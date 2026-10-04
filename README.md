@@ -1,19 +1,21 @@
 # Hòe
 
-Website tiếng Việt dùng Next.js App Router, TypeScript, Tailwind CSS và Zod. Luồng chính: chọn mẫu → cấu hình theo dịch vụ → giỏ hoa → gửi yêu cầu → shop xác nhận giá/lịch sau.
+Website tiếng Việt với Next.js App Router/TypeScript/Tailwind/Zod. Phase 2 bổ sung Postgres/Drizzle, admin Clerk Google, thư viện Vercel Blob và calendar/time picker mang giao diện Hòe. Giữ Lora, Be Vietnam Pro, Tailwind Preflight và bảng màu hiện tại.
+
+Luồng khách: mẫu hoa → cấu hình dịch vụ → giỏ → gửi yêu cầu → shop xác nhận giá/lịch. Không thanh toán online, tài khoản khách hoặc gói Hoa Thời.
 
 ## Chạy local
 
-Cần Node.js 22 (từ 22.16), npm 11.6.2 và trình duyệt. Dự án khóa phiên bản trực tiếp và commit lockfile.
+Node.js 22 và npm 11.6.2. Phiên bản dependencies và lockfile được khóa.
 
 ```powershell
 npx --yes npm@11.6.2 ci
 npm run dev:test
 ```
 
-Mở http://localhost:3000. Chế độ này dùng fixtures được đánh dấu test và repository trong bộ nhớ của tiến trình local. Dữ liệu mất khi server khởi động lại; kết quả mock không chứng minh đã lưu vào Google Sheets.
+Mở `http://localhost:3000`, widget tại `/xem-thu/widgets`. Chế độ này có nhãn test và mock trong bộ nhớ local; mất dữ liệu khi restart. Không chứng minh lưu Postgres, Google login hay Blob thật. Mock bị cấm trên deployment.
 
-Để dùng nội dung thật hoặc Sheet test, sao chép `.env.example` thành `.env.local`, điền cấu hình theo [SHEETS_RUNBOOK](docs/SHEETS_RUNBOOK.md), rồi chạy `npm run dev`. Secrets không được dùng tiền tố NEXT_PUBLIC, không commit file env.
+Để dùng Postgres thật, sao chép `.env.example` thành `.env.local`, đặt pooled/direct URL, DB_ENV đúng DB riêng và DATA_ADAPTER=postgres. Chạy migration/seed theo [DATABASE](docs/phase-2/DATABASE.md), sau đó `npm run dev`. Secrets và browser session state không commit, không gửi vào chat. Live chỉ đọc DB; Sheets đã bỏ khỏi runtime phase 2.
 
 ## Kiểm tra
 
@@ -28,35 +30,36 @@ npm run build
 npm audit --omit=dev
 ```
 
-Playwright dùng port 3100 và cache riêng `.next-e2e`, gồm desktop và mobile. Chạy build/typecheck sau khi các server/test đã hoàn tất để tránh thay đổi đồng thời các file TypeScript do Next.js tự sinh. Typecheck chạy `next typegen` trước TypeScript.
+Integration dùng Postgres **test riêng đã migrate/seed fixtures**, DATABASE_URL và DB_ENV=test: `npm run test:integration`. Admin UAT thật cần Preview nối dịch vụ và Google storageStates: [ADMIN_RUNBOOK](docs/phase-2/ADMIN_RUNBOOK.md). Không dùng production cho các test ghi dữ liệu.
 
-## Cấu hình môi trường
+Playwright public chạy mock local port 3100/cache `.next-e2e`, desktop và mobile. Chạy typecheck sau build/E2E để tránh file types sinh đồng thời. `db:readiness` kiểm tra dữ liệu/cấu hình production và exit 1 khi chưa sẵn sàng.
 
-| Biến | Mặc định / ý nghĩa |
-| --- | --- |
-| CONTENT_MODE | Nếu thiếu: test trên Vercel Preview, live ở local/production. Cấm test trên Vercel production. |
-| DATA_ADAPTER | sheets; mock chỉ cho local với CONTENT_MODE=test. |
-| SHEETS_GATEWAY_URL | URL /exec của Apps Script cho đúng môi trường. |
-| SHEETS_GATEWAY_SECRET | Secret HMAC, giống GATEWAY_SECRET trong Script Properties. |
-| RATE_LIMIT_SECRET | Secret khác để băm IP; không lưu IP thô. |
-| SITE_URL | URL chuẩn của site; nếu thiếu trên Vercel dùng VERCEL_URL. |
-| SHOP_LIVE | false; chỉ true sau khi nghiệm thu dữ liệu thật và Sheets production. |
+## Môi trường và Preview
 
-## Deploy Vercel
+| Biến                                                 | Ý nghĩa                                                    |
+| ---------------------------------------------------- | ---------------------------------------------------------- |
+| DATABASE_URL                                         | Pooled Postgres URL server, không có NEXT_PUBLIC.          |
+| DATABASE_URL_UNPOOLED                                | Direct URL cho migration/seed.                             |
+| DB_ENV                                               | development/test/preview/production, phải trùng marker DB. |
+| DATA_ADAPTER                                         | postgres; mock chỉ local với CONTENT_MODE=test.            |
+| CONTENT_MODE                                         | Preview mặc định test; production phải live.               |
+| RATE_LIMIT_SECRET                                    | Secret băm IP, không lưu IP thô.                           |
+| NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY / CLERK_SECRET_KEY | Clerk đúng môi trường.                                     |
+| ADMIN_CLERK_USER_IDS                                 | Danh sách Clerk user ID được phép quản trị ở server.       |
+| BLOB_READ_WRITE_TOKEN                                | Blob đúng môi trường, chỉ server.                          |
+| SITE_URL                                             | Canonical URL; Vercel mặc định deployment URL khi thiếu.   |
+| SHOP_LIVE                                            | false đến khi shop nghiệm thu dữ liệu/dịch vụ thật.        |
 
-Import repository `buibao/hoeshop`, framework Next.js, Node 22.x, build `npm run build`, install `npx --yes npm@11.6.2 ci` (được cấu hình sẵn trong vercel.json).
+Preview disconnected có nhãn test và fixture giao diện để duyệt widget; API thiếu DB trả 503, không báo đã nhận. `/xem-thu/widgets` 404 production. Không promote artifact test sang production. Vercel dùng Node22, sin1 và npm11 ci theo vercel.json.
 
-- Preview: CONTENT_MODE=test, DATA_ADAPTER=sheets, SHOP_LIVE=false. Cấu hình gateway/secret cho Sheet test riêng. Nếu thiếu kết nối, API trả 503 và giao diện giữ input/giỏ.
-- Production: CONTENT_MODE=live, DATA_ADAPTER=sheets, gateway/secret cho Sheet production riêng. Cần catalog, ảnh, liên hệ và chính sách thật. Bật SHOP_LIVE=true chỉ khi đạt checklist trong runbook; prebuild từ chối thiếu dữ liệu/cấu hình cơ bản.
-- Không promote artifact có fixtures sang production. Luôn build lại với cấu hình production.
-- Có thể xem trước giao diện khi SHOP_LIVE=false; site có thông báo chuẩn bị mở và noindex.
+Admin đầu tiên dự kiến `buibao1997@gmail.com`; cần cấu hình Clerk user ID sau khi kết nối. Neon/Clerk/Blob hiện chưa nối, env connector trả 403. Chủ project cần thiết lập qua dashboard hoặc cấp quyền. Chưa mở shop.
 
-## Tài liệu
+## Tài liệu bàn giao
 
-- [CONTENT_GUIDE](docs/CONTENT_GUIDE.md): thay nội dung, ảnh và thứ tự Home.
-- [SHEETS_RUNBOOK](docs/SHEETS_RUNBOOK.md): gateway, cột Sheet, trạng thái và khắc phục lỗi.
-- [REQUIREMENTS](docs/REQUIREMENTS.md): baseline gốc và tiêu chí nghiệm thu.
-- [BACKLOG](docs/BACKLOG.md): trạng thái thực tế, phần chưa nghiệm thu.
-- [VERIFICATION](docs/VERIFICATION.md): kết quả kiểm tra và giới hạn bằng chứng.
-
-Giá test không phải giá bán. Hoa Thời chỉ nhận nhu cầu/báo giá; chưa có gói, lịch tự động, thanh toán online, tài khoản, upload hay CMS.
+- [PHASE2_PLAN](docs/phase-2/PHASE2_PLAN.md): milestone, quyết định và trạng thái thực tế.
+- [DATABASE](docs/phase-2/DATABASE.md): schema, transaction, seed và rollback.
+- [ADMIN_RUNBOOK](docs/phase-2/ADMIN_RUNBOOK.md): Google admin, media, widget/UAT và release.
+- [VERIFICATION_PHASE2](docs/phase-2/VERIFICATION_PHASE2.md): bằng chứng, giới hạn và phần chưa nghiệm thu.
+- [Ảnh widget desktop/mobile](docs/phase-2/screenshots): calendar, giờ, lỗi, disabled và focus.
+- [BACKLOG](docs/BACKLOG.md): phần còn thiếu để mở shop.
+- [REQUIREMENTS](docs/REQUIREMENTS.md), [CONTENT_GUIDE](docs/CONTENT_GUIDE.md), [SHEETS_RUNBOOK](docs/SHEETS_RUNBOOK.md), [VERIFICATION phase 1](docs/VERIFICATION.md): lịch sử baseline/import/Sheets; không phải hướng dẫn runtime phase 2.

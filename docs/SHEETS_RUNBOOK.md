@@ -1,5 +1,7 @@
 # Vận hành Google Sheets / Apps Script
 
+> Phase 1 historical reference. Phase 2 uses Postgres/admin; see [phase 2 runbook](phase-2/ADMIN_RUNBOOK.md).
+
 ## Thiết lập Sheet test trước
 
 1. Tạo Google Spreadsheet riêng cho test; không dùng file khách thật. Chỉ chia sẻ với người shop phân công.
@@ -51,16 +53,16 @@ Tùy chỉnh Script Properties: REQUEST_RATE_LIMIT, REQUEST_RATE_WINDOW_MS, COMM
 
 ## Xử lý lỗi
 
-| Biểu hiện | Kiểm tra / xử lý |
-| --- | --- |
-| 503 chưa cấu hình | URL /exec, secret server, Script Properties; giữ dữ liệu và retry. |
-| INVALID_SIGNATURE | Secret hai nơi phải giống, đúng version và timestamp; không tắt xác thực. |
-| MISSING_TAB / INVALID_HEADERS | Chạy initializer; giữ header đúng thứ tự. |
-| LOCK_BUSY / timeout | Đợi rồi retry cùng requestId; đối chiếu Sheet trước khi gửi payload mới. |
-| 409 REQUEST_CONFLICT | Cùng ID được dùng cho nội dung khác; sửa nội dung phải tạo ID mới. |
-| 409 CATALOG_CHANGED | Khách xem lại giỏ, lưu cấu hình để chấp nhận thông tin hiện tại. |
-| 429 | Đợi hết cửa sổ hoặc kiểm tra giới hạn trong Script Properties. |
-| Link ảnh không mở được | Liên hệ khách để lấy link shop có quyền xem; không upload ở phase 1. |
+| Biểu hiện                              | Kiểm tra / xử lý                                                                                                                         |
+| -------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| 503 chưa cấu hình                      | URL /exec, secret server, Script Properties; giữ dữ liệu và retry.                                                                       |
+| INVALID_SIGNATURE                      | Secret hai nơi phải giống, đúng version và timestamp; không tắt xác thực.                                                                |
+| MISSING_TAB / INVALID_HEADERS          | Chạy initializer; giữ header đúng thứ tự.                                                                                                |
+| LOCK_BUSY / timeout                    | Đợi rồi retry cùng requestId; đối chiếu Sheet trước khi gửi payload mới.                                                                 |
+| 409 REQUEST_CONFLICT                   | Cùng ID được dùng cho nội dung khác; sửa nội dung phải tạo ID mới.                                                                       |
+| 409 CATALOG_CHANGED                    | Khách xem lại giỏ, lưu cấu hình để chấp nhận thông tin hiện tại.                                                                         |
+| 429                                    | Đợi hết cửa sổ hoặc kiểm tra giới hạn trong Script Properties.                                                                           |
+| Link ảnh không mở được                 | Liên hệ khách để lấy link shop có quyền xem; không upload ở phase 1.                                                                     |
 | Quota Apps Script / Properties / Sheet | Đo lưu lượng và dọn dữ liệu test; giữ phản hồi lỗi trung thực. Nếu vượt khả năng vận hành, lên kế hoạch chuyển repository sang database. |
 
 Không coi kiểm thử trong Node VM là nghiệm thu Google thật. Mã script vẫn phải được chạy với quyền, quota, định dạng ô và deployment Apps Script thực tế.

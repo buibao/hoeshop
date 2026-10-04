@@ -15,7 +15,14 @@
     "typecheck": "next typegen && tsc --noEmit",
     "test": "vitest run",
     "test:e2e": "playwright test",
-    "validate:content": "tsx scripts/validate-content.ts"
+    "validate:content": "tsx scripts/validate-content.ts",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "tsx scripts/db/migrate.ts",
+    "db:seed": "tsx scripts/db/seed.ts",
+    "db:seed:dry": "tsx scripts/db/seed.ts --dry-run",
+    "db:readiness": "tsx scripts/db/readiness.ts",
+    "test:integration": "vitest run --config vitest.integration.config.ts",
+    "test:uat": "playwright test --config playwright.uat.config.ts"
   },
   "engines": {
     "node": "22.x"
@@ -27,7 +34,23 @@
     "zod": "4.6.5",
     "gray-matter": "4.0.3",
     "react-markdown": "10.1.0",
-    "lucide-react": "1.52.0"
+    "lucide-react": "1.52.0",
+    "drizzle-orm": "0.45.3",
+    "pg": "8.23.1",
+    "@clerk/nextjs": "7.9.10",
+    "@vercel/blob": "2.8.0",
+    "react-bootstrap": "2.10.10",
+    "bootstrap": "5.3.8",
+    "motion": "14.0.0",
+    "@daypicker/react": "10.0.2",
+    "date-fns": "4.4.0",
+    "sharp": "0.35.5",
+    "@next/env": "16.3.8"
+  },
+  "overrides": {
+    "sharp": "$sharp",
+    "@emnapi/core": "1.10.0",
+    "@emnapi/wasi-threads": "1.2.3"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "4.3.3",
@@ -41,6 +64,9 @@
     "vitest": "4.1.11",
     "@playwright/test": "1.63.0",
     "tsx": "4.23.15",
-    "cross-env": "10.1.0"
+    "cross-env": "10.1.0",
+    "drizzle-kit": "0.31.11",
+    "@types/pg": "8.16.0",
+    "sass": "1.105.1"
   }
 }

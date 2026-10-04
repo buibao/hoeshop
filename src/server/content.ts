@@ -1,75 +1,133 @@
-import fs from "node:fs";
-import path from "node:path";
-import { createHash } from "node:crypto";
-import matter from "gray-matter";
-import { z } from "zod";
-import { productSchema, type Product, serviceTypeSchema } from "@/domain/schemas";
-export function isTestContent() {
-  if (process.env.CONTENT_MODE === "test" && process.env.VERCEL_ENV === "production") throw new Error("Test content is forbidden in Vercel production.");
-  return process.env.CONTENT_MODE === "test" || (!process.env.CONTENT_MODE && process.env.VERCEL_ENV === "preview");
+import { unstable_cache } from "next/cache";
+import { and, asc, desc, eq } from "drizzle-orm";
+import { getDb, assertDbEnvironment } from "./db";
+import * as s from "./db/schema";
+import * as files from "./file-content";
+import { productRecord, articleRecord, pricingRevision } from "./db/mappers";
+import {
+  siteSchema,
+  homeSchema,
+  homeDefaults,
+  assetsSchema,
+  serviceSchema,
+} from "@/domain/content";
+import { DomainError } from "@/domain/schemas";
+export { isTestContent, shopLive, siteUrl } from "./file-content";
+export type Article = ReturnType<typeof articleRecord>;
+// Only local test fixtures or an explicitly labeled, disconnected Preview use files.
+export function fixtureContent() {
+  return files.isTestContent() && !process.env.DATABASE_URL;
 }
-const root = () => path.join(process.cwd(), "content");
-const fixtures = () => path.join(process.cwd(), "tests", "fixtures", "content");
-const json = (file: string) => JSON.parse(fs.readFileSync(file, "utf8").replace(/^\uFEFF/, ""));
-const siteSchema = z.object({
-  name: z.string(), tagline: z.string(), description: z.string(),
-  contact: z.object({ phone: z.string().nullable(), email: z.string().nullable(), address: z.string().nullable(), hours: z.string().nullable() }),
-  social: z.array(z.object({ label: z.string(), url: z.url().refine((v) => v.startsWith("https://")) })),
-  faq: z.array(z.object({ question: z.string(), answer: z.string() })),
+async function setting(key: string) {
+  await assertDbEnvironment();
+  const [row] = await getDb()
+    .select()
+    .from(s.siteSettings)
+    .where(eq(s.siteSettings.key, key));
+  if (!row)
+    throw new DomainError(
+      503,
+      "CONTENT_MISSING",
+      "Nội dung website đang được chuẩn bị.",
+    );
+  return row.data;
+}
+const cachedSetting = unstable_cache(setting, ["hoe-settings"], {
+  tags: ["settings"],
+  revalidate: 60,
 });
-export const getSite = () => siteSchema.parse(json(path.join(root(), "site.json")));
-const homeSchema = z.object({ eyebrow: z.string(), title: z.string(), intro: z.string(), benefits: z.array(z.object({ title: z.string(), body: z.string() })), featuredLimit: z.number().int().min(0).max(12), storySlug: z.string() });
-export const getHome = () => homeSchema.parse(json(path.join(root(), "home.json")));
-const assetSchema = z.object({ src: z.string().startsWith("/images/"), alt: z.string().min(1) });
-const assetsSchema = z.object({ logo: assetSchema.extend({ width: z.number().int().positive(), height: z.number().int().positive() }).nullable(), hero: assetSchema.nullable(), story: assetSchema.nullable() });
-export const getAssets = () => assetsSchema.parse(json(path.join(root(), "assets.json")));
-export function validateImage(source: string | null) {
-  if (!source) return;
-  if (source.startsWith("/images/preview/")) {
-    if (!isTestContent() || !["bouquet.jpg", "roses.jpg", "peonies.jpg"].includes(source.split("/").at(-1)!)) throw new Error("Preview image is not allowed in live content.");
-    if (!fs.existsSync(path.join(fixtures(), "../images", source.split("/").at(-1)!))) throw new Error("Missing preview image.");
-    return;
-  }
-  const imageRoot = path.resolve(process.cwd(), "public/images");
-  const target = path.resolve(process.cwd(), "public", "." + source);
-  if (!target.startsWith(imageRoot + path.sep) || !fs.existsSync(target)) throw new Error("Missing or invalid content image: " + source);
+export async function getSite() {
+  return siteSchema.parse(
+    fixtureContent() ? files.getSite() : await cachedSetting("site"),
+  );
 }
-const serviceSchema = z.object({ id: serviceTypeSchema, name: z.string(), shortName: z.string(), subtitle: z.string(), description: z.string(), number: z.string(), image: z.string().startsWith("/images/").nullable() });
-export const getServices = () => ["hoa-thoi", "hoa-tam", "hoa-y"].map((id) => serviceSchema.parse(json(path.join(root(), "services", id + ".json"))));
-export const getService = (id: string) => getServices().find((s) => s.id === id);
-function files(directory: string, ext: string) {
-  if (!fs.existsSync(directory)) return [];
-  return fs.readdirSync(directory).filter((f) => f.endsWith(ext)).sort().map((f) => path.join(directory, f));
+export async function getHome() {
+  return homeSchema.parse(
+    fixtureContent()
+      ? { ...homeDefaults, ...files.getHome() }
+      : await cachedSetting("home"),
+  );
 }
-export function getProducts(includeDraft = false): Product[] {
-  const source = isTestContent() ? fixtures() : root();
-  const products = files(path.join(source, "products"), ".json").map((file) => {
-    const data = productSchema.parse(json(file));
-    if (!isTestContent() && data.fixture) throw new Error("Fixture found in live catalog: " + data.id);
-    return { ...data, revision: createHash("sha256").update(JSON.stringify(data)).digest("hex") };
-  });
-  if (new Set(products.map((p) => p.id)).size !== products.length || new Set(products.map((p) => p.slug)).size !== products.length) throw new Error("Duplicate product ID/slug.");
-  return includeDraft ? products : products.filter((p) => p.published);
+export async function getAssets() {
+  return assetsSchema.parse(
+    fixtureContent() ? files.getAssets() : await cachedSetting("assets"),
+  );
 }
-const articleSchema = z.object({
-  id: z.string().regex(/^[a-z0-9-]+$/), slug: z.string().regex(/^[a-z0-9-]+$/), title: z.string().min(1),
-  excerpt: z.string(), published: z.boolean(), fixture: z.boolean().default(false),
-  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/), category: z.string(), image: z.string().startsWith("/images/").nullable().default(null),
+async function servicesQuery() {
+  await assertDbEnvironment();
+  return (
+    await getDb().select().from(s.services).orderBy(asc(s.services.id))
+  ).map((r) => serviceSchema.parse(r.data));
+}
+const cachedServices = unstable_cache(servicesQuery, ["hoe-services"], {
+  tags: ["services"],
+  revalidate: 60,
 });
-export type Article = z.infer<typeof articleSchema> & { body: string };
-export function getArticles(kind: "blog" | "policies" = "blog", includeDraft = false): Article[] {
-  const source = isTestContent() && kind === "blog" ? fixtures() : root();
-  const articles = files(path.join(source, kind), ".md").map((file) => {
-    const parsed = matter(fs.readFileSync(file, "utf8"));
-    const data = articleSchema.parse(parsed.data);
-    if (!isTestContent() && data.fixture) throw new Error("Fixture found in live articles.");
-    if (data.published && !parsed.content.trim()) throw new Error("Published article has no body.");
-    return { ...data, body: parsed.content };
-  });
-  if (new Set(articles.map((a) => a.id)).size !== articles.length || new Set(articles.map((a) => a.slug)).size !== articles.length) throw new Error("Duplicate article ID/slug.");
-  return includeDraft ? articles : articles.filter((a) => a.published);
+export async function getServices() {
+  const rows = fixtureContent()
+    ? files.getServices().map((r) => serviceSchema.parse(r))
+    : await cachedServices();
+  return rows.sort((a, b) => a.number.localeCompare(b.number));
 }
-export function siteUrl() { return process.env.SITE_URL || (process.env.VERCEL_URL ? "https://" + process.env.VERCEL_URL : "http://localhost:3000"); }
-export function shopLive() {
-  return process.env.SHOP_LIVE === "true" && !isTestContent() && process.env.DATA_ADAPTER !== "mock";
+export async function getService(id: string) {
+  return (await getServices()).find((v) => v.id === id);
+}
+async function productsQuery(includeDraft = false) {
+  await assertDbEnvironment();
+  return (
+    await getDb()
+      .select()
+      .from(s.products)
+      .where(
+        and(
+          includeDraft
+            ? undefined
+            : eq(s.products.publicationStatus, "published"),
+          !files.isTestContent() ? eq(s.products.fixture, 0) : undefined,
+        ),
+      )
+      .orderBy(asc(s.products.sortOrder), asc(s.products.id))
+  ).map(productRecord);
+}
+const cachedProducts = unstable_cache(() => productsQuery(), ["hoe-products"], {
+  tags: ["products"],
+  revalidate: 60,
+});
+export async function getProducts(includeDraft = false) {
+  if (fixtureContent())
+    return files
+      .getProducts(includeDraft)
+      .map((p) => ({ ...p, revision: pricingRevision(p) }));
+  return includeDraft ? productsQuery(true) : cachedProducts();
+}
+export async function getProductsFresh() {
+  return fixtureContent() ? getProducts() : productsQuery();
+}
+async function articlesQuery(kind: "blog" | "policies", includeDraft = false) {
+  await assertDbEnvironment();
+  const table = kind === "blog" ? s.posts : s.policies;
+  return (
+    await getDb()
+      .select()
+      .from(table)
+      .where(
+        and(
+          includeDraft ? undefined : eq(table.publicationStatus, "published"),
+          !files.isTestContent() ? eq(table.fixture, 0) : undefined,
+        ),
+      )
+      .orderBy(desc(table.publishedAt), asc(table.id))
+  ).map(articleRecord);
+}
+const cachedArticles = unstable_cache(
+  (kind: "blog" | "policies") => articlesQuery(kind),
+  ["hoe-articles"],
+  { tags: ["posts", "policies"], revalidate: 60 },
+);
+export async function getArticles(
+  kind: "blog" | "policies" = "blog",
+  includeDraft = false,
+): Promise<Article[]> {
+  if (fixtureContent()) return files.getArticles(kind, includeDraft);
+  return includeDraft ? articlesQuery(kind, true) : cachedArticles(kind);
 }

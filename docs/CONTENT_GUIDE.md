@@ -1,21 +1,23 @@
 # Cập nhật nội dung Hòe
 
+> Phase 1 historical reference. Phase 2 uses Postgres/admin; see [phase 2 runbook](phase-2/ADMIN_RUNBOOK.md).
+
 ## Nơi cần sửa
 
-| Nội dung | Vị trí |
-| --- | --- |
-| Shop, FAQ, liên hệ, social | content/site.json |
-| Hero, lợi ích, số mẫu nổi bật, liên kết câu chuyện | content/home.json |
-| Logo, ảnh hero và câu chuyện | content/assets.json |
-| Ba dịch vụ | content/services/*.json |
-| Sản phẩm | content/products/*.json |
-| Bài blog | content/blog/*.md |
-| Chính sách | content/policies/*.md |
-| Logo/ảnh thật | public/images/ |
-| Màu sắc, typography, spacing tokens | src/styles/tokens.css |
-| Giỏ/form/comment | src/features/ |
-| Adapter dữ liệu | src/server/integrations/ |
-| Google Sheets gateway | integrations/google-sheets/Code.gs |
+| Nội dung                                           | Vị trí                             |
+| -------------------------------------------------- | ---------------------------------- |
+| Shop, FAQ, liên hệ, social                         | content/site.json                  |
+| Hero, lợi ích, số mẫu nổi bật, liên kết câu chuyện | content/home.json                  |
+| Logo, ảnh hero và câu chuyện                       | content/assets.json                |
+| Ba dịch vụ                                         | content/services/*.json            |
+| Sản phẩm                                           | content/products/*.json            |
+| Bài blog                                           | content/blog/*.md                  |
+| Chính sách                                         | content/policies/*.md              |
+| Logo/ảnh thật                                      | public/images/                     |
+| Màu sắc, typography, spacing tokens                | src/styles/tokens.css              |
+| Giỏ/form/comment                                   | src/features/                      |
+| Adapter dữ liệu                                    | src/server/integrations/           |
+| Google Sheets gateway                              | integrations/google-sheets/Code.gs |
 
 Không refactor toàn dự án cho một yêu cầu sửa nội dung. Giữ ID/slug ổn định. Build/typecheck/lint sau cập nhật.
 
