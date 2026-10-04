@@ -38,6 +38,10 @@ describe("pricing and catalog",()=>{
     expect(getArticles("policies")).toEqual([]);
     vi.stubEnv("VERCEL_ENV","production");expect(()=>isTestContent()).toThrow("forbidden");
   });
+  it("defaults to fixtures only on Vercel Preview, never production",()=>{
+    vi.stubEnv("CONTENT_MODE", ""); vi.stubEnv("VERCEL_ENV", "preview"); expect(isTestContent()).toBe(true);
+    vi.stubEnv("VERCEL_ENV", "production"); expect(isTestContent()).toBe(false); expect(getProducts()).toEqual([]);
+  });
 });
 describe("service validation",()=>{
   it("refuses subscription fields, requires emotion and shape",()=>{

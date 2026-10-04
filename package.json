@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
+  "packageManager": "npm@11.6.2",
   "scripts": {
     "dev": "next dev",
     "dev:test": "cross-env CONTENT_MODE=test DATA_ADAPTER=mock next dev",
@@ -17,7 +18,7 @@
     "validate:content": "tsx scripts/validate-content.ts"
   },
   "engines": {
-    "node": ">=22.16.0 <23"
+    "node": "22.x"
   },
   "dependencies": {
     "next": "16.3.8",

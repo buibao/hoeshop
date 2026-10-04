@@ -3,8 +3,8 @@ import type { NextConfig } from "next";
 const config: NextConfig = {
   distDir: process.env.NEXT_DIST_DIR || ".next",
   outputFileTracingIncludes: {
-    "/*": ["./content/**/*", ...(process.env.CONTENT_MODE === "test" ? ["./tests/fixtures/content/**/*"] : [])],
-    "/images/preview/*": process.env.CONTENT_MODE === "test" ? ["./tests/fixtures/images/*.jpg"] : [],
+    "/*": ["./content/**/*", ...(process.env.CONTENT_MODE === "test" || (!process.env.CONTENT_MODE && process.env.VERCEL_ENV === "preview") ? ["./tests/fixtures/content/**/*"] : [])],
+    "/images/preview/*": process.env.CONTENT_MODE === "test" || (!process.env.CONTENT_MODE && process.env.VERCEL_ENV === "preview") ? ["./tests/fixtures/images/*.jpg"] : [],
   },
   poweredByHeader: false,
   async headers() {

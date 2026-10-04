@@ -34,7 +34,7 @@ Playwright dùng port 3100 và cache riêng `.next-e2e`, gồm desktop và mobil
 
 | Biến | Mặc định / ý nghĩa |
 | --- | --- |
-| CONTENT_MODE | live; test để dùng fixtures. Cấm test trên Vercel production. |
+| CONTENT_MODE | Nếu thiếu: test trên Vercel Preview, live ở local/production. Cấm test trên Vercel production. |
 | DATA_ADAPTER | sheets; mock chỉ cho local với CONTENT_MODE=test. |
 | SHEETS_GATEWAY_URL | URL /exec của Apps Script cho đúng môi trường. |
 | SHEETS_GATEWAY_SECRET | Secret HMAC, giống GATEWAY_SECRET trong Script Properties. |
@@ -44,7 +44,7 @@ Playwright dùng port 3100 và cache riêng `.next-e2e`, gồm desktop và mobil
 
 ## Deploy Vercel
 
-Import repository `buibao/hoeshop`, framework Next.js, Node 22.x, build `npm run build`, install `npm ci`.
+Import repository `buibao/hoeshop`, framework Next.js, Node 22.x, build `npm run build`, install `npx --yes npm@11.6.2 ci` (được cấu hình sẵn trong vercel.json).
 
 - Preview: CONTENT_MODE=test, DATA_ADAPTER=sheets, SHOP_LIVE=false. Cấu hình gateway/secret cho Sheet test riêng. Nếu thiếu kết nối, API trả 503 và giao diện giữ input/giỏ.
 - Production: CONTENT_MODE=live, DATA_ADAPTER=sheets, gateway/secret cho Sheet production riêng. Cần catalog, ảnh, liên hệ và chính sách thật. Bật SHOP_LIVE=true chỉ khi đạt checklist trong runbook; prebuild từ chối thiếu dữ liệu/cấu hình cơ bản.

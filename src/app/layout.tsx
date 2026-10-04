@@ -19,7 +19,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   const test = isTestContent();
   return <html lang="vi" className={`${heading.variable} ${body.variable}`}><body>
     <a href="#main-content" className="skip-link">Đến nội dung chính</a>
-    {test ? <div className="banner test">BẢN TEST — Mẫu hoa, giá và ảnh minh họa để kiểm thử. {process.env.DATA_ADAPTER === "mock" ? "Dữ liệu lưu tạm trên máy local, mất khi khởi động lại." : "Gửi vào Sheet test, không tiếp nhận đơn thật."}</div>
+    {test ? <div className="banner test">BẢN TEST — Mẫu hoa, giá và ảnh minh họa để kiểm thử. {process.env.DATA_ADAPTER === "mock" ? "Dữ liệu lưu tạm trên máy local, mất khi khởi động lại." : process.env.SHEETS_GATEWAY_URL && process.env.SHEETS_GATEWAY_SECRET && process.env.RATE_LIMIT_SECRET ? "Gửi vào Sheet test, không tiếp nhận đơn thật." : "Chưa kết nối Sheet test; yêu cầu chưa được tiếp nhận."}</div>
       : !shopLive() ? <div className="banner">Hòe đang chuẩn bị mở nhận đặt hoa. Mời bạn khám phá câu chuyện và dịch vụ của Hòe.</div> : null}
     <Header logo={getAssets().logo}/><main id="main-content">{children}</main><Footer />
   </body></html>;

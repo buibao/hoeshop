@@ -6,7 +6,7 @@ import { z } from "zod";
 import { productSchema, type Product, serviceTypeSchema } from "@/domain/schemas";
 export function isTestContent() {
   if (process.env.CONTENT_MODE === "test" && process.env.VERCEL_ENV === "production") throw new Error("Test content is forbidden in Vercel production.");
-  return process.env.CONTENT_MODE === "test";
+  return process.env.CONTENT_MODE === "test" || (!process.env.CONTENT_MODE && process.env.VERCEL_ENV === "preview");
 }
 const root = () => path.join(process.cwd(), "content");
 const fixtures = () => path.join(process.cwd(), "tests", "fixtures", "content");

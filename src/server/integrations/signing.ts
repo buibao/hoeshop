@@ -1,5 +1,6 @@
 import { createHash, createHmac, timingSafeEqual } from "node:crypto";
 import { canonical } from "@/domain/cart";
+import { DomainError } from "@/domain/schemas";
 export const hashPayload = (payload: unknown) => createHash("sha256").update(canonical(payload)).digest("hex");
 export function signEnvelope(payload: unknown, secret: string, now = Date.now()) {
   const timestamp = Math.floor(now / 1000);
@@ -14,7 +15,7 @@ export function verifyEnvelope(envelope: ReturnType<typeof signEnvelope>, secret
 }
 export function rateKey(request: Request) {
   const secret = process.env.RATE_LIMIT_SECRET;
-  if (!secret && process.env.DATA_ADAPTER !== "mock") throw new Error("Rate limit secret is missing.");
+  if (!secret && process.env.DATA_ADAPTER !== "mock") throw new DomainError(503, "NOT_CONFIGURED", "Hệ thống tiếp nhận chưa được cấu hình. Vui lòng thử lại sau.");
   // On Vercel use its overwritten, trusted IP header. Ignore arbitrary client forwarding headers.
   const ip = process.env.VERCEL ? request.headers.get("x-vercel-forwarded-for")?.split(",")[0].trim() || "unknown" : "local";
   return createHmac("sha256", secret || "local-test-only").update(ip).digest("hex");
