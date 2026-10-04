@@ -4,18 +4,18 @@ Phase 1 baseline giữ trong REQUIREMENTS/VERIFICATION.md; adapter Sheets và Ap
 
 | Mốc phase 2          | Đã triển khai                                                                                                  | Chưa nghiệm thu                                                                |
 | -------------------- | -------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
-| A: retry/giỏ         | Metadata pending 7 ngày, normalize/fingerprint, committed retry trước validation động, reconcile giỏ mới nhất. | Retry trên Neon Preview thật.                                                  |
-| A: DB                | 13 bảng/migration, lazy pg, marker môi trường, seed dry-run/no overwrite, constraints/index.                   | Neon các môi trường và quyền dashboard.                                        |
-| A: dữ liệu phát sinh | Transaction, idempotency, snapshot/items, shared rate buckets, comment cursor. 13 integration Postgres local.  | Persistence/rate/API DB assertions trên Preview.                               |
+| A: retry/giỏ         | Metadata 7 ngày, normalize/fingerprint, retry trước validation động, reconcile; retry mất response/reload đạt trên Neon Preview desktop/mobile. | Shop nghiệm thu giỏ/retry. |
+| A: DB                | 13 bảng/migration, marker, seed no overwrite; Neon Free test/Preview riêng Singapore đã migrate/import. | DB production và dữ liệu thật. |
+| A: dữ liệu phát sinh | Transaction/idempotency/rate; 13 integration cases đạt trên Neon test. Public Preview lưu đơn/tư vấn/bình luận, đối chiếu SQL và retry không trùng. | Shop nghiệm thu/vận hành. |
 | A: content/admin     | Async content/cache, runtime slug, CRUD/archive, status/note audit, allowlist và stale edit.                   | Clerk Google admin/non-admin thật.                                             |
-| B: media             | Direct upload, xác minh bytes/MIME/kích thước, thư viện, chống xóa tham chiếu.                                 | Blob thật; integration hiện mock nhà cung cấp.                                 |
+| B: media             | Direct upload, xác minh bytes/MIME/kích thước, thư viện, chống xóa tham chiếu. Blob SDK thật upload/read/delete đã đạt. | UAT token/direct upload/finish/xóa tham chiếu qua admin UI; integration admin hiện mock provider. |
 | B: widget/storefront | Calendar/giờ tiếng Việt tùy biến, popup/bottom sheet, form nhóm, presets, quantity, menu và motion.            | Shop duyệt Preview desktop/mobile; copy/ảnh thật.                              |
 | C: release           | Checks, screenshots, UAT suite, readiness/runbook/rollback.                                                    | Dịch vụ thật, tài khoản, UAT, tên miền/OAuth production và quyết định mở shop. |
 
 ## Đầu vào còn thiếu
 
-- Neon, Clerk development Google và Blob test kết nối project Vercel hoeshop. Connector env trả 403, cần chủ project thiết lập hoặc cấp quyền.
-- Clerk user ID của `buibao1997@gmail.com` và một tài khoản non-admin để UAT; không dùng email làm quyền server.
+- UAT Google admin/non-admin và upload Blob qua giao diện. Neon test/Preview, Clerk development và Blob đã kết nối bằng CLI; kiểm tra Blob SDK đã đạt.
+- Một tài khoản Google non-admin và browser storageStates để chạy UAT đầy đủ. Admin `buibao1997@gmail.com` đã có Clerk user ID trong allowlist server; không dùng email làm quyền server.
 - Catalog/giá/ảnh/logo thật được phép bán, contact/social thật và chính sách đầy đủ.
 - DB/Blob/Clerk production riêng, tên miền/DNS và Google OAuth production; kiểm tra gói Vercel phù hợp thương mại/chi phí trước đăng ký trả phí.
 - Nghiệm thu giao diện widget và full flow trên Preview thật. Chốt lịch phase 2 sau nền tảng milestone A.

@@ -1,0 +1,17 @@
+# CLI deployments must exclude local credentials, operator scripts and test data.
+.env*
+!.env.example
+.local/
+.agents/
+skills-lock.json
+.git/
+.vercel/
+node_modules/
+.next/
+.next-e2e/
+.next-preview/
+out/
+coverage/
+playwright-report/
+test-results/
+*.tsbuildinfo

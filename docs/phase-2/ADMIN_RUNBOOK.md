@@ -1,11 +1,11 @@
 # Vận hành admin, media và Preview
 
-## Thiết lập do chủ project thực hiện
+## Thiết lập dịch vụ và tài khoản
 
-1. Kết nối Neon, Clerk và Blob trong Vercel dashboard cho project `hoeshop`. Chưa có dịch vụ kết nối; connector ghi env đang trả 403. Ưu tiên gói miễn phí cho test/Preview, kiểm tra chi phí trước khi nâng gói. [Vercel storage](https://vercel.com/docs/storage).
+1. Neon `hoe-preview`/`hoe-test`, Clerk `hoe-admin-preview` và Blob `hoe-media-preview` đã kết nối bằng Vercel CLI ngày 05/10/2026. Connector vẫn thiếu quyền env/integrations; CLI đã đăng nhập và liên kết đúng `buibaos-projects/hoeshop`. Dùng Neon Free, Clerk Hobby và Blob trong hạn mức Vercel Hobby. Chi tiết [PREVIEW_SERVICES](PREVIEW_SERVICES.md). Không nâng gói khi chưa báo chi phí.
 2. Đặt URL DB đúng môi trường, `DB_ENV=preview`, `DATA_ADAPTER=postgres`, `CONTENT_MODE=test`, `SHOP_LIVE=false`, `RATE_LIMIT_SECRET` ngẫu nhiên. Migration/seed dùng direct URL ở máy người vận hành. Preview dùng DB/Blob test riêng.
-3. Tạo Clerk development instance, bật Google, tắt các phương thức không cần. Dùng chế độ hạn chế đăng ký/invite tài khoản quản trị trong dashboard. Không có route đăng ký admin trong ứng dụng; SignIn tắt signup. [Clerk environments](https://clerk.com/docs/guides/development/managing-environments).
-4. Mời/tạo `buibao1997@gmail.com`, lấy user ID dạng `user_...`, đặt `ADMIN_CLERK_USER_IDS` và hai Clerk keys. Email không cấp quyền; server kiểm tra session và allowlist ID cho mọi read/mutation/upload.
+3. Clerk development đã có Google enabled và allowlist đăng ký chỉ gồm tài khoản admin đã chọn; block email subaddresses bật. SignIn không dùng combined sign-in-or-up, `transferable=false` chặn tự chuyển OAuth sang đăng ký và ẩn liên kết signup. Ứng dụng không có route đăng ký admin; allowlist Clerk và server user ID vẫn kiểm soát truy cập. Các phương thức email/password còn theo cấu hình mặc định của Clerk; shop cần tắt phương thức không dùng trong dashboard nếu muốn chỉ hiển thị Google. [Clerk environments](https://clerk.com/docs/guides/development/managing-environments).
+4. `buibao1997@gmail.com` đã có user ID `user_3KFIoirY4ZX9iXow1tImk2g8Rbx`, được đặt trong `ADMIN_CLERK_USER_IDS` của nhánh Preview `feat/phase2`. Backend Clerk xác nhận liên kết `oauth_google`, email verified và đã đăng nhập. Không tạo mật khẩu hoặc gửi email mời. Email không cấp quyền; server kiểm tra session và allowlist ID cho mọi read/mutation/upload. Chưa hoàn tất UAT admin/non-admin và upload ảnh qua giao diện.
 5. Đặt `BLOB_READ_WRITE_TOKEN` test. Redeploy Preview sau thay đổi env. Đăng nhập `/dang-nhap`, xác nhận `/admin` đọc đúng DB marker Preview, shop vẫn đóng.
 
 Clerk chỉ tải ở admin/signin; storefront không yêu cầu tài khoản. Guest API trả 401, signed-in non-admin 403. Admin/draft noindex, private response no-store. Không public buyer hay internalNote trong DTO.

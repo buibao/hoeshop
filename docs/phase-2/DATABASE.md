@@ -6,7 +6,9 @@
 
 Mỗi DB/branch có `site_settings.key = system.environment` với JSON string `development`, `test`, `preview` hoặc `production`. `DB_ENV` bắt buộc ở CLI/local; deployment chọn môi trường từ `VERCEL_ENV`. Migration/seed từ chối marker khác trước khi thay đổi. Clone branch sang môi trường khác phải có người vận hành kiểm tra URL và thay marker bằng SQL riêng; không sửa marker qua admin.
 
-Tạo DB/branch riêng development/test, Preview và production. Chọn Neon AWS Singapore `ap-southeast-1` nếu dashboard xác nhận khả dụng; Functions đã cấu hình `sin1`. Chưa provision/kiểm chứng độ trễ dịch vụ. Tham khảo [Neon regions](https://neon.com/docs/introduction/regions), [Drizzle pg](https://orm.drizzle.team/docs/get-started-postgresql).
+Ngày 05/10/2026 đã provision Neon Free `hoe-preview` chỉ nối Preview và `hoe-test` nối Development với prefix `HOE_TEST`, cùng region Singapore `sin1` (AWS `ap-southeast-1`). PostgreSQL 18.6, pooled/direct kết nối cùng DB đã kiểm tra; migration/import fixtures hoàn tất với marker riêng `preview`/`test`. Functions Preview xác nhận `sin1`. `hoe-test` là DB dành cho kiểm thử, không dùng cho production. Chi tiết trong [PREVIEW_SERVICES](PREVIEW_SERVICES.md). Tham khảo [Neon regions](https://neon.com/docs/introduction/regions), [Drizzle pg](https://orm.drizzle.team/docs/get-started-postgresql).
+
+DB `neon-byzantium-notebook` do chủ shop tạo trước đó dùng prefix `STORAGE_`, region `iad1`, nối Preview/Production. Không chạy migration hay seed vào DB này; runtime phase 2 Preview dùng URL canonical của `hoe-preview`. Production vẫn cần DB và dữ liệu thật riêng trước release.
 
 ## Bảng và bảo toàn lịch sử
 

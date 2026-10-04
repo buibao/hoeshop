@@ -13,6 +13,8 @@ export default function SignInPage() {
         <ClerkProvider>
           <SignIn
             withSignUp={false}
+            transferable={false}
+            appearance={{ elements: { footerAction: { display: "none" } } }}
             routing="path"
             path="/dang-nhap"
             forceRedirectUrl="/admin"

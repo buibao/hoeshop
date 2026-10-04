@@ -52,7 +52,9 @@ Playwright public chạy mock local port 3100/cache `.next-e2e`, desktop và mob
 
 Preview disconnected có nhãn test và fixture giao diện để duyệt widget; API thiếu DB trả 503, không báo đã nhận. `/xem-thu/widgets` 404 production. Không promote artifact test sang production. Vercel dùng Node22, sin1 và npm11 ci theo vercel.json.
 
-Admin đầu tiên dự kiến `buibao1997@gmail.com`; cần cấu hình Clerk user ID sau khi kết nối. Neon/Clerk/Blob hiện chưa nối, env connector trả 403. Chủ project cần thiết lập qua dashboard hoặc cấp quyền. Chưa mở shop.
+Ngày 05/10/2026 đã kết nối dịch vụ bằng Vercel CLI: Neon `hoe-preview` và `hoe-test` riêng ở Singapore, Clerk development và Blob `hoe-media-preview`. Preview đã nhận đơn/tư vấn/bình luận vào Neon; retry sau reload không tạo bản ghi trùng. Admin `buibao1997@gmail.com` đã có Clerk user ID trong allowlist server và liên kết Google. Xem [thiết lập và bằng chứng dịch vụ](docs/phase-2/PREVIEW_SERVICES.md). Chưa mở production; UAT admin/non-admin và upload qua giao diện còn cần hoàn tất.
+
+Deploy qua CLI dùng `.vercelignore` để loại `.env*`, `.local`, browser sessions và công cụ vận hành khỏi source upload. Kiểm tra `vercel deploy --dry --json` trước deploy khi thêm thư mục local.
 
 ## Tài liệu bàn giao
 
