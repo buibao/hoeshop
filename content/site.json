@@ -1,0 +1,38 @@
+{
+  "name": "Hòe",
+  "tagline": "Hòe gửi hoa, chill ghé nhà.",
+  "description": "Một chút hoa, một chút dịu dàng. Hòe cùng bạn gửi những điều thương yêu qua Hoa Thời, Hoa Tâm và Hoa Ý.",
+  "contact": {
+    "phone": null,
+    "email": null,
+    "address": null,
+    "hours": null
+  },
+  "social": [],
+  "faq": [
+    {
+      "question": "Hòe có những dịch vụ nào?",
+      "answer": "Hòe có Hoa Thời cho nhu cầu nhận hoa định kỳ, Hoa Tâm để gửi gắm cảm xúc và Hoa Ý cho thiết kế theo mong muốn."
+    },
+    {
+      "question": "Không biết chọn hoa thì sao?",
+      "answer": "Bạn có thể chọn Hoa Tâm và kể cảm xúc muốn gửi. Hòe sẽ cùng bạn tìm một thiết kế phù hợp."
+    },
+    {
+      "question": "Hoa Thời hoạt động như thế nào?",
+      "answer": "Bạn gửi nhu cầu nhận hoa định kỳ để Hòe tư vấn. Giá và lịch nhận hoa chỉ được chốt khi shop liên hệ xác nhận; website hiện chưa bán gói có lịch cam kết."
+    },
+    {
+      "question": "Có thể chọn màu sắc, loài hoa và gửi lời nhắn không?",
+      "answer": "Có. Hãy ghi mong muốn trong cấu hình mẫu hoa hoặc form tư vấn. Hòe sẽ xác nhận khả năng đáp ứng theo hoa thực tế."
+    },
+    {
+      "question": "Ngày giao và phí giao được xác nhận lúc nào?",
+      "answer": "Ngày, giờ trên form là mong muốn của bạn. Hòe sẽ liên hệ xác nhận lịch, phí giao và giá cuối cùng sau khi nhận yêu cầu."
+    },
+    {
+      "question": "Gửi yêu cầu có nghĩa là đã thanh toán chưa?",
+      "answer": "Chưa. Website tiếp nhận yêu cầu đặt hoa; shop liên hệ xác nhận và hướng dẫn bước tiếp theo."
+    }
+  ]
+}

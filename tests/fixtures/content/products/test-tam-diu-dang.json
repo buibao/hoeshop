@@ -1,0 +1,21 @@
+{
+  "id": "test-tam-diu-dang",
+  "slug": "mau-test-diu-dang",
+  "name": "Dịu dàng • mẫu test",
+  "serviceType": "hoa-tam",
+  "description": "Mẫu dữ liệu kiểm thử luồng Hoa Tâm, không phải sản phẩm đang bán. Giá và ảnh chỉ dùng cho bản xem thử.",
+  "image": "/images/preview/bouquet.jpg",
+  "imageAlt": "Ảnh hoa minh họa cho bản test",
+  "published": true,
+  "fixture": true,
+  "price": {
+    "mode": "fixed",
+    "amount": 550000,
+    "unit": "bó"
+  },
+  "defaultDesign": {
+    "color": "Hồng nhẹ",
+    "style": "Tự nhiên"
+  },
+  "pricedOptions": {}
+}

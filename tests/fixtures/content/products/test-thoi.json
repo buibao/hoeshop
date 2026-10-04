@@ -1,0 +1,16 @@
+{
+  "id": "test-thoi",
+  "slug": "mau-test-hoa-thoi",
+  "name": "Chút an nhiên • mẫu test",
+  "serviceType": "hoa-thoi",
+  "description": "Mẫu tham khảo để kiểm thử nhu cầu Hoa Thời. Không có gói, lịch giao tự động hoặc giá định kỳ.",
+  "image": "/images/preview/peonies.jpg",
+  "imageAlt": "Ảnh hoa minh họa cho bản test",
+  "published": true,
+  "fixture": true,
+  "price": {
+    "mode": "quote"
+  },
+  "defaultDesign": {},
+  "pricedOptions": {}
+}

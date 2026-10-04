@@ -1,0 +1,23 @@
+{
+  "id": "test-y-nang",
+  "slug": "mau-test-nang",
+  "name": "Nắng nhỏ • mẫu test",
+  "serviceType": "hoa-y",
+  "description": "Mẫu dữ liệu kiểm thử giá khoảng, không phải sản phẩm đang bán. Hình thức mẫu là bó hoa; thay đổi thiết kế sẽ cần báo giá.",
+  "image": "/images/preview/roses.jpg",
+  "imageAlt": "Ảnh hoa minh họa cho bản test",
+  "published": true,
+  "fixture": true,
+  "price": {
+    "mode": "range",
+    "min": 600000,
+    "max": 800000,
+    "unit": "bó"
+  },
+  "defaultDesign": {
+    "shape": "bo",
+    "color": "Hồng",
+    "style": "Thanh lịch"
+  },
+  "pricedOptions": {}
+}

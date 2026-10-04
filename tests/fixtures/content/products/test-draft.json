@@ -1,0 +1,18 @@
+{
+  "id": "test-draft",
+  "slug": "mau-test-chua-xuat-ban",
+  "name": "Mẫu chưa xuất bản",
+  "serviceType": "hoa-y",
+  "description": "Fixture kiểm thử việc không công khai draft.",
+  "image": null,
+  "imageAlt": "",
+  "published": false,
+  "fixture": true,
+  "price": {
+    "mode": "quote"
+  },
+  "defaultDesign": {
+    "shape": "bo"
+  },
+  "pricedOptions": {}
+}
