@@ -4,10 +4,10 @@ Website tiếng Việt dùng Next.js App Router, TypeScript, Tailwind CSS và Zo
 
 ## Chạy local
 
-Cần Node.js 22 (từ 22.16), npm và trình duyệt.
+Cần Node.js 22 (từ 22.16), npm 11.6.2 và trình duyệt. Dự án khóa phiên bản trực tiếp và commit lockfile.
 
 ```powershell
-npm ci
+npx --yes npm@11.6.2 ci
 npm run dev:test
 ```
 

@@ -10,7 +10,7 @@
 | P5 Sheets | Adapter/gateway/runbook đã viết và kiểm thử logic; chưa có Sheet test/production hoặc URL/secret Apps Script để nghiệm thu thật. |
 | P6 Blog/comment | Nội dung Chuyện của Hòe, list/detail, plain text Visible và pagination đã triển khai; lưu Google thật chưa nghiệm thu. |
 | P7 Nội dung/assets | Đã chuyển nội dung phù hợp từ Word. Liên hệ/ảnh/logo/catalog/chính sách thật còn thiếu; chính sách giữ draft. |
-| P8 Nghiệm thu/deploy | Build và kiểm thử local; kết quả deployment và browser ghi trong VERIFICATION.md. Chưa mở nhận khách. |
+| P8 Nghiệm thu/deploy | Build/typecheck/lint, 32 unit/API/gateway và 16 E2E local đạt. Preview Vercel READY; giỏ mobile đã kiểm tra trên deployment. Kết nối Google thật và mở nhận khách chưa nghiệm thu; bằng chứng trong VERIFICATION.md. |
 
 ## Đầu vào còn thiếu
 
