@@ -1,5 +1,5 @@
 import { handleUpload, type HandleUploadBody } from "@vercel/blob/client";
-import { z } from "zod";
+import * as z from "zod";
 import { requireAdmin } from "@/server/admin/auth";
 import { mediaPrefix, MEDIA_LIMIT, MEDIA_TYPES } from "@/server/admin/media";
 import { assertDbEnvironment } from "@/server/db";

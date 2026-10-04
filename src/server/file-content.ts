@@ -2,7 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { createHash } from "node:crypto";
 import matter from "gray-matter";
-import { z } from "zod";
+import * as z from "zod";
 import {
   productSchema,
   type Product,

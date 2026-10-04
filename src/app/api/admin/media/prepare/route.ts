@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { z } from "zod";
+import * as z from "zod";
 import { requireAdmin } from "@/server/admin/auth";
 import { mediaPrefix } from "@/server/admin/media";
 import { parseBody, errorResponse, jsonResponse } from "@/server/http";

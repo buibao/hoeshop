@@ -22,6 +22,8 @@ Phase 1 baseline giữ trong REQUIREMENTS/VERIFICATION.md; adapter Sheets và Ap
 
 `SHOP_LIVE=false`. Không thay bằng chứng mock/local bằng tuyên bố đã kết nối dịch vụ thật. Xem docs/phase-2/VERIFICATION_PHASE2.md.
 
+Lighthouse local median mobile phase 2 là 83 (baseline 85); mục tiêu ≥90 còn tuning trên deployment. Payload và JS đã giảm, nhưng chưa xác nhận cải thiện LCP/điểm. Xem docs/phase-2/PERFORMANCE.md. Dev tooling còn 9 audit advisories; production dependencies audit 0.
+
 ## Ngoài scope
 
 Thanh toán, tài khoản khách, tìm kiếm công khai, upload ảnh khách, CMS/page builder, gói Hoa Thời/lịch tự động/gia hạn, tồn kho/theo dõi giao, thông báo tự động và reply/like/rating.

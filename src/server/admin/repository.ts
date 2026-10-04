@@ -1,6 +1,6 @@
 import { desc, eq, sql } from "drizzle-orm";
 import { revalidateTag } from "next/cache";
-import { z } from "zod";
+import * as z from "zod";
 import { getDb, assertDbEnvironment } from "@/server/db";
 import * as s from "@/server/db/schema";
 import { DomainError } from "@/domain/schemas";

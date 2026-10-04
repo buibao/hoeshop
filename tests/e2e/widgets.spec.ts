@@ -94,7 +94,7 @@ for (const width of [360, 390, 768, 1024, 1440])
       )
         await page.screenshot({
           path: `${shots}/${width}-${name}.png`,
-          fullPage: false,
+          fullPage: name === "states-focus",
         });
     };
     await page

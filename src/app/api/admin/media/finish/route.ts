@@ -1,4 +1,4 @@
-import { z } from "zod";
+import * as z from "zod";
 import { requireAdmin } from "@/server/admin/auth";
 import { finishMedia } from "@/server/admin/media";
 import { parseBody, errorResponse, jsonResponse } from "@/server/http";

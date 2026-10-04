@@ -1,36 +1,43 @@
 # Bằng chứng phase 2
 
-Ngày kiểm tra: 05/10/2026 (Asia/Ho_Chi_Minh). Baseline `474cc71`; branch `feat/phase2`. Không có deadline phase 2. SHOP_LIVE=false.
+05/10/2026 (Asia/Ho_Chi_Minh). Baseline `474cc71`, branch `feat/phase2`. SHOP_LIVE=false; chưa có deadline phase 2.
 
-| Kiểm tra                  | Kết quả / giới hạn                                                                                                                                 |
-| ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Build                     | Next production build đã đạt khi không có DB: lazy connection, dynamic public/admin routes; sitemap đọc runtime.                                   |
-| Typecheck / lint          | Đạt.                                                                                                                                               |
-| Vitest unit/API           | 51/51 đạt: giá, cart keys/reconcile, schema, ngày Việt Nam, pending expiry/fingerprint, signature và API errors.                                   |
-| Postgres integration      | 13/13 đạt trên Postgres 18.4 UTF8 local, DB test riêng.                                                                                            |
-| Playwright public         | 34/34 đạt: desktop/mobile, mixed cart, reload pending retry, hai tab, form/comment, draft, guest admin và widget. Adapter mock local có nhãn test. |
-| Browser → API → DB        | Checkout local với adapter Postgres trả 201 received; truy vấn order/items xác nhận một snapshot, cleanup dữ liệu test. Không pageerror.           |
-| Readiness                 | Cố ý chạy DB test: ready=false, exit 1 vì test catalog, thiếu ảnh/contact/policies/auth/media và chưa production.                                  |
-| Google / Neon / Blob thật | Chưa kết nối, chưa nghiệm thu. UAT suite có sẵn nhưng chưa chạy; không coi test mock Clerk/Blob là bằng chứng nhà cung cấp thật.                   |
-| Preview                   | Đang tạo bản xem thử test; sẽ bổ sung deployment URL và smoke khi READY.                                                                           |
-| Lighthouse/bundle         | Đang đo baseline/phase 2 cùng môi trường local production fixture. Chưa cam kết điểm trên Preview Neon thật.                                       |
+| Kiểm tra                | Kết quả / giới hạn                                                                                                                                                                                 |
+| ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Build/typecheck/lint    | Đạt local; build Vercel Preview READY trên sin1. Lazy DB không yêu cầu kết nối khi build; public/admin/sitemap đọc runtime.                                                                        |
+| Vitest unit/API         | 51/51 đạt: giá, giỏ/reconcile, schema, ngày Việt Nam, fingerprint/TTL, signature/API errors và bytes JPEG/PNG/WebP/AVIF.                                                                           |
+| Postgres integration    | 13/13 đạt trên Postgres 18.4 UTF8 local test riêng. Clerk session và Blob provider được mock trong admin integration.                                                                              |
+| Playwright public       | 34/34 desktop/mobile đạt. Đã chạy lại 8 storefront cases mỗi viewport sau tối ưu ảnh/motion và 2 retry cases sau đổi import locale. Mock local có nhãn test.                                       |
+| Browser → API → DB      | Checkout local Postgres 201 received; query order/items xác nhận một snapshot, cleanup. Không pageerror.                                                                                           |
+| Preview thật            | Home/test banner, calendar, giờ, hủy/Escape/return focus, overflow ở 1440/390px: PASS. POST order thiếu DB 503, không receipt; guest admin API 401; admin thông báo đang kết nối; không pageerror. |
+| Readiness               | DB test trả ready=false/exit 1 đúng khi thiếu catalog thật, ảnh/contact/policies/auth/media và chưa production.                                                                                    |
+| Production dependencies | npm audit --omit=dev: 0 vulnerabilities. Sharp 0.35.5, kiểm thử decode MIME thực tế đạt.                                                                                                           |
+| Linux install           | npm 11.6.2 ci dry-run Linux x64 đạt với lockfile tạo từ directory sạch; pinned emnapi overrides xử lý optional dependency mismatch. Vercel install/build đã đạt.                                   |
+| Lighthouse/bundle       | Median mobile 85 → 83, transfer 974 → 480 KiB, JS 243,5 → 227,2 KiB. Target ≥90 chưa đạt; [điều kiện và samples](PERFORMANCE.md).                                                                  |
+| Neon/Google/Blob thật   | Chưa kết nối, chưa nghiệm thu. UAT suite có sẵn nhưng chưa chạy; không coi mock nhà cung cấp là bằng chứng dịch vụ thật.                                                                           |
 
-Postgres integration bao gồm 12 concurrent cùng ID chỉ một đơn, khác hash 409, trigger gây rollback không còn order/items/idempotency/rate, retry sau response mất/restart và qua ngày/catalog archive/shop đóng, rate 5/6 với retry miễn phí, plain text formula string, 22 comments phân trang tuple/hide/restore, optimistic edit và pricing revision, seed không overwrite. Admin API integration dùng Clerk session và Blob deletion mock với DB thật, kiểm tra 401/403, stale 409, publish content và FK/reference deletion 409.
+Preview kiểm tra đầu tiên: `fe93568`, deployment `dpl_DHa7Y75esPbGrm8hsSoCdtDboPo8`, [widget](https://hoeshop-d7twl1isw-buibaos-projects.vercel.app/xem-thu/widgets). Alias nhánh [Preview hiện tại](https://hoeshop-git-feat-phase2-buibaos-projects.vercel.app/xem-thu/widgets) cập nhật theo HEAD. Vercel bảo vệ Preview; dùng share link cấp riêng hoặc đăng nhập chủ project. Không commit bypass token/browser cookies vào repo. Main/production phase 1 chưa đổi.
 
-Widget được thử chuột/chạm/bàn phím tại 360/390/768/1024/1440px; reduced motion, focus trap, Escape/return focus, hôm nay/xóa/hủy, canonical date/time, ngày không tồn tại và giờ/phút biên. Calendar dùng DayPicker locale vi, tuần thứ Hai; không native date/time input. Test mobile iPhone 13 chạy Chromium emulation, chưa thay thử Safari/iOS thật.
+13 integration cases bao gồm: 12 concurrent cùng ID một đơn; khác hash 409; rollback order/items/idempotency/rate; mất response/restart và retry qua ngày/catalog archive/shop đóng; shared rate 5/6 và retry miễn phí; formula string plain text; 22 comments tuple paging/hide/restore; stale edit và pricing revision; seed no overwrite; admin 401/403/content publish/media FK/reference 409. Media finish kiểm tra pathname trong Blob store của server và URL canonical trước fetch, từ chối URL store khác. Các provider mocks được ghi rõ.
 
-## Ảnh nghiệm thu widget
+Widget thử ở 360/390/768/1024/1440px: chuột/chạm/bàn phím, reduced motion, focus trap/Escape/return focus, hôm nay/xóa/hủy, date/time canonical, ngày không tồn tại và giờ/phút biên. DayPicker locale vi, tuần thứ Hai, không native date/time input. iPhone 13 chạy Chromium emulation; chưa thay Safari/iOS thật.
 
-| Desktop 1440px                                                | Mobile 390px                                                   |
-| ------------------------------------------------------------- | -------------------------------------------------------------- |
-| [Calendar đã chọn](screenshots/1440-calendar-selected.png)    | [Calendar bottom sheet](screenshots/390-calendar-selected.png) |
-| [Giờ đã chọn](screenshots/1440-time-selected.png)             | [Giờ bottom sheet](screenshots/390-time-selected.png)          |
-| [Trống/lỗi/disabled/focus](screenshots/1440-states-focus.png) | [Trống/lỗi/disabled/focus](screenshots/390-states-focus.png)   |
+## Ảnh nghiệm thu trên Preview
 
-Ảnh là giao diện fixture test local, không phải ảnh/giá bán. Cần shop thử trực tiếp Preview trước chốt milestone B.
+| Desktop 1440px                                                             | Mobile 390px                                                              |
+| -------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| [Calendar](screenshots/preview-1440-calendar-selected.png)                 | [Calendar bottom sheet](screenshots/preview-390-calendar-selected.png)    |
+| [Giờ](screenshots/preview-1440-time-selected.png)                          | [Giờ bottom sheet](screenshots/preview-390-time-selected.png)             |
+| [Trống/chọn/lỗi/disabled/focus](screenshots/preview-1440-states-focus.png) | [Trống/chọn/lỗi/disabled/focus](screenshots/preview-390-states-focus.png) |
 
-## Các gate còn mở
+Ảnh fixture test, không phải ảnh/giá bán. Screenshot ẩn riêng toolbar Vercel khi chụp để thấy widget rõ; ứng dụng không thay đổi platform toolbar. Ảnh local test tương ứng cũng giữ trong screenshots. Shop cần thử trực tiếp Preview trước chốt milestone B.
 
-Kết nối Neon/Clerk/Blob test, cấu hình env đúng môi trường, lấy admin user ID, chạy UAT trên deployment và đối chiếu DB. Có quyền đọc/deploy Vercel nhưng thao tác ghi env/integrations trả 403; CLI chưa đăng nhập. Không tự mua dịch vụ trả phí. Production cần dữ liệu thật, tên miền/OAuth và nghiệm thu; chưa mở nhận khách.
+## Phần chưa nghiệm thu và giới hạn
 
-Đọc [ADMIN_RUNBOOK](ADMIN_RUNBOOK.md) cho cấu hình, UAT session states và release/rollback. Lịch sử phase 1 không được coi là nghiệm thu Postgres/Clerk/Blob phase 2.
+Neon/Clerk/Blob test chưa có; thao tác ghi env/integrations Vercel trả 403, CLI chưa đăng nhập. Git push nhánh thành công và có Preview; GitHub connector tạo draft PR trả 403 Resource not accessible by integration. Có thể [mở PR từ nhánh](https://github.com/buibao/hoeshop/pull/new/feat/phase2) sau khi chủ project cấp quyền. Chưa merge/promote.
+
+`npm audit` toàn bộ còn 9 advisories ở dev tooling (drizzle-kit/esbuild và eslint glob/braces); runtime audit 0. Không tự downgrade Drizzle/Next theo audit --force. Theo dõi bản vá tương thích của tooling, chỉ chạy công cụ dev local; không mở dev server của esbuild ra mạng. Chưa coi đây là toàn bộ release security/UAT.
+
+Cần Clerk user ID của buibao1997@gmail.com, DB/Blob/auth đúng môi trường, UAT Google/non-admin/Blob/Neon deployment và DB assertions, catalog/giá/logo/ảnh/contact/policies thật, domain/OAuth production và shop nghiệm thu. Performance tuning ≥90, Safari/iOS thật và kiểm tra gói Vercel thương mại còn mở. Không tự mua gói trả phí, không mở nhận khách.
+
+Xem [ADMIN_RUNBOOK](ADMIN_RUNBOOK.md), [DATABASE](DATABASE.md), [PHASE2_PLAN](PHASE2_PLAN.md). Phase 1 không phải bằng chứng nghiệm thu dịch vụ phase 2.

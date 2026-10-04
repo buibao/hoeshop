@@ -1,4 +1,4 @@
-import { z } from "zod";
+import * as z from "zod";
 import { DomainError } from "@/domain/schemas";
 export async function parseBody<T>(
   request: Request,

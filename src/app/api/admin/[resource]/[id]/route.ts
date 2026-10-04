@@ -3,7 +3,7 @@ import { resourceSchema, editSchema } from "@/server/admin/schemas";
 import { adminList, adminSave } from "@/server/admin/repository";
 import { errorResponse, jsonResponse, parseBody } from "@/server/http";
 import { deleteMedia } from "@/server/admin/media";
-import { z } from "zod";
+import * as z from "zod";
 import { DomainError } from "@/domain/schemas";
 export const runtime = "nodejs";
 type Context = { params: Promise<{ resource: string; id: string }> };

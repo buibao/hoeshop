@@ -2,7 +2,7 @@ import { requireAdmin } from "@/server/admin/auth";
 import { resourceSchema } from "@/server/admin/schemas";
 import { adminList } from "@/server/admin/repository";
 import { errorResponse, jsonResponse } from "@/server/http";
-import { z } from "zod";
+import * as z from "zod";
 export const runtime = "nodejs";
 export async function GET(
   request: Request,

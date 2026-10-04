@@ -1,6 +1,6 @@
 "use client";
 import { useRef, useState } from "react";
-import { z } from "zod";
+import * as z from "zod";
 import {
   fingerprint,
   pendingFor,

@@ -1,4 +1,4 @@
-import { z } from "zod";
+import * as z from "zod";
 import vietnamese from "zod/v4/locales/vi.js";
 z.config(vietnamese());
 

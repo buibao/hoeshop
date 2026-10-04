@@ -1,4 +1,4 @@
-import { z } from "zod";
+import * as z from "zod";
 import { commentSchema, DomainError } from "@/domain/schemas";
 import { getArticles } from "@/server/content";
 import { getRepositories } from "@/server/repositories";

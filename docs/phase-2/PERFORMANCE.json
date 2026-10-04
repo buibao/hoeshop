@@ -1,0 +1,92 @@
+{
+  "date": "2026-10-05",
+  "baseline": "474cc71",
+  "branch": "feat/phase2",
+  "lighthouse": "13.0.3",
+  "lighthouseNode": "22.20.0",
+  "appNode": "22.16.0",
+  "browser": "Chromium 153",
+  "mode": "production local; CONTENT_MODE=test DATA_ADAPTER=mock SHOP_LIVE=false; mobile simulated throttling; three sequential runs per version",
+  "samples": [
+    {
+      "name": "baseline-1",
+      "performance": 87,
+      "accessibility": 96,
+      "lcpMs": 3809.0600000000004,
+      "tbtMs": 149,
+      "cls": 0,
+      "bytes": 997354,
+      "jsBytes": 249342
+    },
+    {
+      "name": "baseline-2",
+      "performance": 85,
+      "accessibility": 96,
+      "lcpMs": 3885.1499999999996,
+      "tbtMs": 179.5,
+      "cls": 0,
+      "bytes": 997354,
+      "jsBytes": 249342
+    },
+    {
+      "name": "baseline-3",
+      "performance": 80,
+      "accessibility": 96,
+      "lcpMs": 4680.8255,
+      "tbtMs": 164.5,
+      "cls": 0,
+      "bytes": 997354,
+      "jsBytes": 249342
+    },
+    {
+      "name": "final-1",
+      "performance": 82,
+      "accessibility": 96,
+      "lcpMs": 4379.1900000000005,
+      "tbtMs": 192,
+      "cls": 0,
+      "bytes": 491298,
+      "jsBytes": 232626
+    },
+    {
+      "name": "final-2",
+      "performance": 83,
+      "accessibility": 96,
+      "lcpMs": 4121.65,
+      "tbtMs": 208.5,
+      "cls": 0,
+      "bytes": 491476,
+      "jsBytes": 232626
+    },
+    {
+      "name": "final-3",
+      "performance": 85,
+      "accessibility": 96,
+      "lcpMs": 4178.763999999999,
+      "tbtMs": 142.5,
+      "cls": 0,
+      "bytes": 491653,
+      "jsBytes": 232626
+    }
+  ],
+  "median": {
+    "baseline": {
+      "performance": 85,
+      "accessibility": 96,
+      "lcpMs": 3885.1499999999996,
+      "tbtMs": 164.5,
+      "cls": 0,
+      "bytes": 997354,
+      "jsBytes": 249342
+    },
+    "final": {
+      "performance": 83,
+      "accessibility": 96,
+      "lcpMs": 4178.763999999999,
+      "tbtMs": 192,
+      "cls": 0,
+      "bytes": 491476,
+      "jsBytes": 232626
+    }
+  }
+}
