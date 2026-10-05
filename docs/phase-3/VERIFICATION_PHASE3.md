@@ -31,9 +31,19 @@ Browser thật 1440/390px: sáu page checks và mười screenshots; Home/detail
 
 05/10/2026: chuyển caption hero xuống dưới ảnh, bỏ khung vòm riêng của card thứ hai; card Home/catalog/dịch vụ cùng 4:5/8px. Thêm submenu Sản phẩm tới ba trang dịch vụ, giữ link catalog. Bổ sung fade in/out của menu, fade/scroll reveal, stagger card, hero parallax nhẹ và hover/click; reduced motion không dịch chuyển hoặc giấu nội dung. Các link đang fade-out trở thành inert ngay để Tab không đi vào menu đã đóng.
 
-Kiểm tra revision: 58 unit, 14 integration Neon test, build và lint đạt; full public E2E 46/46 đạt (23 desktop + 23 mobile), sau chỉnh Tab order chạy riêng sáu ca landing/navigation đạt. Có kiểm tra hover, ArrowDown/Tab/Escape và return focus, link Hoa Ý tới catalog đúng loại, caption nằm dưới ảnh, khung ảnh đồng nhất, overflow tại 360/390/768/1024/1440px, trạng thái cuối reveal và reduced motion. Kiểm tra console trong ca motion không có hydration error sau khi sửa SSR style của hero. Mock browser tests vẫn tách khỏi dữ liệu Neon Preview.
+Kiểm tra revision: 58 unit, 14 integration Neon test, build/typecheck/lint đạt; full public E2E 46/46 đạt (23 desktop + 23 mobile), sau chỉnh Tab order chạy riêng sáu ca landing/navigation đạt. Có kiểm tra hover, ArrowDown/Tab/Escape và return focus, link Hoa Ý tới catalog đúng loại, caption nằm dưới ảnh, khung ảnh đồng nhất, overflow tại 360/390/768/1024/1440px, trạng thái cuối reveal và reduced motion. Kiểm tra console trong ca motion không có hydration error sau khi sửa SSR style của hero. Mock browser tests vẫn tách khỏi dữ liệu Neon Preview.
 
-Preview revision và ảnh/video desktop/mobile sẽ được ghi sau khi kiểm tra deployment. Bằng chứng A/B bên trên được giữ làm lịch sử; chưa coi feedback sửa mẫu là shop duyệt checkpoint B.
+Preview code `5ce2578`: deployment `dpl_ASn2pS7XBmpnEgBjwjs1sb4brco5`, READY, sin1, [website](https://hoeshop-5dvl26umm-buibaos-projects.vercel.app). Mở bằng share link cấp riêng hoặc tài khoản Vercel có quyền; không commit token. Browser thật qua agent-browser và Playwright: Home HTTP 200, ba trang dịch vụ HTTP 200 ở 1440/390px, mỗi dịch vụ hiện một mẫu test đúng loại từ catalog hiện có. Không có page/console errors hoặc overflow; reduced motion hiển thị card ngay; không ghi API hoặc seed nội dung shop. Không suy diễn kiểm tra navigation là nghiệm thu Google admin/Blob hay lưu đơn thật.
+
+| Revision 1 | Desktop 1440 | Mobile 390 |
+| --- | --- | --- |
+| Hero / caption | [Ảnh](screenshots/revision-1/1440-hero.png) | [Ảnh](screenshots/revision-1/390-hero.png) |
+| Card cùng layout | [Ảnh](screenshots/revision-1/1440-products.png) | [Ảnh](screenshots/revision-1/390-products.png) |
+| Menu Sản phẩm / focus | [Ảnh](screenshots/revision-1/1440-product-menu.png) | [Ảnh](screenshots/revision-1/390-product-menu.png) |
+| Home toàn trang | [Ảnh](screenshots/revision-1/1440-home.png) | [Ảnh](screenshots/revision-1/390-home.png) |
+| Scroll / hover / menu | [Video WebM](screenshots/revision-1/1440-motion.webm) | [Video WebM](screenshots/revision-1/390-motion.webm) |
+
+Video dùng viewport cao 960px, có mở/đóng menu và cuộn các section. Ảnh hero mobile dùng vùng chụp cao 1200px để thấy caption dưới ảnh; ảnh toàn trang chụp sau khi đưa scroll về đầu để trạng thái parallax đúng hero ban đầu. Chỉ ẩn toolbar Vercel khi chụp, không sửa giao diện ứng dụng. Tám ảnh và hai video trên cùng deployment code 5ce2578; commit bàn giao sau chỉ thêm bằng chứng. Bằng chứng A/B bên trên được giữ làm lịch sử; chưa coi feedback sửa mẫu là shop duyệt checkpoint B.
 
 ## Chưa nghiệm thu
 
