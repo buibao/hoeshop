@@ -1,0 +1,585 @@
+{
+  "repository": "https://github.com/untitleduico/react",
+  "commit": "4702dc0ea8d140c3491a85670c7b4fab47b722da",
+  "license": "MIT",
+  "files": [
+    {
+      "source": "components/base/form/form.tsx",
+      "url": "https://raw.githubusercontent.com/untitleduico/react/4702dc0ea8d140c3491a85670c7b4fab47b722da/components/base/form/form.tsx",
+      "commit": "4702dc0ea8d140c3491a85670c7b4fab47b722da",
+      "sha256": "a90bbe7d4cd6f63be0127a70b753da72dfbb00f9e82d915e5e0313f3ad31fdbb",
+      "destination": "src/components/untitled/base/form/form.tsx",
+      "localSha256": "a90bbe7d4cd6f63be0127a70b753da72dfbb00f9e82d915e5e0313f3ad31fdbb",
+      "patched": false
+    },
+    {
+      "source": "components/base/input/input.tsx",
+      "url": "https://raw.githubusercontent.com/untitleduico/react/4702dc0ea8d140c3491a85670c7b4fab47b722da/components/base/input/input.tsx",
+      "commit": "4702dc0ea8d140c3491a85670c7b4fab47b722da",
+      "sha256": "1167b4c6210667ac08b6571eb53000a9221f39a37f4bc67011e5ea85515317c0",
+      "destination": "src/components/untitled/base/input/input.tsx",
+      "localSha256": "521349fc65b38f6d2ee99f632711fed73e0547e9d1274064fddcf66af4c0041d",
+      "patched": false
+    },
+    {
+      "source": "components/base/input/hint-text.tsx",
+      "url": "https://raw.githubusercontent.com/untitleduico/react/4702dc0ea8d140c3491a85670c7b4fab47b722da/components/base/input/hint-text.tsx",
+      "commit": "4702dc0ea8d140c3491a85670c7b4fab47b722da",
+      "sha256": "521941d440c71a807fc81ee50ee6262ea414ab5fc4a39f5ce5ea5ff16f3b3037",
+      "destination": "src/components/untitled/base/input/hint-text.tsx",
+      "localSha256": "e5f7ae2a503c683640d320e5347fabafc19c2d8981575a82769177cb8ccf95b5",
+      "patched": false
+    },
+    {
+      "source": "utils/cx.ts",
+      "url": "https://raw.githubusercontent.com/untitleduico/react/4702dc0ea8d140c3491a85670c7b4fab47b722da/utils/cx.ts",
+      "commit": "4702dc0ea8d140c3491a85670c7b4fab47b722da",
+      "sha256": "d32cbae0ef101a957c58c0fff7b81738917c9f6b3f150103301e26192af62bcf",
+      "destination": "src/components/untitled/utils/cx.ts",
+      "localSha256": "d32cbae0ef101a957c58c0fff7b81738917c9f6b3f150103301e26192af62bcf",
+      "patched": false
+    },
+    {
+      "source": "components/base/input/label.tsx",
+      "url": "https://raw.githubusercontent.com/untitleduico/react/4702dc0ea8d140c3491a85670c7b4fab47b722da/components/base/input/label.tsx",
+      "commit": "4702dc0ea8d140c3491a85670c7b4fab47b722da",
+      "sha256": "12c33452d3f864b5e254021b83de02b6874225c3c39d95db4e3befd5ec113a77",
+      "destination": "src/components/untitled/base/input/label.tsx",
+      "localSha256": "2a2d7476b08e0ece637f704174ad4f35915208aaf87ba68f8c67306c9911e3b8",
+      "patched": true
+    },
+    {
+      "source": "components/base/tooltip/tooltip.tsx",
+      "url": "https://raw.githubusercontent.com/untitleduico/react/4702dc0ea8d140c3491a85670c7b4fab47b722da/components/base/tooltip/tooltip.tsx",
+      "commit": "4702dc0ea8d140c3491a85670c7b4fab47b722da",
+      "sha256": "7011cc9c0e9041c6807eef5140c34e503a3eda1324a74232a4474af7ebd312a4",
+      "destination": "src/components/untitled/base/tooltip/tooltip.tsx",
+      "localSha256": "f81f0bdd94f13dc7afba8e1ca3d1eb6d1a6b2691a5c93eccefcfab55ad88d5ab",
+      "patched": false
+    },
+    {
+      "source": "components/base/input/input-date.tsx",
+      "url": "https://raw.githubusercontent.com/untitleduico/react/4702dc0ea8d140c3491a85670c7b4fab47b722da/components/base/input/input-date.tsx",
+      "commit": "4702dc0ea8d140c3491a85670c7b4fab47b722da",
+      "sha256": "c3f54bdb875535170eecb035cca0f82d1da5f04c07fff15090bf5ec2a1421a66",
+      "destination": "src/components/untitled/base/input/input-date.tsx",
+      "localSha256": "f5e1092345433471d6c0ad95ec081f06001364870cb534ad9ede76b8e44ef6ac",
+      "patched": false
+    },
+    {
+      "source": "components/base/input/input-number.tsx",
+      "url": "https://raw.githubusercontent.com/untitleduico/react/4702dc0ea8d140c3491a85670c7b4fab47b722da/components/base/input/input-number.tsx",
+      "commit": "4702dc0ea8d140c3491a85670c7b4fab47b722da",
+      "sha256": "ebf11bd4a2b72fd7a9ff55ca1d1c689c26360d9d441c08c1836be7b218e5d74f",
+      "destination": "src/components/untitled/base/input/input-number.tsx",
+      "localSha256": "976371ee03ab9f0806acdea0ef33f4777019285a6fc609b9206046dc3f1ff724",
+      "patched": true
+    },
+    {
+      "source": "components/base/buttons/button.tsx",
+      "url": "https://raw.githubusercontent.com/untitleduico/react/4702dc0ea8d140c3491a85670c7b4fab47b722da/components/base/buttons/button.tsx",
+      "commit": "4702dc0ea8d140c3491a85670c7b4fab47b722da",
+      "sha256": "0c2529d16dbed76301cdaae489f5dbc9a0e8345fbba057ba6b672ae948cc301f",
+      "destination": "src/components/untitled/base/buttons/button.tsx",
+      "localSha256": "bb8824c4bc0ac7f22c244c65b0bc292db69ad9f6b045cba34ba23ba4dcf30190",
+      "patched": true
+    },
+    {
+      "source": "utils/is-react-component.ts",
+      "url": "https://raw.githubusercontent.com/untitleduico/react/4702dc0ea8d140c3491a85670c7b4fab47b722da/utils/is-react-component.ts",
+      "commit": "4702dc0ea8d140c3491a85670c7b4fab47b722da",
+      "sha256": "71fb098f5b2e1e1965b02d363dd7be3982698dce005077f9e497e6603fcce958",
+      "destination": "src/components/untitled/utils/is-react-component.ts",
+      "localSha256": "71fb098f5b2e1e1965b02d363dd7be3982698dce005077f9e497e6603fcce958",
+      "patched": false
+    },
+    {
+      "source": "components/base/textarea/textarea.tsx",
+      "url": "https://raw.githubusercontent.com/untitleduico/react/4702dc0ea8d140c3491a85670c7b4fab47b722da/components/base/textarea/textarea.tsx",
+      "commit": "4702dc0ea8d140c3491a85670c7b4fab47b722da",
+      "sha256": "f89cf45750697eb5385b1fd20c828624686998f590daa95cf54efabd6a75de5c",
+      "destination": "src/components/untitled/base/textarea/textarea.tsx",
+      "localSha256": "a96df57dd7398cb69d7ea84cc11711ede12f7bb6d4a71726fafab2b0dd8d8609",
+      "patched": false
+    },
+    {
+      "source": "components/base/select/select.tsx",
+      "url": "https://raw.githubusercontent.com/untitleduico/react/4702dc0ea8d140c3491a85670c7b4fab47b722da/components/base/select/select.tsx",
+      "commit": "4702dc0ea8d140c3491a85670c7b4fab47b722da",
+      "sha256": "5c7f17225c9171c987fd632082a4909353e17a9087da452fc5fd345b2f406e10",
+      "destination": "src/components/untitled/base/select/select.tsx",
+      "localSha256": "d1a3e8ef524e4c5e6ea5fac781bbdc4cb0f3b1dd0e052cef24b93a616fe8bd93",
+      "patched": false
+    },
+    {
+      "source": "components/base/avatar/avatar.tsx",
+      "url": "https://raw.githubusercontent.com/untitleduico/react/4702dc0ea8d140c3491a85670c7b4fab47b722da/components/base/avatar/avatar.tsx",
+      "commit": "4702dc0ea8d140c3491a85670c7b4fab47b722da",
+      "sha256": "49bcc021bf717ab395a6caec94bd19cb82eb25d3e13afafa74aa937582e0ba28",
+      "destination": "src/components/untitled/base/avatar/avatar.tsx",
+      "localSha256": "a3850feb8b2c4ba88b63ff3c054ffe5d187f182be57a4e6fed25a3a1e0ec26e9",
+      "patched": false
+    },
+    {
+      "source": "components/base/avatar/base-components/index.tsx",
+      "url": "https://raw.githubusercontent.com/untitleduico/react/4702dc0ea8d140c3491a85670c7b4fab47b722da/components/base/avatar/base-components/index.tsx",
+      "commit": "4702dc0ea8d140c3491a85670c7b4fab47b722da",
+      "sha256": "d630103c098195bb12b76683ddce85402dcc394feef45d2427e478209d2c2bd5",
+      "destination": "src/components/untitled/base/avatar/base-components/index.tsx",
+      "localSha256": "d630103c098195bb12b76683ddce85402dcc394feef45d2427e478209d2c2bd5",
+      "patched": false
+    },
+    {
+      "source": "components/base/avatar/base-components/avatar-add-button.tsx",
+      "url": "https://raw.githubusercontent.com/untitleduico/react/4702dc0ea8d140c3491a85670c7b4fab47b722da/components/base/avatar/base-components/avatar-add-button.tsx",
+      "commit": "4702dc0ea8d140c3491a85670c7b4fab47b722da",
+      "sha256": "4676000225227c5e9f6a0e953c03c015a5c10ea0de282024ddaabb3c8600032d",
+      "destination": "src/components/untitled/base/avatar/base-components/avatar-add-button.tsx",
+      "localSha256": "5a36a50cccd5e802830c232da695f29586f6d9c0a5eabb51f050ff30c3f5df1c",
+      "patched": false
+    },
+    {
+      "source": "components/base/avatar/base-components/avatar-company-icon.tsx",
+      "url": "https://raw.githubusercontent.com/untitleduico/react/4702dc0ea8d140c3491a85670c7b4fab47b722da/components/base/avatar/base-components/avatar-company-icon.tsx",
+      "commit": "4702dc0ea8d140c3491a85670c7b4fab47b722da",
+      "sha256": "52223fe32cd9f6b1f08702eb052af37a875f380c3f2626ccc8c2e6da0329bb09",
+      "destination": "src/components/untitled/base/avatar/base-components/avatar-company-icon.tsx",
+      "localSha256": "c996a89b7eb58ddbf0736efbad05002d621c4669cace1c3521fba26151a7b7ec",
+      "patched": false
+    },
+    {
+      "source": "components/base/avatar/base-components/avatar-online-indicator.tsx",
+      "url": "https://raw.githubusercontent.com/untitleduico/react/4702dc0ea8d140c3491a85670c7b4fab47b722da/components/base/avatar/base-components/avatar-online-indicator.tsx",
+      "commit": "4702dc0ea8d140c3491a85670c7b4fab47b722da",
+      "sha256": "40dd93e07eb5d2875298586f027bad205b78aabb3be6a296ef036437595b0226",
+      "destination": "src/components/untitled/base/avatar/base-components/avatar-online-indicator.tsx",
+      "localSha256": "ee154d9e44719b96ce8ca2db2b81a2d3f8dcd7a79bd1d4dcb841f123e77e000d",
+      "patched": false
+    },
+    {
+      "source": "components/base/avatar/base-components/verified-tick.tsx",
+      "url": "https://raw.githubusercontent.com/untitleduico/react/4702dc0ea8d140c3491a85670c7b4fab47b722da/components/base/avatar/base-components/verified-tick.tsx",
+      "commit": "4702dc0ea8d140c3491a85670c7b4fab47b722da",
+      "sha256": "9cf7b0cd9970923bd6eb9d0a1c82eab1ddcdda007a6e94e48b047f7ef85b2473",
+      "destination": "src/components/untitled/base/avatar/base-components/verified-tick.tsx",
+      "localSha256": "cd1e3d9a64822e91a8c7e9041ab0d086febd0eb23ddb4405cf66b3cf7e79068e",
+      "patched": false
+    },
+    {
+      "source": "components/base/avatar/base-components/avatar-count.tsx",
+      "url": "https://raw.githubusercontent.com/untitleduico/react/4702dc0ea8d140c3491a85670c7b4fab47b722da/components/base/avatar/base-components/avatar-count.tsx",
+      "commit": "4702dc0ea8d140c3491a85670c7b4fab47b722da",
+      "sha256": "ac7958c908a28fe7c4e090d54af4dcfb5cceb1faf3c2bac94ea0cb8a08bc088d",
+      "destination": "src/components/untitled/base/avatar/base-components/avatar-count.tsx",
+      "localSha256": "e7985bb0d9411316e5d163e83a9c2398996478396172d2e60d20990bf5d8eb00",
+      "patched": false
+    },
+    {
+      "source": "components/base/select/combobox.tsx",
+      "url": "https://raw.githubusercontent.com/untitleduico/react/4702dc0ea8d140c3491a85670c7b4fab47b722da/components/base/select/combobox.tsx",
+      "commit": "4702dc0ea8d140c3491a85670c7b4fab47b722da",
+      "sha256": "ae8996154967a26c4103ccd964ed00560804a76c7d39bacf5414064c9af3a787",
+      "destination": "src/components/untitled/base/select/combobox.tsx",
+      "localSha256": "9b5b760186460128231053db94332147d897cc33989d45190e57ac8b413e4133",
+      "patched": false
+    },
+    {
+      "source": "components/base/select/popover.tsx",
+      "url": "https://raw.githubusercontent.com/untitleduico/react/4702dc0ea8d140c3491a85670c7b4fab47b722da/components/base/select/popover.tsx",
+      "commit": "4702dc0ea8d140c3491a85670c7b4fab47b722da",
+      "sha256": "a52e8f8f4537b2d1bca089a8ba726e17e1c4c25ce6e38b86af6855048aacf51f",
+      "destination": "src/components/untitled/base/select/popover.tsx",
+      "localSha256": "41d106c6f1af5f012d2b150951623bc531c159a8a7bc60d903ad59cb38d70298",
+      "patched": false
+    },
+    {
+      "source": "components/base/select/select-shared.tsx",
+      "url": "https://raw.githubusercontent.com/untitleduico/react/4702dc0ea8d140c3491a85670c7b4fab47b722da/components/base/select/select-shared.tsx",
+      "commit": "4702dc0ea8d140c3491a85670c7b4fab47b722da",
+      "sha256": "abfd514facc4e3e32ff5421a54359bb6bc17f8a580f266799fc1c063c958c9d7",
+      "destination": "src/components/untitled/base/select/select-shared.tsx",
+      "localSha256": "abfd514facc4e3e32ff5421a54359bb6bc17f8a580f266799fc1c063c958c9d7",
+      "patched": false
+    },
+    {
+      "source": "hooks/use-resize-observer.ts",
+      "url": "https://raw.githubusercontent.com/untitleduico/react/4702dc0ea8d140c3491a85670c7b4fab47b722da/hooks/use-resize-observer.ts",
+      "commit": "4702dc0ea8d140c3491a85670c7b4fab47b722da",
+      "sha256": "2249879a7bce44732898f827e03e5b4b31567030bd7abc0c562495ee21572a25",
+      "destination": "src/components/untitled/hooks/use-resize-observer.ts",
+      "localSha256": "2249879a7bce44732898f827e03e5b4b31567030bd7abc0c562495ee21572a25",
+      "patched": false
+    },
+    {
+      "source": "components/base/select/select-item.tsx",
+      "url": "https://raw.githubusercontent.com/untitleduico/react/4702dc0ea8d140c3491a85670c7b4fab47b722da/components/base/select/select-item.tsx",
+      "commit": "4702dc0ea8d140c3491a85670c7b4fab47b722da",
+      "sha256": "93a5e1ac3bc7a9ac4131ab9404d965d7d96e594ef18fbcd7abb0b556a070a2e1",
+      "destination": "src/components/untitled/base/select/select-item.tsx",
+      "localSha256": "92fbe8d687a608c81ea639dae110ff65e917dd2efc8c09b68d67dca0931f5a2c",
+      "patched": false
+    },
+    {
+      "source": "components/base/checkbox/checkbox.tsx",
+      "url": "https://raw.githubusercontent.com/untitleduico/react/4702dc0ea8d140c3491a85670c7b4fab47b722da/components/base/checkbox/checkbox.tsx",
+      "commit": "4702dc0ea8d140c3491a85670c7b4fab47b722da",
+      "sha256": "4266edfa3562c505e869ba55c81a64e7bdd86962835aa0ea9c460fd7ffc89bd1",
+      "destination": "src/components/untitled/base/checkbox/checkbox.tsx",
+      "localSha256": "4db396dd96743786889e0bcdbb07afd7b5bf2971efa29b7e5207cae5658296fb",
+      "patched": false
+    },
+    {
+      "source": "components/base/radio-buttons/radio-buttons.tsx",
+      "url": "https://raw.githubusercontent.com/untitleduico/react/4702dc0ea8d140c3491a85670c7b4fab47b722da/components/base/radio-buttons/radio-buttons.tsx",
+      "commit": "4702dc0ea8d140c3491a85670c7b4fab47b722da",
+      "sha256": "853415c4a92754637d6896515e11d9bbcc91423b21ae11dd3e5554007bc3d612",
+      "destination": "src/components/untitled/base/radio-buttons/radio-buttons.tsx",
+      "localSha256": "270bac2e02b2fbeca1ac00627c9de78eaa0c999e180e1bff3a95aa61ca9dcbca",
+      "patched": false
+    },
+    {
+      "source": "components/base/badges/badges.tsx",
+      "url": "https://raw.githubusercontent.com/untitleduico/react/4702dc0ea8d140c3491a85670c7b4fab47b722da/components/base/badges/badges.tsx",
+      "commit": "4702dc0ea8d140c3491a85670c7b4fab47b722da",
+      "sha256": "3ba3b3a1da36b92154ae8f7e831b6fc8213e7d7ffd2bc73095b29d552e043333",
+      "destination": "src/components/untitled/base/badges/badges.tsx",
+      "localSha256": "d9dcdc9a9806c7983d12818f2ab8746175d159484b764cb71d0f562c9a71e33b",
+      "patched": false
+    },
+    {
+      "source": "components/foundations/dot-icon.tsx",
+      "url": "https://raw.githubusercontent.com/untitleduico/react/4702dc0ea8d140c3491a85670c7b4fab47b722da/components/foundations/dot-icon.tsx",
+      "commit": "4702dc0ea8d140c3491a85670c7b4fab47b722da",
+      "sha256": "a908145b197665d9fc0148d93d7a67806a7548bb69e82d7c2b21a80f9568b4f6",
+      "destination": "src/components/untitled/foundations/dot-icon.tsx",
+      "localSha256": "a908145b197665d9fc0148d93d7a67806a7548bb69e82d7c2b21a80f9568b4f6",
+      "patched": false
+    },
+    {
+      "source": "components/base/badges/badge-types.ts",
+      "url": "https://raw.githubusercontent.com/untitleduico/react/4702dc0ea8d140c3491a85670c7b4fab47b722da/components/base/badges/badge-types.ts",
+      "commit": "4702dc0ea8d140c3491a85670c7b4fab47b722da",
+      "sha256": "086f2d74cddd0decb0fa78b80609ff17968df7a9c09661d813243ead847d1501",
+      "destination": "src/components/untitled/base/badges/badge-types.ts",
+      "localSha256": "086f2d74cddd0decb0fa78b80609ff17968df7a9c09661d813243ead847d1501",
+      "patched": false
+    },
+    {
+      "source": "components/application/date-picker/date-picker.tsx",
+      "url": "https://raw.githubusercontent.com/untitleduico/react/4702dc0ea8d140c3491a85670c7b4fab47b722da/components/application/date-picker/date-picker.tsx",
+      "commit": "4702dc0ea8d140c3491a85670c7b4fab47b722da",
+      "sha256": "2644218cc4aed8d535e4cb7c23ec2eb507501140dfb5e3dcd9b7f09e79576ed9",
+      "destination": "src/components/untitled/application/date-picker/date-picker.tsx",
+      "localSha256": "00deec2042dc3b6a5f92621c37982650ed8d71e9b24631ecdba8186d47e21a5d",
+      "patched": true
+    },
+    {
+      "source": "components/application/date-picker/calendar.tsx",
+      "url": "https://raw.githubusercontent.com/untitleduico/react/4702dc0ea8d140c3491a85670c7b4fab47b722da/components/application/date-picker/calendar.tsx",
+      "commit": "4702dc0ea8d140c3491a85670c7b4fab47b722da",
+      "sha256": "9bd9d085340852c96810986db96bfa7862d4e2a90a7613efd50a576da22da8a8",
+      "destination": "src/components/untitled/application/date-picker/calendar.tsx",
+      "localSha256": "bb204aa17ced780d4b1e9c84f343fa275d43a147dcc8fd8423a6fc20207a106f",
+      "patched": true
+    },
+    {
+      "source": "components/application/date-picker/cell.tsx",
+      "url": "https://raw.githubusercontent.com/untitleduico/react/4702dc0ea8d140c3491a85670c7b4fab47b722da/components/application/date-picker/cell.tsx",
+      "commit": "4702dc0ea8d140c3491a85670c7b4fab47b722da",
+      "sha256": "5276acf52e43a8d3745a723011a4436a3650a8895791b5c9cc827505c7f6e7ef",
+      "destination": "src/components/untitled/application/date-picker/cell.tsx",
+      "localSha256": "de619febe26e553f4016d96930e02c3cb9d73032a5f68f554e68a202c0a076b3",
+      "patched": false
+    },
+    {
+      "source": "components/application/app-navigation/header-navigation.tsx",
+      "url": "https://raw.githubusercontent.com/untitleduico/react/4702dc0ea8d140c3491a85670c7b4fab47b722da/components/application/app-navigation/header-navigation.tsx",
+      "commit": "4702dc0ea8d140c3491a85670c7b4fab47b722da",
+      "sha256": "490b4df40643a37fd0afc423795b469913fe490c59f533e815ff8ecb7db8f7bd",
+      "destination": "src/components/untitled/application/app-navigation/header-navigation.tsx",
+      "localSha256": "e41f2d548efb458f9378d4f753d2f29e25ed22be434a97c53ec74ce405d4ef5c",
+      "patched": true
+    },
+    {
+      "source": "components/application/tabs/tabs.tsx",
+      "url": "https://raw.githubusercontent.com/untitleduico/react/4702dc0ea8d140c3491a85670c7b4fab47b722da/components/application/tabs/tabs.tsx",
+      "commit": "4702dc0ea8d140c3491a85670c7b4fab47b722da",
+      "sha256": "090aa84ea228281db1eb3ef811038bef3b2aa6e1b93174ced73a71ea0bf16914",
+      "destination": "src/components/untitled/application/tabs/tabs.tsx",
+      "localSha256": "0aa9a08062279354ad0218de111357a3963f2cf9114a83588636a9e4ae32a98d",
+      "patched": false
+    },
+    {
+      "source": "components/base/dropdown/dropdown-account-button.tsx",
+      "url": "https://raw.githubusercontent.com/untitleduico/react/4702dc0ea8d140c3491a85670c7b4fab47b722da/components/base/dropdown/dropdown-account-button.tsx",
+      "commit": "4702dc0ea8d140c3491a85670c7b4fab47b722da",
+      "sha256": "1c4b8586cc8830e6bcf55fc4317a0d3d247eabe5ddfc9dfdcf30a2e052dfda2a",
+      "destination": "src/components/untitled/base/dropdown/dropdown-account-button.tsx",
+      "localSha256": "c899216032ce16955863de0414140db0f7e465daf8bcce21cab97a9467469e16",
+      "patched": false
+    },
+    {
+      "source": "components/base/dropdown/dropdown.tsx",
+      "url": "https://raw.githubusercontent.com/untitleduico/react/4702dc0ea8d140c3491a85670c7b4fab47b722da/components/base/dropdown/dropdown.tsx",
+      "commit": "4702dc0ea8d140c3491a85670c7b4fab47b722da",
+      "sha256": "74639dbd028d2a5e4e20cbdc54e2ae318bbc15145cc39de2d73627b84296202f",
+      "destination": "src/components/untitled/base/dropdown/dropdown.tsx",
+      "localSha256": "f1b727d544ff0a30ee8488181e3e3992fbe812e319c1ab63b05d1a8640f46a7e",
+      "patched": false
+    },
+    {
+      "source": "components/base/toggle/toggle.tsx",
+      "url": "https://raw.githubusercontent.com/untitleduico/react/4702dc0ea8d140c3491a85670c7b4fab47b722da/components/base/toggle/toggle.tsx",
+      "commit": "4702dc0ea8d140c3491a85670c7b4fab47b722da",
+      "sha256": "ca63d139ae984f5ef0b255b68325071448ddc3e1d208dd3dae397b10f5620cef",
+      "destination": "src/components/untitled/base/toggle/toggle.tsx",
+      "localSha256": "7f43484a9554e782e7377e6cbe80245c7665cd8c4cf4ce0ed8919f3ca9834aed",
+      "patched": false
+    },
+    {
+      "source": "components/foundations/logo/untitledui-logo.tsx",
+      "url": "https://raw.githubusercontent.com/untitleduico/react/4702dc0ea8d140c3491a85670c7b4fab47b722da/components/foundations/logo/untitledui-logo.tsx",
+      "commit": "4702dc0ea8d140c3491a85670c7b4fab47b722da",
+      "sha256": "987cf75638639c0c3e96609f035645f80121a47cb713ecf0cdde4d12170bd0ab",
+      "destination": "src/components/untitled/foundations/logo/untitledui-logo.tsx",
+      "localSha256": "0e149ef408cba364926dd19aac0eadfd41b18a1b019942fd1c5c56ef87f7ae8f",
+      "patched": true
+    },
+    {
+      "source": "components/foundations/logo/untitledui-logo-minimal.tsx",
+      "url": "https://raw.githubusercontent.com/untitleduico/react/4702dc0ea8d140c3491a85670c7b4fab47b722da/components/foundations/logo/untitledui-logo-minimal.tsx",
+      "commit": "4702dc0ea8d140c3491a85670c7b4fab47b722da",
+      "sha256": "1878f083f794bf972295bfb0c817c0efd7d0f092986d389460cc29d617a7e370",
+      "destination": "src/components/untitled/foundations/logo/untitledui-logo-minimal.tsx",
+      "localSha256": "5a71a2249256703f1f1e1512cd42820666372c1bfd524e8d2c1e77727110bc14",
+      "patched": false
+    },
+    {
+      "source": "components/application/app-navigation/base-components/mobile-header.tsx",
+      "url": "https://raw.githubusercontent.com/untitleduico/react/4702dc0ea8d140c3491a85670c7b4fab47b722da/components/application/app-navigation/base-components/mobile-header.tsx",
+      "commit": "4702dc0ea8d140c3491a85670c7b4fab47b722da",
+      "sha256": "6ad8dc8ecead926ba05ab0d03e91515fda81a9edcdb62c3dd0ffe5016cd3b3e6",
+      "destination": "src/components/untitled/application/app-navigation/base-components/mobile-header.tsx",
+      "localSha256": "848439a630e22dcbad74f19d887e69397eefe354803e46e772f8bbbe621f12b9",
+      "patched": true
+    },
+    {
+      "source": "components/application/app-navigation/base-components/nav-account-card.tsx",
+      "url": "https://raw.githubusercontent.com/untitleduico/react/4702dc0ea8d140c3491a85670c7b4fab47b722da/components/application/app-navigation/base-components/nav-account-card.tsx",
+      "commit": "4702dc0ea8d140c3491a85670c7b4fab47b722da",
+      "sha256": "e2bd1486aa503a3bc44bd1cb007c1434c9a61f0e3af3fd46081e34d826157dda",
+      "destination": "src/components/untitled/application/app-navigation/base-components/nav-account-card.tsx",
+      "localSha256": "d48e8f601cd23a52f31d392ae16d3d98221c85c97d8829e490ecbf9d6e6864a5",
+      "patched": false
+    },
+    {
+      "source": "components/base/avatar/avatar-label-group.tsx",
+      "url": "https://raw.githubusercontent.com/untitleduico/react/4702dc0ea8d140c3491a85670c7b4fab47b722da/components/base/avatar/avatar-label-group.tsx",
+      "commit": "4702dc0ea8d140c3491a85670c7b4fab47b722da",
+      "sha256": "9d69a72bea31b01ba4c5186be54553bc68a3f0dc76ed8e5abd0164445c43af6e",
+      "destination": "src/components/untitled/base/avatar/avatar-label-group.tsx",
+      "localSha256": "5604a9214edeb287a44ee92d27c9089043ab42bd5101729cc60c47fc8727adb4",
+      "patched": false
+    },
+    {
+      "source": "hooks/use-breakpoint.ts",
+      "url": "https://raw.githubusercontent.com/untitleduico/react/4702dc0ea8d140c3491a85670c7b4fab47b722da/hooks/use-breakpoint.ts",
+      "commit": "4702dc0ea8d140c3491a85670c7b4fab47b722da",
+      "sha256": "8cd0570571715450986b6e1916fa423e314b1aeeca75813f6f51e333f9f8fb6d",
+      "destination": "src/components/untitled/hooks/use-breakpoint.ts",
+      "localSha256": "8cd0570571715450986b6e1916fa423e314b1aeeca75813f6f51e333f9f8fb6d",
+      "patched": false
+    },
+    {
+      "source": "components/application/app-navigation/base-components/nav-button.tsx",
+      "url": "https://raw.githubusercontent.com/untitleduico/react/4702dc0ea8d140c3491a85670c7b4fab47b722da/components/application/app-navigation/base-components/nav-button.tsx",
+      "commit": "4702dc0ea8d140c3491a85670c7b4fab47b722da",
+      "sha256": "5c45d988c7380a3139b582e167412f5e977b98af9ad517ebaf90df1cc0c75bfa",
+      "destination": "src/components/untitled/application/app-navigation/base-components/nav-button.tsx",
+      "localSha256": "940914564745de8c00ac4fcee9edc5ac600fa103065a57a645d4bb853bcb107a",
+      "patched": false
+    },
+    {
+      "source": "components/application/app-navigation/base-components/nav-item.tsx",
+      "url": "https://raw.githubusercontent.com/untitleduico/react/4702dc0ea8d140c3491a85670c7b4fab47b722da/components/application/app-navigation/base-components/nav-item.tsx",
+      "commit": "4702dc0ea8d140c3491a85670c7b4fab47b722da",
+      "sha256": "92c8c3ef5522cfe90731b14ebf423331d9e6356e80febb7ad17c1d82dbd02108",
+      "destination": "src/components/untitled/application/app-navigation/base-components/nav-item.tsx",
+      "localSha256": "14ee33cffaadbac5ea8a13893497328a87bdea3affb78227f063c31ade690ef0",
+      "patched": false
+    },
+    {
+      "source": "components/application/app-navigation/base-components/nav-list.tsx",
+      "url": "https://raw.githubusercontent.com/untitleduico/react/4702dc0ea8d140c3491a85670c7b4fab47b722da/components/application/app-navigation/base-components/nav-list.tsx",
+      "commit": "4702dc0ea8d140c3491a85670c7b4fab47b722da",
+      "sha256": "142bf5ff86e8c860828c042012ff50ba1b48592132e2c08b8e578f257772bd3a",
+      "destination": "src/components/untitled/application/app-navigation/base-components/nav-list.tsx",
+      "localSha256": "f4d79ed4b11d0de49d1d73ba98c771a5c8df0a5073bf286a6953fe1324662b7b",
+      "patched": false
+    },
+    {
+      "source": "components/application/app-navigation/config.ts",
+      "url": "https://raw.githubusercontent.com/untitleduico/react/4702dc0ea8d140c3491a85670c7b4fab47b722da/components/application/app-navigation/config.ts",
+      "commit": "4702dc0ea8d140c3491a85670c7b4fab47b722da",
+      "sha256": "b83709e53830d685073bd4fd319ed236ec32d4eebe0ef4f02e6262e31f48264c",
+      "destination": "src/components/untitled/application/app-navigation/config.ts",
+      "localSha256": "b83709e53830d685073bd4fd319ed236ec32d4eebe0ef4f02e6262e31f48264c",
+      "patched": false
+    },
+    {
+      "source": "components/application/app-navigation/sidebar-navigation/sidebar-simple.tsx",
+      "url": "https://raw.githubusercontent.com/untitleduico/react/4702dc0ea8d140c3491a85670c7b4fab47b722da/components/application/app-navigation/sidebar-navigation/sidebar-simple.tsx",
+      "commit": "4702dc0ea8d140c3491a85670c7b4fab47b722da",
+      "sha256": "31f57676da011c5cf44f22236ddd7a6b413a4318e67fd09f8050196f2f69ba24",
+      "destination": "src/components/untitled/application/app-navigation/sidebar-navigation/sidebar-simple.tsx",
+      "localSha256": "90000f92c09c270c07b25ab6c6fc5766253be66c5f0d0f616382c020f9578a46",
+      "patched": true
+    },
+    {
+      "source": "components/application/table/table.tsx",
+      "url": "https://raw.githubusercontent.com/untitleduico/react/4702dc0ea8d140c3491a85670c7b4fab47b722da/components/application/table/table.tsx",
+      "commit": "4702dc0ea8d140c3491a85670c7b4fab47b722da",
+      "sha256": "f91d47fdba53705123ab304a14c2fe46e955e216c40170af3648322343ac40c7",
+      "destination": "src/components/untitled/application/table/table.tsx",
+      "localSha256": "60163fa88dd7df345464cb15066f649a30bfdce212a6df9eb0cd39039e996ec2",
+      "patched": false
+    },
+    {
+      "source": "components/application/pagination/pagination.tsx",
+      "url": "https://raw.githubusercontent.com/untitleduico/react/4702dc0ea8d140c3491a85670c7b4fab47b722da/components/application/pagination/pagination.tsx",
+      "commit": "4702dc0ea8d140c3491a85670c7b4fab47b722da",
+      "sha256": "8b1f94c0627fef690930f8ee813d074722906919ec1aa278e040a2cf9954f151",
+      "destination": "src/components/untitled/application/pagination/pagination.tsx",
+      "localSha256": "f2c3179ac76d32d0ff1e362db72366d89061c71c136d904391760211e71e182a",
+      "patched": false
+    },
+    {
+      "source": "components/base/button-group/button-group.tsx",
+      "url": "https://raw.githubusercontent.com/untitleduico/react/4702dc0ea8d140c3491a85670c7b4fab47b722da/components/base/button-group/button-group.tsx",
+      "commit": "4702dc0ea8d140c3491a85670c7b4fab47b722da",
+      "sha256": "1871ab9149bc6fe1637ef202fb9d717f79f523f2da8ae423e17e07383d5d7c28",
+      "destination": "src/components/untitled/base/button-group/button-group.tsx",
+      "localSha256": "7ec34e7d25b59b3a94d90f371fc3686aa88141d82b73ce083c25f1536faaea49",
+      "patched": false
+    },
+    {
+      "source": "components/application/pagination/pagination-base.tsx",
+      "url": "https://raw.githubusercontent.com/untitleduico/react/4702dc0ea8d140c3491a85670c7b4fab47b722da/components/application/pagination/pagination-base.tsx",
+      "commit": "4702dc0ea8d140c3491a85670c7b4fab47b722da",
+      "sha256": "219f2286202339ed7a3b6a9bde6ab20957e1c72a1df43bbd26c9a1b6cfde1711",
+      "destination": "src/components/untitled/application/pagination/pagination-base.tsx",
+      "localSha256": "219f2286202339ed7a3b6a9bde6ab20957e1c72a1df43bbd26c9a1b6cfde1711",
+      "patched": false
+    },
+    {
+      "source": "components/application/modals/modal.tsx",
+      "url": "https://raw.githubusercontent.com/untitleduico/react/4702dc0ea8d140c3491a85670c7b4fab47b722da/components/application/modals/modal.tsx",
+      "commit": "4702dc0ea8d140c3491a85670c7b4fab47b722da",
+      "sha256": "d698ac483dcf8e305b5258b0edbb860ea45c1562a82a7fe5717baa6c08272d42",
+      "destination": "src/components/untitled/application/modals/modal.tsx",
+      "localSha256": "b823ed0e6941391f9912c02ff675169b0680fce306d04c7f322b6a8c894d80d0",
+      "patched": false
+    },
+    {
+      "source": "components/application/slideout-menus/slideout-menu.tsx",
+      "url": "https://raw.githubusercontent.com/untitleduico/react/4702dc0ea8d140c3491a85670c7b4fab47b722da/components/application/slideout-menus/slideout-menu.tsx",
+      "commit": "4702dc0ea8d140c3491a85670c7b4fab47b722da",
+      "sha256": "242c25873ebb543db0d982e1c49b2d8fcca21a595e726c3bd185447497a6d918",
+      "destination": "src/components/untitled/application/slideout-menus/slideout-menu.tsx",
+      "localSha256": "399316f1ca3f7d996f8c4749f4b7aaeabad7ae28b3c814f6b37af06304cf20a2",
+      "patched": false
+    },
+    {
+      "source": "components/base/buttons/close-button.tsx",
+      "url": "https://raw.githubusercontent.com/untitleduico/react/4702dc0ea8d140c3491a85670c7b4fab47b722da/components/base/buttons/close-button.tsx",
+      "commit": "4702dc0ea8d140c3491a85670c7b4fab47b722da",
+      "sha256": "312c6b022a6792a8943922d59b81fbe7c3bc0912d9451d4d7386b9fa94d8ad38",
+      "destination": "src/components/untitled/base/buttons/close-button.tsx",
+      "localSha256": "04ab5f561f2c7839ce69ccdd62efcb3143136d9eea3a55d7264184d2e701b726",
+      "patched": false
+    },
+    {
+      "source": "components/application/file-upload/file-upload-base.tsx",
+      "url": "https://raw.githubusercontent.com/untitleduico/react/4702dc0ea8d140c3491a85670c7b4fab47b722da/components/application/file-upload/file-upload-base.tsx",
+      "commit": "4702dc0ea8d140c3491a85670c7b4fab47b722da",
+      "sha256": "91185f67b38fe143ccaf16f7ff80c60926f824cc5a7fd4b6c24ebdc47d0473a0",
+      "destination": "src/components/untitled/application/file-upload/file-upload-base.tsx",
+      "localSha256": "d03cc874044ad49a2de5ddde100ca0cedd29012140b831b883b9aa01327e8266",
+      "patched": true
+    },
+    {
+      "source": "components/base/buttons/button-utility.tsx",
+      "url": "https://raw.githubusercontent.com/untitleduico/react/4702dc0ea8d140c3491a85670c7b4fab47b722da/components/base/buttons/button-utility.tsx",
+      "commit": "4702dc0ea8d140c3491a85670c7b4fab47b722da",
+      "sha256": "33365a02e747433dcd6d24950542b42b869ced3585cd04475126553c6e6ad7df",
+      "destination": "src/components/untitled/base/buttons/button-utility.tsx",
+      "localSha256": "8b9f4abf0b74b70283ca8969202f77abee70976f545232987386264667ad1391",
+      "patched": false
+    },
+    {
+      "source": "components/base/progress-indicators/progress-indicators.tsx",
+      "url": "https://raw.githubusercontent.com/untitleduico/react/4702dc0ea8d140c3491a85670c7b4fab47b722da/components/base/progress-indicators/progress-indicators.tsx",
+      "commit": "4702dc0ea8d140c3491a85670c7b4fab47b722da",
+      "sha256": "0a8189b5f78080e8e81aa712dc352dd213d4fd008e73fc20e660c2aa7d88929c",
+      "destination": "src/components/untitled/base/progress-indicators/progress-indicators.tsx",
+      "localSha256": "0c8e2dd0ede7de7e32a32dbbc5da774336325d07572697aa9c19190fa212fd01",
+      "patched": false
+    },
+    {
+      "source": "components/foundations/featured-icon/featured-icon.tsx",
+      "url": "https://raw.githubusercontent.com/untitleduico/react/4702dc0ea8d140c3491a85670c7b4fab47b722da/components/foundations/featured-icon/featured-icon.tsx",
+      "commit": "4702dc0ea8d140c3491a85670c7b4fab47b722da",
+      "sha256": "2c9e0227bcd87c88cc87c20ba119d701de61f855d0add2bc9360b8ecebebe06d",
+      "destination": "src/components/untitled/foundations/featured-icon/featured-icon.tsx",
+      "localSha256": "b46cc5e7e054446fd453d23a7ae202102a5e0c816fa918d0d8bf69081e6aac2f",
+      "patched": false
+    },
+    {
+      "source": "styles/theme.css",
+      "url": "https://raw.githubusercontent.com/untitleduico/react/4702dc0ea8d140c3491a85670c7b4fab47b722da/styles/theme.css",
+      "commit": "4702dc0ea8d140c3491a85670c7b4fab47b722da",
+      "sha256": "52241a7d0d28f7022b59f11006d5f4b6b38e8173ef1ef2d81fb62cde520e344c",
+      "destination": "src/styles/untitled/theme.css",
+      "localSha256": "52241a7d0d28f7022b59f11006d5f4b6b38e8173ef1ef2d81fb62cde520e344c",
+      "patched": false
+    },
+    {
+      "source": "styles/typography.css",
+      "url": "https://raw.githubusercontent.com/untitleduico/react/4702dc0ea8d140c3491a85670c7b4fab47b722da/styles/typography.css",
+      "commit": "4702dc0ea8d140c3491a85670c7b4fab47b722da",
+      "sha256": "531cc316caf58796c51e7e67abe4ceb88e4c21ff3c483c018bef1c336c19b109",
+      "destination": "src/styles/untitled/typography.css",
+      "localSha256": "531cc316caf58796c51e7e67abe4ceb88e4c21ff3c483c018bef1c336c19b109",
+      "patched": false
+    },
+    {
+      "source": "styles/globals.css",
+      "url": "https://raw.githubusercontent.com/untitleduico/react/4702dc0ea8d140c3491a85670c7b4fab47b722da/styles/globals.css",
+      "commit": "4702dc0ea8d140c3491a85670c7b4fab47b722da",
+      "sha256": "0c1fd5eebe0cb65dbf9e81d2e3950d6156a872acd187330cd79574f85c40883e",
+      "destination": "src/styles/untitled/globals.css",
+      "localSha256": "0c1fd5eebe0cb65dbf9e81d2e3950d6156a872acd187330cd79574f85c40883e",
+      "patched": false
+    },
+    {
+      "source": "LICENSE",
+      "url": "https://raw.githubusercontent.com/untitleduico/react/4702dc0ea8d140c3491a85670c7b4fab47b722da/LICENSE",
+      "commit": "4702dc0ea8d140c3491a85670c7b4fab47b722da",
+      "sha256": "c4b824495f1d48ee0b257606dccdb9b0a442d565ce155fc1eb86f497172534e1",
+      "destination": "src/components/untitled/LICENSE",
+      "localSha256": "c4b824495f1d48ee0b257606dccdb9b0a442d565ce155fc1eb86f497172534e1",
+      "patched": false
+    }
+  ],
+  "dependencies": {
+    "react": "19.3.0",
+    "react-aria-components": "1.21.1",
+    "@untitledui/icons": "0.0.23",
+    "tailwind-merge": "3.7.0",
+    "@internationalized/date": "3.12.4",
+    "@react-stately/utils": "3.12.1",
+    "react-aria": "3.52.1",
+    "@untitledui/file-icons": "0.0.9",
+    "motion": "13.4.4"
+  }
+}

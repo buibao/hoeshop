@@ -15,12 +15,12 @@ export default async function PolicyPage({ params }: Props) {
     p = (await getArticles("policies")).find((p) => p.slug === slug);
   if (!p) notFound();
   return (
-    <div className="container section">
-      <div className="article-title">
-        <span className="eyebrow">CHÍNH SÁCH CỦA HÒE</span>
+    <div className="container mx-auto w-full max-w-container px-4 md:px-8 section py-12 md:py-16">
+      <div className="article-title flex flex-col gap-4 py-8">
+        <span className="eyebrow mb-4 block text-sm font-semibold text-brand-secondary">CHÍNH SÁCH CỦA HÒE</span>
         <h1>{p.title}</h1>
       </div>
-      <article className="prose">
+      <article className="prose prose prose-neutral max-w-none">
         <Markdown skipHtml>{p.body}</Markdown>
       </article>
     </div>

@@ -10,9 +10,9 @@ export const metadata: Metadata = {
 export default async function ProductsPage() {
   const products = await getProducts();
   return (
-    <div className="container">
-      <div className="page-heading">
-        <span className="eyebrow">CHỌN HOA TỪ ĐIỀU BẠN MUỐN GỬI</span>
+    <div className="container mx-auto w-full max-w-container px-4 md:px-8">
+      <div className="page-heading flex flex-col gap-4 py-8 md:py-12">
+        <span className="eyebrow mb-4 block text-sm font-semibold text-brand-secondary">CHỌN HOA TỪ ĐIỀU BẠN MUỐN GỬI</span>
         <h1>
           Những đóa hoa,
           <br />
@@ -24,13 +24,13 @@ export default async function ProductsPage() {
         </p>
       </div>
       <ServiceCards />
-      <section className="section">
-        <div className="section-heading">
+      <section className="section py-12 md:py-16">
+        <div className="section-heading mb-8 flex flex-wrap items-center justify-between gap-4">
           <h2>Các mẫu hoa</h2>
           <p>Thay đổi thiết kế ngoài mẫu sẽ cần shop báo giá.</p>
         </div>
         {products.length ? (
-          <div className="product-grid">
+          <div className="product-grid grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {products.map((p) => (
               <ProductCard key={p.id} product={p} />
             ))}

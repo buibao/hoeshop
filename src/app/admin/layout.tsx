@@ -1,9 +1,10 @@
-import Link from "next/link";
+import { ActionLink } from "@/components/ui/ActionLink";
 import { ClerkProvider, UserButton } from "@clerk/nextjs";
+import { viVN } from "@clerk/localizations";
 import { redirect } from "next/navigation";
 import { requireAdmin, authConfigured } from "@/server/admin/auth";
 import { DomainError } from "@/domain/schemas";
-import "@/styles/admin.css";
+
 import { AdminNav } from "@/features/admin/AdminNav";
 export const metadata = {
   title: "Quản trị Hòe",
@@ -16,16 +17,16 @@ export default async function AdminLayout({
 }) {
   if (!authConfigured())
     return (
-      <main className="container section">
-        <span className="brand">hòe</span>
-        <h1 className="admin-title">Quản trị đang được kết nối</h1>
+      <main className="container mx-auto w-full max-w-container px-4 md:px-8 section py-12 md:py-16">
+        <span className="brand font-display text-display-xs text-brand-secondary">hòe</span>
+        <h1 className="admin-title font-body text-display-xs font-semibold">Quản trị đang được kết nối</h1>
         <p>
           Đăng nhập Google chưa được thiết lập. Khu vực quản trị chỉ mở cho tài
           khoản được shop cấp quyền.
         </p>
-        <Link className="text-link" href="/xem-thu/widgets">
+        <ActionLink className="text-link" href="/xem-thu/widgets">
           Xem thử widget Hòe
-        </Link>
+        </ActionLink>
       </main>
     );
   try {
@@ -34,10 +35,10 @@ export default async function AdminLayout({
     if (e instanceof DomainError && e.status === 401) redirect("/dang-nhap");
     if (e instanceof DomainError && e.status === 403)
       return (
-        <main className="container section">
-          <h1 className="admin-title">Chưa có quyền quản trị</h1>
+        <main className="container mx-auto w-full max-w-container px-4 md:px-8 section py-12 md:py-16">
+          <h1 className="admin-title font-body text-display-xs font-semibold">Chưa có quyền quản trị</h1>
           <p>Shop cần cấp quyền cho tài khoản Google của bạn.</p>
-          <ClerkProvider>
+          <ClerkProvider localization={viVN} appearance={{variables:{colorPrimary:"#D6306E",fontFamily:"var(--font-body)"}}}>
             <UserButton />
           </ClerkProvider>
         </main>
@@ -45,12 +46,12 @@ export default async function AdminLayout({
     throw e;
   }
   return (
-    <ClerkProvider>
-      <div className="admin-shell">
+    <ClerkProvider localization={viVN} appearance={{variables:{colorPrimary:"#D6306E",fontFamily:"var(--font-body)"}}}>
+      <div className="admin-shell flex min-h-dvh flex-col lg:flex-row">
         <AdminNav>
           <UserButton />
         </AdminNav>
-        <main className="admin-main">{children}</main>
+        <main className="admin-main min-w-0 flex-1 px-4 py-8 md:px-8">{children}</main>
       </div>
     </ClerkProvider>
   );

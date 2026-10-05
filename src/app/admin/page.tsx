@@ -6,14 +6,14 @@ export default async function AdminPage() {
   const data = await dashboard();
   return (
     <>
-      <span className="eyebrow">GÓC CỦA SHOP</span>
-      <h1 className="admin-title">Một ngày cùng Hòe</h1>
-      <p className="muted">
+      <span className="eyebrow mb-4 block text-sm font-semibold text-brand-secondary">GÓC CỦA SHOP</span>
+      <h1 className="admin-title font-body text-display-xs font-semibold">Một ngày cùng Hòe</h1>
+      <p className="muted text-tertiary">
         {data.shopLive
           ? "Website đang mở nhận yêu cầu."
           : "Website đang đóng nhận khách, chờ nghiệm thu."}
       </p>
-      <div className="admin-stats">
+      <div className="admin-stats grid grid-cols-1 gap-4 md:grid-cols-3">
         <Link href="/admin/orders">
           <strong>{data.received}</strong>
           <span>Đơn mới cần liên hệ</span>

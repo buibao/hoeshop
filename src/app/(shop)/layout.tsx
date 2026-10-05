@@ -37,11 +37,11 @@ export default async function ShopLayout({
   const test = isTestContent();
   return (
     <>
-      <a href="#main-content" className="skip-link">
+      <a href="#main-content" className="skip-link sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-primary focus:px-4 focus:py-3 focus:shadow-lg focus:outline-2 focus:outline-focus-ring">
         Đến nội dung chính
       </a>
       {test ? (
-        <div className="banner test">
+        <div className="banner bg-brand-primary px-4 py-3 text-center text-sm text-brand-secondary test">
           BẢN TEST — Mẫu hoa, giá và ảnh minh họa để kiểm thử.{" "}
           {process.env.DATA_ADAPTER === "mock"
             ? "Dữ liệu lưu tạm trên máy local, mất khi khởi động lại."
@@ -50,13 +50,13 @@ export default async function ShopLayout({
               : "Chưa kết nối DB test; yêu cầu chưa được tiếp nhận."}
         </div>
       ) : !shopLive() ? (
-        <div className="banner">
+        <div className="banner bg-brand-primary px-4 py-3 text-center text-sm text-brand-secondary">
           Hòe đang chuẩn bị mở nhận đặt hoa. Mời bạn khám phá câu chuyện và dịch
           vụ của Hòe.
         </div>
       ) : null}
       <Header logo={(await getAssets()).logo} />
-      <main id="main-content">{children}</main>
+      <main id="main-content" className="[&_h1]:font-display [&_h2]:font-display [&_h3]:font-display">{children}</main>
       <Footer />
     </>
   );

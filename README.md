@@ -1,5 +1,9 @@
 # Hòe
 
+Store/Admin đã chuyển sang source **Untitled UI React miễn phí** trên nhánh `feat/untitled-ui`, khóa upstream commit `4702dc0ea8d140c3491a85670c7b4fab47b722da`. Bootstrap/DayPicker và motion/CSS geometry cũ đã gỡ. Ngày dùng Calendar/segment chính thức, giờ dùng TimeField 24 giờ; nghiệp vụ/API/DB giữ nguyên. Xem [plan mới](docs/untitled-ui/PLAN.md), [nguồn và patch](docs/untitled-ui/SOURCE_MAP.md), [kiểm chứng và Preview](docs/untitled-ui/VERIFICATION.md).
+
+Gallery `/xem-thu/giao-dien`, sidebar mẫu `/xem-thu/giao-dien?panel=admin` và widget `/xem-thu/widgets` dùng fixture cố định, noindex/404 production. Các layout thiếu template miễn phí được compose cho Hòe; Clerk widget thuộc provider. Google/Blob UAT và shop duyệt hình ảnh thật được ghi riêng, `SHOP_LIVE=false`. Những mô tả motion/Bootstrap/time popup trong tài liệu phase 2/3 bên dưới là lịch sử, được thay bằng kế hoạch Untitled UI.
+
 Phase 3 đang ở checkpoint A/B trên nhánh `feat/phase3`: sửa Hoa Ý/giá/trạng thái/field errors và mẫu Home, chi tiết sản phẩm, admin. Xem [plan](docs/phase-3/PHASE3_PLAN.md), [UI spec](docs/phase-3/UI_SPEC.md), [bằng chứng](docs/phase-3/VERIFICATION_PHASE3.md). `/xem-thu/giao-dien` dùng admin mẫu cố định, không đọc đơn thật hoặc lưu dữ liệu; chỉ có trong chế độ test và không mở trên Vercel production. Chờ shop duyệt thiết kế trước C/D/E; `SHOP_LIVE=false`.
 
 Revision checkpoint B: ghi chú hero bên dưới ảnh, khung card sản phẩm thống nhất, submenu Sản phẩm theo ba dịch vụ, fade/scroll/hover/click và reduced motion. Preview và bằng chứng desktop/mobile được ghi trong VERIFICATION_PHASE3; assets vẫn là ảnh test.

@@ -1,4 +1,5 @@
 import { ClerkProvider, SignIn } from "@clerk/nextjs";
+import { viVN } from "@clerk/localizations";
 import { authConfigured } from "@/server/admin/auth";
 export const metadata = {
   title: "Đăng nhập shop",
@@ -6,11 +7,11 @@ export const metadata = {
 };
 export default function SignInPage() {
   return (
-    <main className="container section" style={{ maxWidth: 520 }}>
-      <span className="brand">hòe</span>
-      <h1 style={{ fontSize: 32, marginBlock: 24 }}>Góc nhỏ của shop</h1>
+    <main className="mx-auto flex max-w-xl flex-col gap-6 px-4 py-12 md:px-8 md:py-16">
+      <span className="brand font-display text-display-xs text-brand-secondary">hòe</span>
+      <h1 className="text-display-sm">Góc nhỏ của shop</h1>
       {authConfigured() ? (
-        <ClerkProvider>
+        <ClerkProvider localization={viVN} appearance={{variables:{colorPrimary:"#D6306E", fontFamily:"var(--font-body)"}}}>
           <SignIn
             withSignUp={false}
             transferable={false}

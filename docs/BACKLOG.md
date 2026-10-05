@@ -1,5 +1,11 @@
 # Backlog Hòe
 
+## Migration Untitled UI
+
+Nhánh `feat/untitled-ui` thay toàn bộ UI ứng dụng bằng source MIT đã khóa và composition miễn phí cho Hòe. Theme/fonts/controls/navigation/table/media đã migrate, giữ business/API/DB contracts. Xem docs/untitled-ui. Không mua PRO; không tự mở shop.
+
+Còn nghiệm thu: duyệt gallery và Store/Admin desktop/mobile, Google admin/non-admin + Blob qua UI trên Preview, Safari/iOS thật, assets thật. Các yêu cầu cũ về Bootstrap/DayPicker/parallax/reveal/time popup đã được quyết định mới thay thế. Trạng thái kiểm thử cuối và link Preview cập nhật tại VERIFICATION.md; không lấy tài liệu cũ làm bằng chứng cho bản UI mới.
+
 Phase 1 baseline giữ trong REQUIREMENTS/VERIFICATION.md; adapter Sheets và Apps Script là lịch sử. Phase 2 bắt đầu từ `474cc71`, runtime dùng Postgres. Không dùng lại deadline 06/10/2026.
 
 | Mốc phase 2          | Đã triển khai                                                                                                                                       | Chưa nghiệm thu                                                                                   |

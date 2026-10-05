@@ -1,6 +1,9 @@
 "use client";
+import { Form } from "@/components/ui/Form";
+import { ActionLink } from "@/components/ui/ActionLink";
+import { Action } from "@/components/ui/Action";
+
 import { useState } from "react";
-import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import type { Product } from "@/domain/schemas";
 import { configurationSchema } from "@/domain/schemas";
@@ -85,7 +88,7 @@ export function ProductForm({
     setAdded(false);
   }
   return (
-    <form
+    <Form
       onSubmit={handleSubmit}
       onChange={(e) => preview(e.currentTarget)}
       noValidate
@@ -98,31 +101,31 @@ export function ProductForm({
           errors={errors}
           guidance={guidance}
         />
-        <div style={{ marginTop: 18, maxWidth: 180 }}>
+        <div className="mt-4 max-w-xs">
           <QuantityField name="quantity" />
         </div>
       </fieldset>
-      <p className="form-note">
+      <p className="form-note text-sm text-tertiary">
         Theo cấu hình hiện tại: <strong>{label}</strong>. Thay đổi thiết kế
         ngoài mẫu cần shop báo giá. Giá cuối, phí giao và lịch nhận được xác
         nhận sau.
       </p>
       {error ? (
-        <div className="error" role="alert">
+        <div className="error rounded-xl bg-primary p-4 text-error-primary ring-1 ring-error_subtle" role="alert">
           {error}
         </div>
       ) : null}
       {added ? (
-        <div className="success" role="status">
+        <div className="success rounded-xl bg-primary p-4 text-success-primary ring-1 ring-success_secondary" role="status">
           <strong>Đã thêm vào giỏ hoa.</strong>
-          <Link href="/gio-hang" className="text-link">
+          <ActionLink href="/gio-hang" className="text-link">
             Xem giỏ & gửi yêu cầu <ArrowRight size={15} />
-          </Link>
+          </ActionLink>
         </div>
       ) : null}
-      <button className="button" type="submit">
+      <Action className="button" type="submit">
         Thêm vào giỏ hoa <ArrowRight size={15} />
-      </button>
-    </form>
+      </Action>
+    </Form>
   );
 }

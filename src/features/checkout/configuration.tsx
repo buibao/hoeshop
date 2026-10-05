@@ -1,4 +1,5 @@
 "use client";
+
 import { Field } from "@/components/Fields";
 import {
   configurationSchema,
@@ -105,7 +106,7 @@ export function ConfigurationFields({
     (key) => Boolean(value[key]) || Boolean(errors?.[key]),
   );
   return (
-    <div className="form-grid">
+    <div className="form-grid grid grid-cols-1 gap-4 md:grid-cols-2">
       {serviceType === "hoa-tam"
         ? field("emotion", "Cảm xúc muốn gửi", {
             required: true,
@@ -162,11 +163,11 @@ export function ConfigurationFields({
             maxLength: 1000,
           })
         : null}
-      <details className="hoe-optional" open={expanded || undefined}>
+      <details className="hoe-optional rounded-xl bg-primary p-4 ring-1 ring-secondary" open={expanded || undefined}>
         <summary>
-          Thêm mong muốn riêng <span className="small muted">Tùy chọn</span>
+          Thêm mong muốn riêng <span className="small text-sm muted text-tertiary">Tùy chọn</span>
         </summary>
-        <div className="form-grid">
+        <div className="form-grid grid grid-cols-1 gap-4 md:grid-cols-2">
           {serviceType === "hoa-tam" ? (
             <>
               {field("relationship", "Mối quan hệ", { maxLength: 120 })}

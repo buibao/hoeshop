@@ -28,16 +28,16 @@ export default async function BlogDetail({ params }: Props) {
     p = (await getArticles()).find((p) => p.slug === slug);
   if (!p) notFound();
   return (
-    <div className="container">
-      <div className="breadcrumb">
+    <div className="container mx-auto w-full max-w-container px-4 md:px-8">
+      <div className="breadcrumb flex flex-wrap items-center gap-3 py-6 text-sm text-tertiary">
         <Link href="/">Trang chủ</Link>
         <span>/</span>
         <Link href="/blog">Chuyện hoa</Link>
       </div>
-      <div className="article-title">
-        <span className="eyebrow">{p.category}</span>
+      <div className="article-title flex flex-col gap-4 py-8">
+        <span className="eyebrow mb-4 block text-sm font-semibold text-brand-secondary">{p.category}</span>
         <h1>{p.title}</h1>
-        <div className="article-meta">
+        <div className="article-meta text-sm text-tertiary">
           <span>Hòe</span>
           <time dateTime={p.date}>
             {new Intl.DateTimeFormat("vi-VN", {
@@ -47,7 +47,7 @@ export default async function BlogDetail({ params }: Props) {
           </time>
         </div>
       </div>
-      <article className="prose">
+      <article className="prose prose prose-neutral max-w-none">
         <Markdown skipHtml>{p.body}</Markdown>
       </article>
       {features.commentsEnabled ? <Comments postId={p.id} /> : null}

@@ -1,4 +1,7 @@
 "use client";
+import { Form } from "@/components/ui/Form";
+import { Action } from "@/components/ui/Action";
+
 import { useCart } from "@/features/cart/store";
 import { useSubmission } from "./useSubmission";
 import {
@@ -15,7 +18,7 @@ export function CheckoutForm({ products }: { products: Product[] }) {
   const submission = useSubmission<Receipt>("/api/orders");
   if (submission.result)
     return (
-      <div className="success" role="status">
+      <div className="success rounded-xl bg-primary p-4 text-success-primary ring-1 ring-success_secondary" role="status">
         <strong>Hòe đã nhận yêu cầu {submission.result.requestId}.</strong>Shop
         sẽ liên hệ xác nhận giá và thời gian giao. Mã tiếp nhận chưa phải xác
         nhận đơn hoặc giao hàng.
@@ -71,11 +74,11 @@ export function CheckoutForm({ products }: { products: Product[] }) {
     if (result) cart.complete(submitted);
   }
   return (
-    <div className="cart-layout">
-      <form onSubmit={handleSubmit} noValidate className="card">
+    <div className="cart-layout grid grid-cols-1 items-start gap-8 py-8 lg:grid-cols-2">
+      <Form onSubmit={handleSubmit} noValidate className="card rounded-xl bg-primary p-6 shadow-xs ring-1 ring-secondary">
         <fieldset disabled={submission.phase === "submitting"}>
           <legend>Thông tin người đặt</legend>
-          <div className="form-grid">
+          <div className="form-grid grid grid-cols-1 gap-4 md:grid-cols-2">
             <Field
               name="buyer.name"
               label="Họ tên người đặt"
@@ -103,9 +106,9 @@ export function CheckoutForm({ products }: { products: Product[] }) {
               errors={submission.errors}
             />
           </div>
-          <hr className="divider" />
+          <hr className="divider my-4 border-secondary" />
           <legend>Thông tin nhận hoa chung</legend>
-          <div className="form-grid">
+          <div className="form-grid grid grid-cols-1 gap-4 md:grid-cols-2">
             <Field
               name="recipient.name"
               label="Tên người nhận"
@@ -139,24 +142,24 @@ export function CheckoutForm({ products }: { products: Product[] }) {
             />
           </div>
           <Honeypot />
-          <p className="form-note">
+          <p className="form-note text-sm text-tertiary">
             Ngày/giờ mong muốn nằm trong từng mẫu ở giỏ. Shop sẽ xác nhận giá
             cuối, phí giao và lịch nhận. Website chưa thu tiền.
           </p>
-          <button className="button" type="submit">
+          <Action className="button" type="submit" isLoading={submission.phase === "submitting"}>
             {submission.phase === "submitting"
               ? "Đang gửi yêu cầu…"
               : "Gửi yêu cầu đặt hoa"}
-          </button>
+          </Action>
         </fieldset>
         {blocked ? (
-          <div className="error" role="alert">
+          <div className="error rounded-xl bg-primary p-4 text-error-primary ring-1 ring-error_subtle" role="alert">
             Giỏ có mẫu không khả dụng hoặc thông tin đã thay đổi. Hãy quay lại
             giỏ và kiểm tra cấu hình.
           </div>
         ) : null}
         {submission.error ? (
-          <div className="error" role="alert">
+          <div className="error rounded-xl bg-primary p-4 text-error-primary ring-1 ring-error_subtle" role="alert">
             {submission.error}
             {Object.entries(submission.errors)
               .filter(([key]) => key.startsWith("items."))
@@ -168,7 +171,7 @@ export function CheckoutForm({ products }: { products: Product[] }) {
               ))}
           </div>
         ) : null}
-      </form>
+      </Form>
       <CartSummary products={products} checkout />
     </div>
   );

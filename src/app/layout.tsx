@@ -1,20 +1,20 @@
 import type { Metadata } from "next";
 import { Lora, Be_Vietnam_Pro } from "next/font/google";
 import { connection } from "next/server";
-import { MotionProvider } from "@/components/ui/MotionProvider";
+import { UiProvider } from "@/components/ui/UiProvider";
 import "./globals.css";
-import "@/styles/widgets.css";
-import "@/styles/phase3.css";
+
+
 const heading = Lora({
   subsets: ["latin", "vietnamese"],
   display: "swap",
-  variable: "--font-heading",
+  variable: "--font-hoe-display",
 });
 const body = Be_Vietnam_Pro({
   subsets: ["latin", "vietnamese"],
   weight: ["400", "500", "600"],
   display: "swap",
-  variable: "--font-body",
+  variable: "--font-hoe-body",
 });
 export const metadata: Metadata = {
   title: { default: "Hòe — Hòe gửi hoa, chill ghé nhà.", template: "%s | Hòe" },
@@ -29,7 +29,7 @@ export default async function RootLayout({
   return (
     <html lang="vi" className={`${heading.variable} ${body.variable}`}>
       <body>
-        <MotionProvider>{children}</MotionProvider>
+        <UiProvider>{children}</UiProvider>
       </body>
     </html>
   );

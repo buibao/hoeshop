@@ -1,11 +1,18 @@
 "use client";
+
 import { useId, useRef } from "react";
+import { Input } from "@/components/untitled/base/input/input";
+import { TextArea } from "@/components/untitled/base/textarea/textarea";
+import { Button } from "@/components/untitled/base/buttons/button";
+import { SelectField, notifyForm } from "./ui/SelectField";
 import { DateTimeField } from "./ui/DateTimeField";
 type FieldProps = {
   name: string;
   label: string;
   type?: string;
   required?: boolean;
+  disabled?: boolean;
+  readOnly?: boolean;
   defaultValue?: string | number;
   multiline?: boolean;
   hint?: string;
@@ -23,12 +30,12 @@ export function Field({
   label,
   type = "text",
   required,
+  disabled,
+  readOnly,
   defaultValue,
   multiline,
   hint,
   maxLength,
-  min,
-  max,
   autoComplete,
   full,
   options,
@@ -38,8 +45,19 @@ export function Field({
   const id = useId(),
     input = useRef<HTMLInputElement>(null);
   const error = errors?.[name];
-  const hintId = id + "-hint";
-  const errorId = id + "-error";
+  const shared = {
+    id,
+    name,
+    label,
+    isRequired: required,
+    isDisabled: disabled,
+    isReadOnly: readOnly,
+    defaultValue: String(defaultValue ?? ""),
+    hint: error || hint,
+    isInvalid: Boolean(error),
+    validationBehavior: "aria" as const,
+    size: "md" as const,
+  };
   if (type === "date" || type === "time")
     return (
       <DateTimeField
@@ -47,60 +65,51 @@ export function Field({
         label={label}
         type={type}
         required={required}
+        disabled={disabled}
+        readOnly={readOnly}
         defaultValue={defaultValue}
         hint={hint}
         errors={errors}
       />
     );
-  const props = {
-    id,
-    name,
-    defaultValue,
-    required,
-    "aria-invalid": !!error,
-    "aria-describedby":
-      [hint ? hintId : "", error ? errorId : ""].filter(Boolean).join(" ") ||
-      undefined,
-  };
   return (
-    <div className={`field ${full ? "full" : ""}`}>
-      <label htmlFor={id}>
-        {label}
-        {required ? (
-          <span className="required-mark" aria-hidden="true" />
-        ) : null}
-      </label>
+    <div className={full ? "col-span-full" : undefined} data-field-name={name}>
       {options ? (
-        <select {...props}>
-          {options.map((o) => (
-            <option key={o.value} value={o.value}>
-              {o.label}
-            </option>
-          ))}
-        </select>
+        <SelectField
+          {...{
+            name,
+            label,
+            defaultValue,
+            options,
+            required,
+            disabled,
+            readOnly,
+            hint,
+            error,
+          }}
+        />
       ) : multiline ? (
-        <textarea {...props} maxLength={maxLength || 1500} />
+        <TextArea {...shared} maxLength={maxLength || 1500} />
       ) : (
-        <input
+        <Input
+          {...shared}
           ref={input}
-          {...props}
-          type={type}
+          type={type as "text"}
           maxLength={maxLength || 500}
-          min={min}
-          max={max}
           autoComplete={autoComplete}
         />
       )}
       {presets?.length ? (
         <div
-          className="hoe-presets"
+          className="mt-3 flex flex-wrap gap-3"
           aria-label={`Gợi ý ${label.toLowerCase()}`}
         >
           {presets.map((preset) => (
-            <button
-              type="button"
+            <Button
               key={preset}
-              onClick={() => {
+              size="sm"
+              color="secondary"
+              onPress={() => {
                 if (!input.current) return;
                 Object.getOwnPropertyDescriptor(
                   HTMLInputElement.prototype,
@@ -109,30 +118,21 @@ export function Field({
                 input.current.dispatchEvent(
                   new Event("input", { bubbles: true }),
                 );
+                notifyForm(input.current);
                 input.current.focus();
               }}
             >
               {preset}
-            </button>
+            </Button>
           ))}
         </div>
-      ) : null}
-      {hint ? (
-        <span id={hintId} className="field-hint">
-          {hint}
-        </span>
-      ) : null}
-      {error ? (
-        <span id={errorId} className="required small">
-          {error}
-        </span>
       ) : null}
     </div>
   );
 }
 export function Honeypot() {
   return (
-    <div className="honeypot" aria-hidden="true">
+    <div hidden aria-hidden="true">
       <label>
         Để trống trường này
         <input name="honeypot" tabIndex={-1} autoComplete="off" />
@@ -141,21 +141,22 @@ export function Honeypot() {
   );
 }
 export function focusError(form: HTMLFormElement, path: string) {
-  const field =
+  const named =
     form.elements.namedItem(path) ||
     form.elements.namedItem(path.split(".").at(-1)!);
-  if (field instanceof HTMLElement) {
-    let parent = field.parentElement;
+  const wrapper = Array.from(
+    form.querySelectorAll<HTMLElement>("[data-field-name]"),
+  ).find((node) => node.dataset.fieldName === path);
+  const control =
+    wrapper?.querySelector<HTMLElement>(
+      'input:not([type="hidden"]),textarea,button,[role="spinbutton"]',
+    ) || named;
+  if (control instanceof HTMLElement) {
+    let parent = control.parentElement;
     while (parent && parent !== form) {
       if (parent instanceof HTMLDetailsElement) parent.open = true;
       parent = parent.parentElement;
     }
+    control.focus();
   }
-  if (
-    field instanceof HTMLInputElement &&
-    field.type === "hidden" &&
-    field.dataset.focusTarget
-  )
-    document.getElementById(field.dataset.focusTarget)?.focus();
-  else if (field instanceof HTMLElement) field.focus();
 }

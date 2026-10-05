@@ -1,0 +1,33 @@
+/* Branding only. All scale, geometry and semantic relationships are upstream. */
+@theme inline {
+  --font-body: var(--font-hoe-body), sans-serif;
+  --font-display: var(--font-hoe-display), serif;
+  --font-sans: var(--font-body);
+  --color-brand-50: color-mix(in oklch, #fcdfe1 50%, white);
+  --color-brand-100: #fcdfe1;
+  --color-brand-200: color-mix(in oklch, #fcdfe1 67%, #ff92c1);
+  --color-brand-300: color-mix(in oklch, #fcdfe1 33%, #ff92c1);
+  --color-brand-400: #ff92c1;
+  --color-brand-500: #d6306e;
+  --color-brand-600: #af2154;
+  --color-brand-700: #922044;
+  --color-brand-800: color-mix(in oklch, #922044 85%, black);
+  --color-brand-900: color-mix(in oklch, #922044 70%, black);
+  --color-brand-950: color-mix(in oklch, #922044 55%, black);
+  --color-bg-primary: #fffcf7;
+  --color-bg-brand-solid: var(--color-brand-500);
+  --color-bg-brand-solid_hover: var(--color-brand-600);
+  --color-text-primary: #332c2a;
+  --color-fg-primary: #332c2a;
+  --color-hoe-caramel: #efb17e;
+  --color-hoe-jasmine: #efd47b;
+}
+
+/* Accessibility patch: retain upstream geometry; remove interaction animation when requested. */
+@media (prefers-reduced-motion: reduce) {
+  [data-rac], [data-rac] * {
+    animation-duration: 0s;
+    transition-duration: 0s;
+    scroll-behavior: auto;
+  }
+}

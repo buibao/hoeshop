@@ -1,4 +1,9 @@
 "use client";
+
+import { Input } from "@/components/untitled/base/input/input";
+import { InputNumber } from "@/components/untitled/base/input/input-number";
+import { TextArea } from "@/components/untitled/base/textarea/textarea";
+import { SelectField } from "@/components/ui/SelectField";
 import { valueLabel } from "@/domain/labels";
 export type EditorFieldProps = {
   path: string;
@@ -24,52 +29,53 @@ export function AdminField({
   readOnly,
   rows = 4,
 }: EditorFieldProps) {
-  const error = errors[path],
-    props = {
-      id: path,
-      name: path,
-      "aria-invalid": error ? (true as const) : undefined,
-      "aria-describedby":
-        [hint ? `${path}-hint` : "", error ? `${path}-error` : ""]
-          .filter(Boolean)
-          .join(" ") || undefined,
-      value: String(value ?? ""),
-      readOnly,
-      onChange: (
-        e: React.ChangeEvent<
-          HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-        >,
-      ) =>
-        change(
-          path,
-          type === "number" ? Number(e.target.value) : e.target.value,
-        ),
-    };
+  const shared = {
+    name: path,
+    id: path,
+    label,
+    hint: errors[path] || hint,
+    isInvalid: Boolean(errors[path]),
+    isReadOnly: readOnly,
+    validationBehavior: "aria" as const,
+    size: "md" as const,
+  };
   return (
-    <div className="field admin-control">
-      <label htmlFor={path}>{label}</label>
+    <div data-field-name={path}>
       {type === "select" ? (
-        <select {...props}>
-          {(options || []).map((v) => (
-            <option key={v} value={v}>
-              {v ? valueLabel(v) : "Chưa chọn"}
-            </option>
-          ))}
-        </select>
+        <SelectField
+          name={path}
+          label={label}
+          value={String(value ?? "")}
+          options={(options || []).map((v) => ({
+            value: v,
+            label: v ? valueLabel(v) : "Chưa chọn",
+          }))}
+          onChange={(next) => change(path, next)}
+          error={errors[path]}
+          hint={hint}
+          readOnly={readOnly}
+        />
       ) : type === "textarea" ? (
-        <textarea {...props} rows={rows} />
+        <TextArea
+          {...shared}
+          value={String(value ?? "")}
+          rows={rows}
+          onChange={(next) => change(path, next)}
+        />
+      ) : type === "number" ? (
+        <InputNumber
+          {...shared}
+          value={Number(value ?? 0)}
+          minValue={0}
+          formatOptions={{ useGrouping: false, maximumFractionDigits: 0 }}
+          onChange={(next) => change(path, next)}
+        />
       ) : (
-        <input {...props} type={type} min={type === "number" ? 0 : undefined} />
-      )}
-      {hint && (
-        <small id={`${path}-hint`} className="admin-hint">
-          {hint}
-        </small>
-      )}
-      {error && (
-        <small id={`${path}-error`} className="admin-field-error">
-          {error}
-        </small>
+        <Input
+          {...shared}
+          value={String(value ?? "")}
+          onChange={(next) => change(path, next)}
+        />
       )}
     </div>
   );

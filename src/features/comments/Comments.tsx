@@ -1,4 +1,7 @@
 "use client";
+import { Form } from "@/components/ui/Form";
+import { Action } from "@/components/ui/Action";
+
 import { useCallback,useEffect,useState } from "react";
 import { commentSchema,type CommentPage,type PublicComment } from "@/domain/schemas";
 import { Field,Honeypot } from "@/components/Fields";
@@ -38,21 +41,21 @@ export function Comments({postId}: {postId:string}) {
       setReadError("");
     }
   }
-  return <section className="comments" aria-label="Bình luận bài viết"><h2>Một lời gửi lại Hòe</h2><p>Bình luận được công khai ngay sau khi lưu. Tên hiển thị do người viết tự nhập, chưa được xác minh.</p>
-    <form onSubmit={handleSubmit} noValidate onChange={()=>{if(submission.phase==="success")submission.reset();}}>
-      <fieldset disabled={submission.phase==="submitting" || loading}><div className="form-grid">
+  return <section className="comments mt-8 flex flex-col gap-4" aria-label="Bình luận bài viết"><h2>Một lời gửi lại Hòe</h2><p>Bình luận được công khai ngay sau khi lưu. Tên hiển thị do người viết tự nhập, chưa được xác minh.</p>
+    <Form onSubmit={handleSubmit} noValidate onChange={()=>{if(submission.phase==="success")submission.reset();}}>
+      <fieldset disabled={submission.phase==="submitting" || loading}><div className="form-grid grid grid-cols-1 gap-4 md:grid-cols-2">
         <Field name="displayName" label="Tên hiển thị" required full maxLength={80} errors={submission.errors}/>
         <Field name="body" label="Bình luận" required multiline full maxLength={1500} errors={submission.errors}/>
       </div><Honeypot/>
-      {submission.error ? <div className="error" role="alert">{submission.error}</div> : null}
-      {submission.phase==="success" ? <p className="success" role="status">Bình luận của bạn đã được lưu và công khai.</p> : null}
-      <button className="button" type="submit" style={{marginTop:18}}>{submission.phase==="submitting" ? "Đang gửi…" : "Gửi bình luận"}</button>
+      {submission.error ? <div className="error rounded-xl bg-primary p-4 text-error-primary ring-1 ring-error_subtle" role="alert">{submission.error}</div> : null}
+      {submission.phase==="success" ? <p className="success rounded-xl bg-primary p-4 text-success-primary ring-1 ring-success_secondary" role="status">Bình luận của bạn đã được lưu và công khai.</p> : null}
+      <Action className="button" type="submit" isLoading={submission.phase==="submitting"}>{submission.phase==="submitting" ? "Đang gửi…" : "Gửi bình luận"}</Action>
       </fieldset>
-    </form>
-    <div style={{marginTop:30}}><button className="link-button" onClick={()=>reload()} disabled={loading}>Tải lại bình luận</button></div>
-    {readError ? <div className="error" role="alert">{readError} <button className="link-button" onClick={()=>reload()}>Thử lại</button></div> : null}
-    {loading ? <p role="status" className="form-note">Đang tải bình luận…</p> : !comments.length && !readError ? <p className="form-note">Chưa có bình luận. Bạn có thể là người đầu tiên gửi một lời dịu dàng.</p> : null}
-    {comments.map(c=><article className="comment" key={c.commentId}><div className="comment-header"><strong>{c.displayName}</strong><time dateTime={c.createdAt}>{new Intl.DateTimeFormat("vi-VN",{dateStyle:"short",timeStyle:"short",timeZone:"Asia/Ho_Chi_Minh"}).format(new Date(c.createdAt))}</time></div><p>{c.body}</p></article>)}
-    {cursor ? <button className="button secondary" style={{marginTop:25}} onClick={()=>reload(cursor)} disabled={loading}>Xem thêm bình luận</button> : null}
+    </Form>
+    <div className="mt-8"><Action className="link-button" onClick={()=>reload()} disabled={loading}>Tải lại bình luận</Action></div>
+    {readError ? <div className="error rounded-xl bg-primary p-4 text-error-primary ring-1 ring-error_subtle" role="alert">{readError} <Action className="link-button" onClick={()=>reload()}>Thử lại</Action></div> : null}
+    {loading ? <p role="status" className="form-note text-sm text-tertiary">Đang tải bình luận…</p> : !comments.length && !readError ? <p className="form-note text-sm text-tertiary">Chưa có bình luận. Bạn có thể là người đầu tiên gửi một lời dịu dàng.</p> : null}
+    {comments.map(c=><article className="comment rounded-xl bg-secondary p-4" key={c.commentId}><div className="comment-header mb-3 flex flex-wrap justify-between gap-3"><strong>{c.displayName}</strong><time dateTime={c.createdAt}>{new Intl.DateTimeFormat("vi-VN",{dateStyle:"short",timeStyle:"short",timeZone:"Asia/Ho_Chi_Minh"}).format(new Date(c.createdAt))}</time></div><p>{c.body}</p></article>)}
+    {cursor ? <Action className="button secondary"  onClick={()=>reload(cursor)} disabled={loading}>Xem thêm bình luận</Action> : null}
   </section>;
 }

@@ -1,18 +1,20 @@
 "use client";
+import { Action } from "@/components/ui/Action";
+
 export default function AvailabilityError({ reset }: { reset: () => void }) {
   return (
-    <main className="container section">
-      <span className="brand">hòe</span>
-      <div className="page-heading">
-        <span className="eyebrow">HÒE ĐANG CHUẨN BỊ</span>
-        <h1 style={{ fontSize: 40 }}>Hẹn bạn một chút nhé.</h1>
+    <main className="container mx-auto w-full max-w-container px-4 md:px-8 section py-12 md:py-16">
+      <span className="brand font-display text-display-xs text-brand-secondary">hòe</span>
+      <div className="page-heading flex flex-col gap-4 py-8 md:py-12">
+        <span className="eyebrow mb-4 block text-sm font-semibold text-brand-secondary">HÒE ĐANG CHUẨN BỊ</span>
+        <h1 >Hẹn bạn một chút nhé.</h1>
         <p>
           Nội dung và hệ thống tiếp nhận đang được kết nối. Yêu cầu chỉ được ghi
           nhận khi bạn nhận mã tiếp nhận.
         </p>
-        <button className="button" onClick={reset}>
+        <Action className="button" onClick={reset}>
           Thử lại
-        </button>
+        </Action>
       </div>
     </main>
   );

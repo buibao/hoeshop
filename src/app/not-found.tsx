@@ -1,2 +1,2 @@
-import Link from "next/link";
-export default function NotFound() { return <div className="container section empty"><span className="eyebrow">404</span><h1>Chưa tìm thấy đóa hoa này</h1><p>Trang bạn tìm chưa được xuất bản hoặc không còn khả dụng.</p><Link href="/" className="button">Về trang chủ</Link></div>; }
+import { ActionLink } from "@/components/ui/ActionLink";
+export default function NotFound() { return <div className="container mx-auto w-full max-w-container px-4 md:px-8 section py-12 md:py-16 empty flex flex-col items-center gap-4 rounded-xl bg-secondary p-8 text-center"><span className="eyebrow mb-4 block text-sm font-semibold text-brand-secondary">404</span><h1>Chưa tìm thấy đóa hoa này</h1><p>Trang bạn tìm chưa được xuất bản hoặc không còn khả dụng.</p><ActionLink href="/" className="button">Về trang chủ</ActionLink></div>; }

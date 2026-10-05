@@ -1,0 +1,514 @@
+diff --git a/src/components/untitled/base/input/label.tsx b/src/components/untitled/base/input/label.tsx
+index 81cebd4..0928eff 100644
+--- a/src/components/untitled/base/input/label.tsx
++++ b/src/components/untitled/base/input/label.tsx
+@@ -30,8 +30,9 @@ export const Label = ({ isInvalid, isRequired, tooltip, tooltipDescription, clas
+             {props.children}
+ 
+             <span
++                aria-hidden="true"
+                 className={cx(
+-                    "hidden text-brand-tertiary",
++                    "hidden text-brand-tertiary after:content-['*']",
+                     isRequired && "block",
+                     typeof isRequired === "undefined" && "group-required:block",
+ 
+@@ -39,7 +40,6 @@ export const Label = ({ isInvalid, isRequired, tooltip, tooltipDescription, clas
+                     typeof isInvalid === "undefined" && "group-invalid:text-error-primary",
+                 )}
+             >
+-                *
+             </span>
+ 
+             {tooltip && (
+diff --git a/src/components/untitled/base/input/input-number.tsx b/src/components/untitled/base/input/input-number.tsx
+index c9cec37..473076e 100644
+--- a/src/components/untitled/base/input/input-number.tsx
++++ b/src/components/untitled/base/input/input-number.tsx
+@@ -63,6 +63,7 @@ export const InputNumberBase = ({
+     isRequired: _isRequired,
+     ...inputProps
+ }: Omit<InputNumberBaseProps, "label" | "hint">) => {
++    void _isRequired;
+     // If the input is inside a `TextFieldContext`, use its context to simplify applying styles
+     const context = useContext(NumberFieldContext);
+ 
+@@ -96,7 +97,7 @@ export const InputNumberBase = ({
+             }
+         >
+             {orientation === "horizontal" && (
+-                <Button size={size} iconLeading={Minus} slot="decrement" color="tertiary" className="static h-full rounded-r-none" />
++                <Button aria-label="Giảm" size={size} iconLeading={Minus} slot="decrement" color="tertiary" className="static h-full rounded-r-none" />
+             )}
+ 
+             {/* Input field */}
+@@ -114,19 +115,21 @@ export const InputNumberBase = ({
+             />
+ 
+             {orientation === "horizontal" && (
+-                <Button size={size} iconLeading={Plus} slot="increment" color="tertiary" className="static h-full rounded-l-none" />
++                <Button aria-label="Tăng" size={size} iconLeading={Plus} slot="increment" color="tertiary" className="static h-full rounded-l-none" />
+             )}
+ 
+             {orientation === "vertical" && (
+                 <div className={cx("flex w-7 shrink-0 flex-col border-l border-primary", size === "lg" && "w-7.5")}>
+                     <AriaButton
+                         slot="increment"
++                        aria-label="Tăng"
+                         className="flex flex-1 cursor-pointer items-center justify-center text-fg-quaternary outline-brand transition duration-100 ease-linear hover:bg-primary_hover hover:text-fg-quaternary_hover disabled:cursor-not-allowed disabled:opacity-50"
+                     >
+                         <ChevronUp className={cx("size-3 stroke-3", size === "lg" && "size-3.5 stroke-[2.57px]")} />
+                     </AriaButton>
+                     <AriaButton
+                         slot="decrement"
++                        aria-label="Giảm"
+                         className="flex flex-1 cursor-pointer items-center justify-center border-t border-primary text-fg-quaternary outline-brand transition duration-100 ease-linear hover:bg-primary_hover hover:text-fg-quaternary_hover disabled:cursor-not-allowed disabled:opacity-50"
+                     >
+                         <ChevronDown className={cx("size-3 stroke-3", size === "lg" && "size-3.5 stroke-[2.57px]")} />
+diff --git a/src/components/untitled/base/buttons/button.tsx b/src/components/untitled/base/buttons/button.tsx
+index 1237132..0d3f309 100644
+--- a/src/components/untitled/base/buttons/button.tsx
++++ b/src/components/untitled/base/buttons/button.tsx
+@@ -162,7 +162,7 @@ export interface ButtonProps extends CommonProps, Omit<AriaButtonProps, "childre
+ /**
+  * Props for the link variant (anchor tag)
+  */
+-interface LinkProps extends CommonProps, Omit<AriaLinkProps, "children" | "className"> {
++export interface LinkProps extends CommonProps, Omit<AriaLinkProps, "children" | "className"> {
+     href: NonNullable<AriaLinkProps["href"]>;
+ }
+ 
+diff --git a/src/components/untitled/application/date-picker/date-picker.tsx b/src/components/untitled/application/date-picker/date-picker.tsx
+index d4db67a..9facf12 100644
+--- a/src/components/untitled/application/date-picker/date-picker.tsx
++++ b/src/components/untitled/application/date-picker/date-picker.tsx
+@@ -1,6 +1,6 @@
+ "use client";
+ 
+-import { getLocalTimeZone, today } from "@internationalized/date";
++import { today } from "@internationalized/date";
+ import { useControlledState } from "@react-stately/utils";
+ import { Calendar as CalendarIcon } from "@untitledui/icons";
+ import { useDateFormatter } from "react-aria";
+@@ -10,7 +10,7 @@ import { Button, type ButtonProps } from "@/components/untitled/base/buttons/but
+ import { cx } from "@/components/untitled/utils/cx";
+ import { Calendar } from "./calendar";
+ 
+-const highlightedDates = [today(getLocalTimeZone())];
++const highlightedDates = [today("Asia/Ho_Chi_Minh")];
+ 
+ interface DatePickerProps extends AriaDatePickerProps<DateValue> {
+     /** The function to call when the apply button is clicked. */
+@@ -22,18 +22,18 @@ interface DatePickerProps extends AriaDatePickerProps<DateValue> {
+ 
+ export const DatePicker = ({ value: valueProp, defaultValue, onChange, onApply, onCancel, size = "sm", ...props }: DatePickerProps) => {
+     const formatter = useDateFormatter({
+-        month: "short",
+-        day: "numeric",
++        month: "2-digit",
++        day: "2-digit",
+         year: "numeric",
+     });
+     const [value, setValue] = useControlledState(valueProp, defaultValue || null, onChange);
+ 
+-    const formattedDate = value ? formatter.format(value.toDate(getLocalTimeZone())) : "Select date";
++    const formattedDate = value ? formatter.format(value.toDate("Asia/Ho_Chi_Minh")) : "Chọn ngày";
+ 
+     return (
+-        <AriaDatePicker aria-label="Date picker" shouldCloseOnSelect={false} {...props} value={value} onChange={setValue}>
++        <AriaDatePicker aria-label="Chọn ngày" shouldCloseOnSelect={false} {...props} value={value} onChange={setValue}>
+             <AriaGroup>
+-                <Button size={size} color="secondary" iconLeading={CalendarIcon}>
++                <Button aria-label={props["aria-label"] || "Mở lịch"} aria-labelledby="" size={size} color="secondary" iconLeading={CalendarIcon}>
+                     {formattedDate}
+                 </Button>
+             </AriaGroup>
+@@ -50,7 +50,7 @@ export const DatePicker = ({ value: valueProp, defaultValue, onChange, onApply,
+                     )
+                 }
+             >
+-                <AriaDialog aria-label="Date picker" className="rounded-2xl bg-primary shadow-xl ring ring-secondary_alt">
++                <AriaDialog aria-label="Chọn ngày" className="rounded-2xl bg-primary shadow-xl ring ring-secondary_alt">
+                     {({ close }) => (
+                         <>
+                             <div className="flex px-6 py-5">
+@@ -64,9 +64,7 @@ export const DatePicker = ({ value: valueProp, defaultValue, onChange, onApply,
+                                         onCancel?.();
+                                         close();
+                                     }}
+-                                >
+-                                    Cancel
+-                                </Button>
++                                >Hủy</Button>
+                                 <Button
+                                     size="md"
+                                     color="primary"
+@@ -74,9 +72,7 @@ export const DatePicker = ({ value: valueProp, defaultValue, onChange, onApply,
+                                         onApply?.();
+                                         close();
+                                     }}
+-                                >
+-                                    Apply
+-                                </Button>
++                                >Xác nhận</Button>
+                             </div>
+                         </>
+                     )}
+diff --git a/src/components/untitled/application/date-picker/calendar.tsx b/src/components/untitled/application/date-picker/calendar.tsx
+index 8b52e0d..181ff88 100644
+--- a/src/components/untitled/application/date-picker/calendar.tsx
++++ b/src/components/untitled/application/date-picker/calendar.tsx
+@@ -2,7 +2,7 @@
+ 
+ import type { PropsWithChildren, ReactNode } from "react";
+ import { Fragment, useState } from "react";
+-import { getLocalTimeZone, today } from "@internationalized/date";
++import { today } from "@internationalized/date";
+ import { ChevronLeft, ChevronRight } from "@untitledui/icons";
+ import type { CalendarProps as AriaCalendarProps, DateValue } from "react-aria-components";
+ import {
+@@ -51,29 +51,27 @@ export const Calendar = ({ highlightedDates, className, children, ...props }: Ca
+ 
+     return (
+         <ContextWrapper>
+-            <AriaCalendar {...props} className={(state) => cx("flex flex-col gap-3", typeof className === "function" ? className(state) : className)}>
++            <AriaCalendar firstDayOfWeek="mon" {...props} className={(state) => cx("flex flex-col gap-3", typeof className === "function" ? className(state) : className)}>
+                 {({ state }) => (
+                     <>
+                         <header className="flex items-center justify-between">
+-                            <Button slot="previous" iconLeading={ChevronLeft} size="sm" color="tertiary" className="size-8" />
++                            <Button aria-label="Tháng trước" slot="previous" iconLeading={ChevronLeft} size="sm" color="tertiary" className="size-8" />
+                             <AriaHeading className="text-sm font-semibold text-fg-secondary" />
+-                            <Button slot="next" iconLeading={ChevronRight} size="sm" color="tertiary" className="size-8" />
++                            <Button aria-label="Tháng sau" slot="next" iconLeading={ChevronRight} size="sm" color="tertiary" className="size-8" />
+                         </header>
+ 
+                         {children || (
+                             <div className="flex gap-3">
+-                                <InputDateBase aria-label="Date" size="sm" className="flex-1" />
++                                <InputDateBase aria-label="Ngày" size="sm" className="flex-1" />
+                                 <Button
+                                     slot={null}
+                                     size="sm"
+                                     color="secondary"
+                                     onClick={() => {
+-                                        state.setValue(today(getLocalTimeZone()));
+-                                        state.setFocusedDate(today(getLocalTimeZone()));
++                                        state.setValue(today("Asia/Ho_Chi_Minh"));
++                                        state.setFocusedDate(today("Asia/Ho_Chi_Minh"));
+                                     }}
+-                                >
+-                                    Today
+-                                </Button>
++                                >Hôm nay</Button>
+                             </div>
+                         )}
+ 
+@@ -81,7 +79,7 @@ export const Calendar = ({ highlightedDates, className, children, ...props }: Ca
+                             <AriaCalendarGridHeader className="border-b-4 border-transparent">
+                                 {(day) => (
+                                     <AriaCalendarHeaderCell className="p-0">
+-                                        <div className="flex size-10 items-center justify-center text-sm font-medium text-secondary">{day.slice(0, 2)}</div>
++                                        <div className="flex size-10 items-center justify-center text-sm font-medium text-secondary">{day.replace("Th ", "T").replace("CN", "CN")}</div>
+                                     </AriaCalendarHeaderCell>
+                                 )}
+                             </AriaCalendarGridHeader>
+diff --git a/src/components/untitled/application/app-navigation/header-navigation.tsx b/src/components/untitled/application/app-navigation/header-navigation.tsx
+index 1f1ba72..1e7ce33 100644
+--- a/src/components/untitled/application/app-navigation/header-navigation.tsx
++++ b/src/components/untitled/application/app-navigation/header-navigation.tsx
+@@ -1,17 +1,18 @@
+ "use client";
++import Link from "next/link";
+ 
+ import { type FC, type ReactNode } from "react";
+-import { Bell01, LifeBuoy01, SearchLg, Settings01 } from "@untitledui/icons";
++import { Bell01, SearchLg, Settings01 } from "@untitledui/icons";
+ import { TabList, Tabs } from "@/components/untitled/application/tabs/tabs";
+-import { BadgeWithDot } from "@/components/untitled/base/badges/badges";
++
+ import { DropdownAccountButton } from "@/components/untitled/base/dropdown/dropdown-account-button";
+-import { Input } from "@/components/untitled/base/input/input";
++
+ import { UntitledLogo } from "@/components/untitled/foundations/logo/untitledui-logo";
+ import { cx } from "@/components/untitled/utils/cx";
+ import { MobileNavigationHeader } from "./base-components/mobile-header";
+-import { NavAccountCard } from "./base-components/nav-account-card";
++
+ import { NavButton } from "./base-components/nav-button";
+-import { NavItemBase } from "./base-components/nav-item";
++
+ import { NavList } from "./base-components/nav-list";
+ 
+ type NavItem = {
+@@ -128,36 +129,12 @@ export const HeaderNavigationBase = ({
+                     <div className="flex flex-col gap-5 px-4">
+                         <UntitledLogo className="h-6" />
+ 
+-                        <Input size="md" aria-label="Search" placeholder="Search" icon={SearchLg} />
++
+                     </div>
+ 
+                     <NavList items={items} />
+-
+-                    <div className="mt-auto flex flex-col gap-3 p-4">
+-                        <div className="flex flex-col">
+-                            <NavItemBase type="link" href="#" icon={LifeBuoy01}>
+-                                Support
+-                            </NavItemBase>
+-                            <NavItemBase
+-                                type="link"
+-                                href="#"
+-                                icon={Settings01}
+-                                badge={
+-                                    <BadgeWithDot color="success" type="modern" size="sm">
+-                                        Online
+-                                    </BadgeWithDot>
+-                                }
+-                            >
+-                                Settings
+-                            </NavItemBase>
+-                            <NavItemBase type="link" href="https://www.untitledui.com/" icon={Settings01}>
+-                                Open in browser
+-                            </NavItemBase>
+-                        </div>
+-
+-                        <NavAccountCard />
+-                    </div>
+-                </aside>
++                    {hasCustomActions && <div className="flex flex-col gap-3 px-4 py-4">{actions}</div>}
++                    </aside>
+             </MobileNavigationHeader>
+ 
+             <header className="max-lg:hidden">
+@@ -166,13 +143,13 @@ export const HeaderNavigationBase = ({
+                 >
+                     <div className={cx("flex w-full max-w-container items-center pr-3 pl-4 md:px-8", centered && "gap-8")}>
+                         <div className={cx("flex items-center", centered ? "flex-1" : "mr-4")}>
+-                            <a
+-                                aria-label="Go to homepage"
++                            <Link
++                                aria-label="Về trang chủ"
+                                 href="/"
+                                 className="rounded-xs outline-focus-ring focus-visible:outline-2 focus-visible:outline-offset-2"
+                             >
+                                 <UntitledLogo className="h-6" />
+-                            </a>
++                            </Link>
+                         </div>
+ 
+                         <nav>
+@@ -215,7 +192,6 @@ export const HeaderNavigationBase = ({
+                                     </ul>
+                                 </nav>
+ 
+-                                {!centered && <Input shortcut aria-label="Search" placeholder="Search" icon={SearchLg} size="sm" className="max-w-70" />}
+                             </div>
+                         )}
+                     </section>
+diff --git a/src/components/untitled/foundations/logo/untitledui-logo.tsx b/src/components/untitled/foundations/logo/untitledui-logo.tsx
+index 281eaab..5d78337 100644
+--- a/src/components/untitled/foundations/logo/untitledui-logo.tsx
++++ b/src/components/untitled/foundations/logo/untitledui-logo.tsx
+@@ -1,60 +1,13 @@
+ "use client";
+-
+-import type { HTMLAttributes } from "react";
++import { createContext, useContext, type HTMLAttributes } from "react";
+ import { cx } from "@/components/untitled/utils/cx";
+-import { UntitledLogoMinimal } from "./untitledui-logo-minimal";
+-
+-export const UntitledLogo = (props: HTMLAttributes<HTMLOrSVGElement>) => {
+-    return (
+-        <div {...props} className={cx("flex h-8 w-max items-center justify-start overflow-visible", props.className)}>
+-            {/* Minimal logo */}
+-            <UntitledLogoMinimal className="aspect-square h-full w-auto shrink-0" />
+-
+-            {/* Gap that adjusts to the height of the container */}
+-            <div className="aspect-[0.3] h-full" />
+-
+-            {/* Logomark */}
+-            <svg viewBox="0 0 97 32" fill="none" className="aspect-[3] h-full shrink-0">
+-                <path
+-                    d="M33.9101 10.2372C34.2321 10.5355 34.6179 10.6847 35.0678 10.6847C35.5176 10.6847 35.9011 10.5355 36.2183 10.2372C36.5403 9.9342 36.7013 9.57199 36.7013 9.15058C36.7013 8.73392 36.5403 8.37644 36.2183 8.07814C35.9011 7.77511 35.5176 7.6236 35.0678 7.6236C34.6179 7.6236 34.2321 7.77511 33.9101 8.07814C33.5928 8.37644 33.4342 8.73392 33.4342 9.15058C33.4342 9.57199 33.5928 9.9342 33.9101 10.2372Z"
+-                    className="fill-fg-primary"
+-                />
+-                <path
+-                    d="M11.2997 20.6847C11.8063 19.8892 12.0597 18.9612 12.0597 17.9006V8.45456H8.98438V17.6378C8.98438 18.1918 8.86127 18.6842 8.61506 19.1151C8.37358 19.5459 8.0303 19.8845 7.58523 20.1307C7.14489 20.3769 6.62642 20.5 6.02983 20.5C5.43797 20.5 4.91951 20.3769 4.47443 20.1307C4.02936 19.8845 3.68371 19.5459 3.4375 19.1151C3.19602 18.6842 3.07528 18.1918 3.07528 17.6378V8.45456H0V17.9006C0 18.9612 0.250947 19.8892 0.752841 20.6847C1.25473 21.4801 1.95786 22.1004 2.86222 22.5455C3.76657 22.9858 4.82244 23.206 6.02983 23.206C7.23248 23.206 8.28599 22.9858 9.19034 22.5455C10.0947 22.1004 10.7978 21.4801 11.2997 20.6847Z"
+-                    className="fill-fg-primary"
+-                />
+-                <path
+-                    d="M18.3589 12.51C17.7907 12.8793 17.3859 13.3812 17.1444 14.0156H17.0165V12.0909H14.133V23H17.1586V16.6932C17.1633 16.2244 17.2509 15.8244 17.4214 15.4929C17.5966 15.1567 17.838 14.9011 18.1458 14.7259C18.4583 14.5507 18.8182 14.4631 19.2254 14.4631C19.8314 14.4631 20.3073 14.6525 20.6529 15.0313C20.9986 15.4053 21.169 15.9262 21.1643 16.5938V23H24.1898V16.054C24.1898 15.2065 24.0336 14.4773 23.7211 13.8665C23.4086 13.251 22.9706 12.7775 22.4072 12.446C21.8437 12.1146 21.1832 11.9489 20.4256 11.9489C19.616 11.9489 18.9271 12.1359 18.3589 12.51Z"
+-                    className="fill-fg-primary"
+-                />
+-                <path
+-                    d="M27.3463 21.821C27.0433 21.3523 26.8941 20.7604 26.8989 20.0455V14.3637H25.4074V12.0909H26.8989V9.47729H29.9244V12.0909H31.977V14.3637H29.9244V19.6477C29.9244 19.9271 29.967 20.1449 30.0523 20.3012C30.1375 20.4527 30.2559 20.5592 30.4074 20.6208C30.5636 20.6823 30.7436 20.7131 30.9472 20.7131C31.0892 20.7131 31.2313 20.7012 31.3733 20.6776C31.5153 20.6492 31.6242 20.6279 31.7 20.6137L32.1759 22.8651C32.0243 22.9124 31.8113 22.9669 31.5366 23.0284C31.262 23.0947 30.9282 23.135 30.5352 23.1492C29.8061 23.1776 29.1669 23.0805 28.6176 22.858C28.0731 22.6354 27.6493 22.2898 27.3463 21.821Z"
+-                    className="fill-fg-primary"
+-                />
+-                <path
+-                    d="M39.769 21.821C39.4659 21.3523 39.3168 20.7604 39.3215 20.0455V14.3637H37.83V12.0909H39.3215V9.47729H42.3471V12.0909H44.3996V14.3637H42.3471V19.6477C42.3471 19.9271 42.3897 20.1449 42.4749 20.3012C42.5602 20.4527 42.6785 20.5592 42.83 20.6208C42.9863 20.6823 43.1662 20.7131 43.3698 20.7131C43.5119 20.7131 43.6539 20.7012 43.796 20.6776C43.938 20.6492 44.0469 20.6279 44.1227 20.6137L44.5985 22.8651C44.447 22.9124 44.2339 22.9669 43.9593 23.0284C43.6847 23.0947 43.3509 23.135 42.9579 23.1492C42.2287 23.1776 41.5895 23.0805 41.0403 22.858C40.4958 22.6354 40.072 22.2898 39.769 21.821Z"
+-                    className="fill-fg-primary"
+-                />
+-                <path
+-                    fillRule="evenodd"
+-                    clipRule="evenodd"
+-                    d="M56.2257 23.2131C55.1035 23.2131 54.1376 22.9858 53.328 22.5313C52.5231 22.072 51.9028 21.4233 51.4672 20.5852C51.0316 19.7424 50.8138 18.7458 50.8138 17.5952C50.8138 16.473 51.0316 15.4882 51.4672 14.6406C51.9028 13.7931 52.516 13.1326 53.3067 12.6591C54.1021 12.1856 55.0349 11.9489 56.105 11.9489C56.8247 11.9489 57.4946 12.0649 58.1149 12.2969C58.7399 12.5242 59.2844 12.8674 59.7484 13.3267C60.2172 13.786 60.5818 14.3637 60.8422 15.0597C61.1026 15.751 61.2328 16.5606 61.2328 17.4887V18.3196H53.8038V18.3267C53.8038 18.8665 53.9033 19.3329 54.1021 19.7259C54.3057 20.1189 54.5922 20.4219 54.9615 20.635C55.3308 20.848 55.7688 20.9546 56.2754 20.9546C56.6116 20.9546 56.9194 20.9072 57.1987 20.8125C57.4781 20.7178 57.7172 20.5758 57.916 20.3864C58.1149 20.197 58.2664 19.965 58.3706 19.6904L61.1689 19.875C61.0268 20.5474 60.7357 21.1345 60.2953 21.6364C59.8597 22.1335 59.2963 22.5218 58.605 22.8012C57.9184 23.0758 57.1253 23.2131 56.2257 23.2131ZM54.1092 15.3722C53.9258 15.6954 53.8249 16.0529 53.8067 16.4446H58.3848C58.3848 16.009 58.2901 15.6231 58.1007 15.2869C57.9113 14.9508 57.6485 14.688 57.3124 14.4986C56.9809 14.3045 56.595 14.2074 56.1547 14.2074C55.6954 14.2074 55.2882 14.3139 54.9331 14.527C54.5827 14.7353 54.3081 15.0171 54.1092 15.3722Z"
+-                    className="fill-fg-primary"
+-                />
+-                <path
+-                    fillRule="evenodd"
+-                    clipRule="evenodd"
+-                    d="M64.5757 22.5384C65.2481 22.9645 65.9985 23.1776 66.8271 23.1776C67.4143 23.1776 67.9114 23.0805 68.3186 22.8864C68.7305 22.6923 69.0643 22.4484 69.32 22.1548C69.5804 21.8566 69.7817 21.5559 69.9237 21.2529H70.0516V23H73.0345V8.45456H70.0161V13.9233H69.9237C69.7911 13.6298 69.597 13.3315 69.3413 13.0284C69.0904 12.7207 68.7589 12.465 68.347 12.2614C67.9398 12.053 67.4308 11.9489 66.82 11.9489C66.0198 11.9489 65.2836 12.1572 64.6112 12.5739C63.9436 12.9858 63.4086 13.6084 63.0061 14.4418C62.6036 15.2704 62.4024 16.3097 62.4024 17.5597C62.4024 18.7765 62.5965 19.804 62.9848 20.6421C63.3778 21.4754 63.9081 22.1075 64.5757 22.5384ZM69.0217 20.3722C68.6856 20.6373 68.2736 20.7699 67.7859 20.7699C67.2888 20.7699 66.8698 20.635 66.5288 20.3651C66.1927 20.0905 65.9346 19.7117 65.7547 19.2287C65.5795 18.741 65.4919 18.1799 65.4919 17.5455C65.4919 16.9157 65.5795 16.3618 65.7547 15.8835C65.9299 15.4053 66.1879 15.0313 66.5288 14.7614C66.8698 14.4915 67.2888 14.3566 67.7859 14.3566C68.2736 14.3566 68.6879 14.4868 69.0288 14.7472C69.3698 15.0076 69.6302 15.3769 69.8101 15.8551C69.99 16.3334 70.08 16.8968 70.08 17.5455C70.08 18.1941 69.9876 18.76 69.803 19.2429C69.6231 19.7259 69.3626 20.1023 69.0217 20.3722Z"
+-                    className="fill-fg-primary"
+-                />
+-                <path
+-                    d="M88.0229 19.1151C88.2691 18.6842 88.3922 18.1918 88.3922 17.6378V8.45456H91.4675V17.9006C91.4675 18.9612 91.2142 19.8892 90.7075 20.6847C90.2056 21.4801 89.5025 22.1004 88.5982 22.5455C87.6938 22.9858 86.6403 23.206 85.4376 23.206C84.2303 23.206 83.1744 22.9858 82.27 22.5455C81.3657 22.1004 80.6625 21.4801 80.1607 20.6847C79.6588 19.8892 79.4078 18.9612 79.4078 17.9006V8.45456H82.4831V17.6378C82.4831 18.1918 82.6038 18.6842 82.8453 19.1151C83.0915 19.5459 83.4372 19.8845 83.8822 20.1307C84.3273 20.3769 84.8458 20.5 85.4376 20.5C86.0342 20.5 86.5527 20.3769 86.993 20.1307C87.4381 19.8845 87.7814 19.5459 88.0229 19.1151Z"
+-                    className="fill-fg-primary"
+-                />
+-                <path d="M33.5479 12.0909V23H36.5734V12.0909H33.5479Z" className="fill-fg-primary" />
+-                <path d="M49.2305 23V8.45456H46.2049V23H49.2305Z" className="fill-fg-primary" />
+-                <path d="M96.6729 23V8.45456H93.5977V23H96.6729Z" className="fill-fg-primary" />
+-            </svg>
+-        </div>
+-    );
++type Logo={src:string;alt:string;width:number;height:number}|null;
++export const LogoContext=createContext<Logo>(null);
++/** Branding replacement; retains the upstream logo slot size. */
++export const UntitledLogo=(props:HTMLAttributes<HTMLOrSVGElement>)=>{
++ const logo=useContext(LogoContext);
++ return <div {...props} className={cx("flex h-8 w-max items-center justify-start overflow-visible",props.className)}>
++  {logo?<svg role="img" aria-label={logo.alt} viewBox={`0 0 ${logo.width} ${logo.height}`} className="h-full w-auto"><image href={logo.src} width={logo.width} height={logo.height}/></svg>
++  :<svg viewBox="0 0 97 32" role="img" aria-label="Hòe" className="aspect-[3] h-full shrink-0 fill-fg-brand-primary"><text x="0" y="26" fontSize="32" fontFamily="var(--font-display)">hòe</text></svg>}
++ </div>;
+ };
+diff --git a/src/components/untitled/application/app-navigation/base-components/mobile-header.tsx b/src/components/untitled/application/app-navigation/base-components/mobile-header.tsx
+index 92a39ae..69aa277 100644
+--- a/src/components/untitled/application/app-navigation/base-components/mobile-header.tsx
++++ b/src/components/untitled/application/app-navigation/base-components/mobile-header.tsx
+@@ -19,7 +19,7 @@ export const MobileNavigationHeader = ({ children }: PropsWithChildren) => {
+                 <UntitledLogo className="h-6" />
+ 
+                 <AriaButton
+-                    aria-label="Expand navigation menu"
++                    aria-label="Mở menu"
+                     className="group flex items-center justify-center rounded-lg bg-primary p-2 text-fg-secondary outline-focus-ring hover:bg-primary_hover hover:text-fg-secondary_hover focus-visible:outline-2 focus-visible:outline-offset-2"
+                 >
+                     <Menu02 className="size-6 transition duration-200 ease-in-out group-aria-expanded:opacity-0" />
+@@ -39,16 +39,17 @@ export const MobileNavigationHeader = ({ children }: PropsWithChildren) => {
+             >
+                 {({ state }) => (
+                     <>
++                        <AriaModal className="w-full max-w-74 cursor-auto will-change-transform">
++                            <AriaDialog aria-label="Menu điều hướng" className="h-dvh outline-hidden focus:outline-hidden">
+                         <AriaButton
+-                            aria-label="Close navigation menu"
++                            aria-label="Đóng menu"
+                             onPress={() => state.close()}
+                             className="fixed top-2.5 right-3 flex cursor-pointer items-center justify-center rounded-lg p-2 text-fg-white/70 outline-focus-ring hover:bg-white/10 hover:text-fg-white focus-visible:outline-2 focus-visible:outline-offset-2"
+                         >
+                             <CloseIcon className="size-6" />
+                         </AriaButton>
+ 
+-                        <AriaModal className="w-full max-w-74 cursor-auto will-change-transform">
+-                            <AriaDialog className="h-dvh outline-hidden focus:outline-hidden">{children}</AriaDialog>
++                            {children}</AriaDialog>
+                         </AriaModal>
+                     </>
+                 )}
+diff --git a/src/components/untitled/application/app-navigation/sidebar-navigation/sidebar-simple.tsx b/src/components/untitled/application/app-navigation/sidebar-navigation/sidebar-simple.tsx
+index fd8fd2f..f4b89ca 100644
+--- a/src/components/untitled/application/app-navigation/sidebar-navigation/sidebar-simple.tsx
++++ b/src/components/untitled/application/app-navigation/sidebar-navigation/sidebar-simple.tsx
+@@ -1,8 +1,8 @@
+ "use client";
+ 
+ import type { ReactNode } from "react";
+-import { SearchLg } from "@untitledui/icons";
+-import { Input } from "@/components/untitled/base/input/input";
++
++
+ import { UntitledLogo } from "@/components/untitled/foundations/logo/untitledui-logo";
+ import { cx } from "@/components/untitled/utils/cx";
+ import { MobileNavigationHeader } from "../base-components/mobile-header";
+@@ -58,10 +58,10 @@ export const SidebarNavigationSimple = ({
+                 <UntitledLogo className="h-6" />
+ 
+                 {/* Mobile search input */}
+-                <Input size="md" aria-label="Search" placeholder="Search" icon={SearchLg} className="md:hidden" />
++
+ 
+                 {/* Desktop search input */}
+-                <Input shortcut size="sm" aria-label="Search" placeholder="Search" icon={SearchLg} className="max-md:hidden" />
++
+             </div>
+ 
+             <NavList activeUrl={activeUrl} items={items} />
+diff --git a/src/components/untitled/application/file-upload/file-upload-base.tsx b/src/components/untitled/application/file-upload/file-upload-base.tsx
+index 2bde15c..dd47e9f 100644
+--- a/src/components/untitled/application/file-upload/file-upload-base.tsx
++++ b/src/components/untitled/application/file-upload/file-upload-base.tsx
+@@ -223,13 +223,13 @@ export const FileUploadDropZone = ({
+                     />
+                     <label htmlFor={id} className="flex cursor-pointer">
+                         <Button color="link-color" size="md" isDisabled={isDisabled} onClick={() => inputRef.current?.click()}>
+-                            Click to upload <span className="md:hidden">and attach files</span>
++                            Chọn ảnh <span className="md:hidden">để tải lên</span>
+                         </Button>
+                     </label>
+-                    <span className="text-sm max-md:hidden">or drag and drop</span>
++                    <span className="text-sm max-md:hidden">hoặc kéo thả</span>
+                 </div>
+                 <p className={cx("text-xs transition duration-100 ease-linear", isInvalid && "text-error-primary")}>
+-                    {hint || "SVG, PNG, JPG or GIF (max. 800x400px)"}
++                    {hint || "Chọn tệp phù hợp"}
+                 </p>
+             </div>
+         </div>
+@@ -290,12 +290,12 @@ export const FileListItemProgressBar = ({ name, size, progress, failed, type, fi
+                                 {!isComplete && !failed && <p className="text-sm font-medium text-quaternary">Uploading...</p>}
+ 
+                                 {failed && <XCircle className="size-4 text-fg-error-primary" />}
+-                                {failed && <p className="text-sm font-medium text-error-primary">Failed</p>}
++                                {failed && <p className="text-sm font-medium text-error-primary">Không thành công</p>}
+                             </div>
+                         </div>
+                     </div>
+ 
+-                    <ButtonUtility color="tertiary" tooltip="Delete" icon={Trash01} size="xs" className="-mt-2 -mr-2 self-start" onClick={onDelete} />
++                    <ButtonUtility color="tertiary" tooltip="Xóa" icon={Trash01} size="xs" className="-mt-2 -mr-2 self-start" onClick={onDelete} isDisabled={!onDelete} />
+                 </div>
+ 
+                 {!failed && (
+@@ -306,7 +306,7 @@ export const FileListItemProgressBar = ({ name, size, progress, failed, type, fi
+ 
+                 {failed && (
+                     <Button color="link-destructive" size="sm" onClick={onRetry} className="mt-1.5">
+-                        Try again
++                        Thử lại
+                     </Button>
+                 )}
+             </div>
+@@ -344,7 +344,7 @@ export const FileListItemProgressFill = ({ name, size, progress, failed, type, f
+                         <p className="truncate text-sm font-medium text-secondary">{name}</p>
+ 
+                         <div className="mt-0.5 flex items-center gap-2">
+-                            <p className="text-sm text-tertiary">{failed ? "Upload failed, please try again" : getReadableFileSize(size)}</p>
++                            <p className="text-sm text-tertiary">{failed ? "Chưa tải được, vui lòng thử lại" : getReadableFileSize(size)}</p>
+ 
+                             {!failed && (
+                                 <>
+@@ -362,12 +362,12 @@ export const FileListItemProgressFill = ({ name, size, progress, failed, type, f
+ 
+                     {failed && (
+                         <Button color="link-destructive" size="sm" onClick={onRetry} className="mt-1.5">
+-                            Try again
++                            Thử lại
+                         </Button>
+                     )}
+                 </div>
+ 
+-                <ButtonUtility color="tertiary" tooltip="Delete" icon={Trash01} size="xs" className="-mt-2 -mr-2 self-start" onClick={onDelete} />
++                <ButtonUtility color="tertiary" tooltip="Xóa" icon={Trash01} size="xs" className="-mt-2 -mr-2 self-start" onClick={onDelete} isDisabled={!onDelete} />
+             </div>
+         </motion.li>
+     );
