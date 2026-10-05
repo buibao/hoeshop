@@ -9,27 +9,27 @@ export const metadata: Metadata = {
 export default async function ContactPage() {
   const site = await getSite();
   return (
-    <div className="container mx-auto w-full max-w-container px-4 md:px-8">
-      <div className="page-heading flex flex-col gap-4 py-8 md:py-12">
-        <span className="eyebrow mb-4 block text-sm font-semibold text-brand-secondary">BẮT ĐẦU BẰNG MỘT LỜI KỂ</span>
+    <div className="container">
+      <div className="page-heading">
+        <span className="eyebrow">BẮT ĐẦU BẰNG MỘT LỜI KỂ</span>
         <h1>
           Hòe ở đây,
           <br />
           để nghe bạn.
         </h1>
       </div>
-      <div className="contact-layout grid grid-cols-1 gap-8 py-8 md:grid-cols-2">
+      <div className="contact-layout">
         <div>
           <h2>
             Một chút hoa,
             <br />
             một chút dịu dàng.
           </h2>
-          <p className="muted text-tertiary" >
+          <p className="muted" style={{ marginTop: 25 }}>
             Bạn đang nghĩ đến một người, một cảm xúc hay một thiết kế riêng? Hãy
             kể để Hòe cùng bạn tìm cách gửi.
           </p>
-          <div className="footer-links flex flex-col gap-3" >
+          <div className="footer-links" style={{ marginTop: 30 }}>
             {site.contact.phone ? (
               <a href={`tel:${site.contact.phone}`}>{site.contact.phone}</a>
             ) : null}

@@ -1,5 +1,4 @@
 import { test, expect, type Page } from "./fixtures";
-import { randomUUID } from "node:crypto";
 async function addTam(page: Page, emotion = "Biết ơn") {
   await page.goto("/san-pham/mau-test-diu-dang");
   await page.getByLabel("Cảm xúc muốn gửi", { exact: true }).fill(emotion);
@@ -28,10 +27,6 @@ test("home, navigation, keyboard and images work without horizontal overflow", a
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
   await page.goto("/");
-  await expect(page.locator("[data-hoe-ui-ready]")).toHaveAttribute(
-    "data-hoe-ui-ready",
-    "true",
-  );
   await expect(page.getByRole("heading", { level: 1 })).toContainText(
     "Hòe gửi hoa",
   );
@@ -43,9 +38,12 @@ test("home, navigation, keyboard and images work without horizontal overflow", a
   if (testInfo.project.name === "mobile") {
     await page.getByRole("button", { name: "Mở menu" }).click();
     await expect(
-      page.getByRole("dialog", { name: "Menu điều hướng" }),
+      page.getByRole("navigation", { name: "Điều hướng trên điện thoại" }),
     ).toBeVisible();
-    await page.getByRole("button", { name: "Đóng menu" }).click();
+    await page
+      .getByRole("dialog")
+      .getByRole("button", { name: "Đóng menu" })
+      .click();
   }
   await page
     .getByRole("link", { name: "Khám phá dịch vụ", exact: true })
@@ -96,7 +94,7 @@ test("mixed cart persists, separates configurations and supports editing/removal
   await page
     .locator(".cart-row")
     .first()
-    .getByRole("textbox", { name: "Số lượng", exact: true })
+    .getByLabel("Số lượng", { exact: true })
     .fill("2");
   await page
     .locator(".cart-row")
@@ -116,10 +114,7 @@ test("mixed cart persists, separates configurations and supports editing/removal
   await page.reload();
   await expect(page.locator(".cart-row")).toHaveCount(4);
   await expect(
-    page
-      .locator(".cart-row")
-      .first()
-      .getByRole("textbox", { name: "Số lượng", exact: true }),
+    page.locator(".cart-row").first().getByLabel("Số lượng", { exact: true }),
   ).toHaveValue("2");
   await page
     .locator(".cart-row")
@@ -269,9 +264,7 @@ test("comments publish immediately as escaped text and survive a reload", async 
   await page.goto("/blog/chuyen-cua-hoe");
   const body =
     "<script>window.hoeInjected=true</script> =SUM(1,2) " +
-    testInfo.project.name +
-    " " +
-    randomUUID();
+    testInfo.project.name;
   await page.getByLabel("Tên hiển thị", { exact: true }).fill("=Tên test");
   await page.getByLabel("Bình luận", { exact: true }).fill(body);
   await page

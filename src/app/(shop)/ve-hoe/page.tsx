@@ -1,5 +1,5 @@
-import { ActionLink } from "@/components/ui/ActionLink";
 import type { Metadata } from "next";
+import Link from "next/link";
 import { getSite } from "@/server/content";
 export const metadata: Metadata = {
   title: "Về Hòe",
@@ -8,9 +8,9 @@ export const metadata: Metadata = {
 export default async function AboutPage() {
   const site = await getSite();
   return (
-    <div className="container mx-auto w-full max-w-container px-4 md:px-8">
-      <div className="page-heading flex flex-col gap-4 py-8 md:py-12">
-        <span className="eyebrow mb-4 block text-sm font-semibold text-brand-secondary">HOA & NHỮNG ĐIỀU DỊU DÀNG</span>
+    <div className="container">
+      <div className="page-heading">
+        <span className="eyebrow">HOA & NHỮNG ĐIỀU DỊU DÀNG</span>
         <h1>
           Hòe bắt đầu từ
           <br />
@@ -22,7 +22,7 @@ export default async function AboutPage() {
           dàng với chính mình.
         </p>
       </div>
-      <section className="service-grid grid grid-cols-1 gap-8 md:grid-cols-3" >
+      <section className="service-grid" style={{ marginBottom: 65 }}>
         {[
           [
             "H",
@@ -40,9 +40,9 @@ export default async function AboutPage() {
             "Vẻ đẹp từ những điều vừa đủ. Hòe chăm chút màu sắc, hình dáng và cảm giác mà những đóa hoa mang đến.",
           ],
         ].map(([letter, title, body]) => (
-          <article key={letter} className="service-card relative flex flex-col gap-4 rounded-xl bg-primary p-6 shadow-xs ring-1 ring-secondary">
-            <span className="eyebrow mb-4 block text-sm font-semibold text-brand-secondary">{letter} — GIÁ TRỊ CỦA HÒE</span>
-            <h3 >{title}</h3>
+          <article key={letter} className="service-card">
+            <span className="eyebrow">{letter} — GIÁ TRỊ CỦA HÒE</span>
+            <h3 style={{ fontSize: 30 }}>{title}</h3>
             <p>{body}</p>
           </article>
         ))}
@@ -56,12 +56,13 @@ export default async function AboutPage() {
           </details>
         ))}
       </div>
-      <ActionLink
+      <Link
         href="/blog/chuyen-cua-hoe"
         className="text-link"
+        style={{ marginBottom: 65 }}
       >
         Đọc chuyện của Hòe
-      </ActionLink>
+      </Link>
     </div>
   );
 }

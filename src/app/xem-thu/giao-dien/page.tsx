@@ -1,4 +1,3 @@
-import { ActionLink } from "@/components/ui/ActionLink";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
@@ -10,9 +9,9 @@ import {
 } from "@/features/admin/DesignPreview";
 import { AdminNav } from "@/features/admin/AdminNav";
 import { StatusBadge } from "@/components/ui/StatusBadge";
-
+import "@/styles/admin.css";
 export const metadata: Metadata = {
-  title: "Untitled UI — gallery Hòe",
+  title: "Duyệt thiết kế phase 3",
   robots: { index: false, follow: false },
 };
 const sampleOrders = [
@@ -79,40 +78,40 @@ const detail = {
     },
   ],
 };
-export default async function UntitledPreview({searchParams}:{searchParams:Promise<{panel?:string}>}) {
+export default function Phase3Preview() {
   if (
     process.env.VERCEL_ENV === "production" ||
     process.env.CONTENT_MODE !== "test"
   )
     notFound();
-  if ((await searchParams).panel === "admin") return <main className="flex min-h-dvh flex-col lg:flex-row"><AdminNav /><div className="min-w-0 flex-1 px-4 py-8 md:px-8"><h1 className="mb-8 font-body text-display-xs">Đơn hoa — dữ liệu mẫu</h1><OrderTable rows={sampleOrders} demo/><OrderSummary row={detail}/></div></main>;
   return (
-    <main id="main-content" className="container mx-auto w-full max-w-container px-4 md:px-8">
-      <header className="phase3-preview-heading flex flex-col gap-4 py-8">
-        <Link className="brand font-display text-display-xs text-brand-secondary" href="/">
+    <main id="main-content" className="container">
+      <header className="phase3-preview-heading">
+        <Link className="brand" href="/">
           hòe
         </Link>
-        <span className="eyebrow mb-4 block text-sm font-semibold text-brand-secondary">UNTITLED UI · CHECKPOINT A</span>
-        <h1 className="font-display">
+        <span className="eyebrow">PHASE 3 · CHECKPOINT B</span>
+        <h1>
           Một diện mạo mới,
           <br />
           <em>vẫn là Hòe.</em>
         </h1>
         <p>
-          Component Untitled UI miễn phí từ source đã khóa; các layout được compose cho Hòe. Đây là bản duyệt bố cục với ảnh và giá test; các màn
+          Home và trang sản phẩm theo hướng Foglia + Orphic. Admin theo hướng
+          Untitled UI. Đây là bản duyệt bố cục với ảnh và giá test; các màn
           admin bên dưới dùng dữ liệu mẫu cố định, không đọc đơn thật hoặc lưu
           dữ liệu.
         </p>
-        <nav className="phase3-preview-nav flex flex-wrap gap-3" aria-label="Duyệt thiết kế">
-          <ActionLink className="button" href="/">
+        <nav className="phase3-preview-nav" aria-label="Duyệt thiết kế">
+          <Link className="button" href="/">
             Xem Home
-          </ActionLink>
-          <ActionLink className="button secondary" href="/san-pham/mau-test-nang">
+          </Link>
+          <Link className="button secondary" href="/san-pham/mau-test-nang">
             Chi tiết sản phẩm
-          </ActionLink>
-          <ActionLink className="button secondary" href="/xem-thu/widgets">
+          </Link>
+          <Link className="button secondary" href="/xem-thu/widgets">
             Calendar & giờ
-          </ActionLink>
+          </Link>
           <a className="text-link" href="#admin-mau">
             Admin mẫu
           </a>
@@ -121,12 +120,13 @@ export default async function UntitledPreview({searchParams}:{searchParams:Promi
           </a>
         </nav>
       </header>
-      <div className="phase3-preview-banner rounded-xl bg-brand-primary p-4">
-        Ảnh và nội dung minh họa. Gallery không đọc hoặc ghi dữ liệu quản trị thật.
+      <div className="phase3-preview-banner">
+        Ảnh tạm cho Preview. Chờ shop duyệt checkpoint B trước khi áp dụng thiết
+        kế rộng sang các trang còn lại.
       </div>
-      <section className="phase3-preview-section my-8 flex flex-col gap-4" aria-label="Màu thương hiệu">
+      <section className="phase3-preview-section" aria-label="Màu thương hiệu">
         <h2>Màu sắc và trạng thái</h2>
-        <div className="phase3-token-grid grid grid-cols-2 gap-4 md:grid-cols-5">
+        <div className="phase3-token-grid">
           {[
             ["Berry", "#D6306E"],
             ["Pink", "#FF92C1"],
@@ -135,7 +135,7 @@ export default async function UntitledPreview({searchParams}:{searchParams:Promi
             ["Jasmine", "#EFD47B"],
           ].map(([name, color]) => (
             <div key={name}>
-              <span className="block h-16 rounded-lg" style={{ background: color }} />
+              <span style={{ background: color }} />
               <p>
                 {name}
                 <br />
@@ -144,7 +144,7 @@ export default async function UntitledPreview({searchParams}:{searchParams:Promi
             </div>
           ))}
         </div>
-        <div className="phase3-statuses flex flex-wrap gap-3">
+        <div className="phase3-statuses">
           {[
             "received",
             "contacted",
@@ -159,17 +159,25 @@ export default async function UntitledPreview({searchParams}:{searchParams:Promi
           ))}
         </div>
       </section>
-      <section id="admin-mau" className="phase3-preview-section my-8 flex flex-col gap-4 admin-preview min-w-0 flex-1">
+      <section id="admin-mau" className="phase3-preview-section admin-preview">
         <h2>Góc của shop</h2>
-        <ActionLink href="/xem-thu/giao-dien?panel=admin" className="button secondary">Xem sidebar quản trị mẫu</ActionLink>
-        <OrderTable rows={sampleOrders} demo />
-        <OrderSummary row={detail} />
+        <div className="admin-shell admin-sample-frame">
+          <AdminNav />
+          <div className="admin-main">
+            <div className="admin-page-heading">
+              <h3>Đơn hoa</h3>
+              <span className="admin-hint">Dữ liệu mẫu</span>
+            </div>
+            <OrderTable rows={sampleOrders} demo />
+            <OrderSummary row={detail} />
+          </div>
+        </div>
       </section>
-      <section id="editor-mau" className="phase3-preview-section my-8 flex flex-col gap-4 admin-preview min-w-0 flex-1">
+      <section id="editor-mau" className="phase3-preview-section admin-preview">
         <h2>Editor sản phẩm</h2>
         <ProductDesignPreview />
       </section>
-      <section className="phase3-preview-section my-8 flex flex-col gap-4 admin-preview min-w-0 flex-1">
+      <section className="phase3-preview-section admin-preview">
         <h2>Các trạng thái tương tác</h2>
         <ControlDesignPreview />
       </section>

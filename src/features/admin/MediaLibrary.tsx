@@ -1,13 +1,7 @@
 "use client";
-import { Form } from "@/components/ui/Form";
-import { Action } from "@/components/ui/Action";
-
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { upload } from "@vercel/blob/client";
-import { FileUpload } from "@/components/untitled/application/file-upload/file-upload-base";
-import { Input } from "@/components/untitled/base/input/input";
-import { LibraryDialog } from "@/components/ui/LibraryDialog";
 type Media = {
   id: string;
   url: string;
@@ -26,9 +20,7 @@ export function MediaLibrary({
     [busy, setBusy] = useState(false),
     [alt, setAlt] = useState(""),
     [file, setFile] = useState<File | null>(null),
-    [confirm, setConfirm] = useState<Media | null>(null),
-    [progress, setProgress] = useState(0),
-    [verifying, setVerifying] = useState(false);
+    [confirm, setConfirm] = useState<Media | null>(null);
   const [page, setPage] = useState(0),
     [hasMore, setHasMore] = useState(false);
   async function refresh(nextPage = 0) {
@@ -70,7 +62,6 @@ export function MediaLibrary({
     if (!file || !alt.trim()) return;
     setBusy(true);
     setMessage("");
-    setProgress(0);
     try {
       if (
         file.size > 5242880 ||
@@ -98,9 +89,7 @@ export function MediaLibrary({
         access: "public",
         handleUploadUrl: "/api/admin/media/upload",
         contentType: file.type,
-        onUploadProgress: (event) => setProgress(event.percentage),
       });
-      setVerifying(true);
       const finish = await fetch("/api/admin/media/finish", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -114,7 +103,6 @@ export function MediaLibrary({
       setMessage(e instanceof Error ? e.message : "Chưa tải được ảnh.");
     } finally {
       setBusy(false);
-      setVerifying(false);
     }
   }
   async function remove() {
@@ -145,91 +133,44 @@ export function MediaLibrary({
   }
   return (
     <div>
-      <Form
-        onSubmit={submit}
-        className="admin-media-upload flex flex-col gap-4"
-      >
-        <FileUpload.DropZone
-          hint="JPEG, PNG, WebP hoặc AVIF, tối đa 5 MiB"
-          accept="image/jpeg,image/png,image/webp,image/avif"
-          allowsMultiple={false}
-          maxSize={5242880}
-          isDisabled={busy}
-          onDropFiles={(files) => {
-            setFile(files[0] || null);
-            setProgress(0);
-            setMessage("");
-          }}
-          onDropUnacceptedFiles={() => {
-            setFile(null);
-            setMessage("Chọn ảnh JPEG, PNG, WebP hoặc AVIF.");
-          }}
-          onSizeLimitExceed={() => {
-            setFile(null);
-            setMessage("Ảnh vượt quá 5 MiB.");
-          }}
-        />
-        {file && (
-          <FileUpload.List>
-            <FileUpload.ListItemProgressBar
-              name={file.name}
-              size={file.size}
-              progress={progress}
-              onDelete={busy ? undefined : () => setFile(null)}
-            />
-          </FileUpload.List>
-        )}
-        {verifying && (
-          <p role="status">Đang xác minh bytes và định dạng ảnh…</p>
-        )}
-        <Input
-          size="md"
-          label="Mô tả ảnh cho người đọc"
-          value={alt}
-          onChange={setAlt}
-          maxLength={500}
-          isRequired
-          isDisabled={busy}
-        />
-        <Action className="button" disabled={busy || !file}>
+      <form onSubmit={submit} className="admin-media-upload">
+        <label className="field">
+          <span>Ảnh JPEG / PNG / WebP / AVIF, tối đa 5 MiB</span>
+          <input
+            type="file"
+            accept="image/jpeg,image/png,image/webp,image/avif"
+            onChange={(e) => setFile(e.target.files?.[0] || null)}
+          />
+        </label>
+        <label className="field">
+          <span>Mô tả ảnh cho người đọc</span>
+          <input
+            value={alt}
+            onChange={(e) => setAlt(e.target.value)}
+            maxLength={500}
+            required
+          />
+        </label>
+        <button className="button" disabled={busy || !file}>
           Tải ảnh lên
-        </Action>
-      </Form>
+        </button>
+      </form>
       <p role="status">{message}</p>
-      <LibraryDialog
-        title="Xóa ảnh"
-        busy={busy}
-        open={Boolean(confirm)}
-        close={() => {
-          if (!busy) setConfirm(null);
-        }}
-      >
-        <p>
-          Xóa ảnh “{confirm?.alt}”? Shop chỉ xóa được ảnh không có nội dung sử
-          dụng.
-        </p>
-        {message && (
-          <p role="alert" className="text-sm text-error-primary">
-            {message}
+      {confirm && (
+        <div className="notice" role="alert">
+          <p>
+            Xóa ảnh “{confirm.alt}”? Shop chỉ xóa được ảnh không có nội dung sử
+            dụng.
           </p>
-        )}
-        <Action
-          className="button"
-          disabled={busy}
-          isLoading={busy}
-          onClick={remove}
-        >
-          Xác nhận xóa
-        </Action>{" "}
-        <Action
-          className="button secondary"
-          disabled={busy}
-          onClick={() => setConfirm(null)}
-        >
-          Giữ ảnh
-        </Action>
-      </LibraryDialog>
-      <div className="admin-media-grid mt-6 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+          <button className="button" disabled={busy} onClick={remove}>
+            Xác nhận xóa
+          </button>{" "}
+          <button className="button secondary" onClick={() => setConfirm(null)}>
+            Giữ ảnh
+          </button>
+        </div>
+      )}
+      <div className="admin-media-grid">
         {rows.map((m) => (
           <figure key={m.id}>
             <Image
@@ -246,26 +187,20 @@ export function MediaLibrary({
               </small>
             </figcaption>
             {onSelect && (
-              <Action className="button" onClick={() => onSelect(m.url)}>
+              <button className="button" onClick={() => onSelect(m.url)}>
                 Chọn ảnh
-              </Action>
+              </button>
             )}
-            <Action
-              className="text-link"
-              onClick={() => {
-                setMessage("");
-                setConfirm(m);
-              }}
-            >
+            <button className="text-link" onClick={() => setConfirm(m)}>
               Xóa ảnh
-            </Action>
+            </button>
           </figure>
         ))}
       </div>
       {hasMore && (
-        <Action className="button secondary" disabled={busy} onClick={loadMore}>
+        <button className="button secondary" disabled={busy} onClick={loadMore}>
           Xem thêm ảnh
-        </Action>
+        </button>
       )}
     </div>
   );

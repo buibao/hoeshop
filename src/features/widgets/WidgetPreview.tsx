@@ -1,7 +1,4 @@
 "use client";
-import { Form } from "@/components/ui/Form";
-import { Action } from "@/components/ui/Action";
-
 import { useState, useSyncExternalStore } from "react";
 import { DateTimeField } from "@/components/ui/DateTimeField";
 import { vietnamToday } from "@/domain/schemas";
@@ -15,14 +12,14 @@ export function WidgetPreview() {
   );
   const [selection, setSelection] = useState({ date: "", time: "" });
   return (
-    <div className="widget-preview-grid grid grid-cols-1 gap-8 py-8 lg:grid-cols-2" data-ready={ready}>
-      <section className="widget-preview-card flex flex-col gap-4 rounded-xl bg-primary p-6 shadow-xs ring-1 ring-secondary">
-        <span className="eyebrow mb-4 block text-sm font-semibold text-brand-secondary">THỬ CHỌN MỘT NGÀY DỊU DÀNG</span>
+    <div className="widget-preview-grid" data-ready={ready}>
+      <section className="widget-preview-card">
+        <span className="eyebrow">THỬ CHỌN MỘT NGÀY DỊU DÀNG</span>
         <h2>Ngày và giờ nhận hoa</h2>
-        <p className="form-note text-sm text-tertiary" >
+        <p className="form-note" style={{ marginBottom: 25 }}>
           Ngày, giờ là mong muốn của bạn. Hòe sẽ liên hệ xác nhận lịch.
         </p>
-        <Form
+        <form
           noValidate
           onSubmit={(e) => {
             e.preventDefault();
@@ -45,18 +42,18 @@ export function WidgetPreview() {
             type="time"
             hint="Giờ Việt Nam, định dạng 24 giờ."
           />
-          <Action type="submit" className="button">
+          <button type="submit" className="button">
             Xem lựa chọn
-          </Action>
-        </Form>
-        <div className="widget-preview-state rounded-xl bg-secondary p-4" role="status">
+          </button>
+        </form>
+        <div className="widget-preview-state" role="status">
           {selection.date || selection.time
             ? `Bạn muốn nhận hoa ${selection.date ? displayDate(selection.date) : "chưa chọn ngày"}${selection.time ? " lúc " + selection.time : ""}.`
             : "Chưa có lựa chọn. Hãy mở lịch hoặc bộ chọn giờ để thử."}
         </div>
       </section>
-      <section className="widget-preview-card flex flex-col gap-4 rounded-xl bg-primary p-6 shadow-xs ring-1 ring-secondary">
-        <span className="eyebrow mb-4 block text-sm font-semibold text-brand-secondary">CÁC TRẠNG THÁI ĐỂ NGHIỆM THU</span>
+      <section className="widget-preview-card">
+        <span className="eyebrow">CÁC TRẠNG THÁI ĐỂ NGHIỆM THU</span>
         <h2>Rõ ràng ở từng thao tác</h2>
         <DateTimeField
           name="selectedDate"
@@ -84,10 +81,8 @@ export function WidgetPreview() {
           defaultValue="09:00"
           disabled
         />
-        <DateTimeField name="disabledDate" label="Ngày đang chờ xác nhận" type="date" defaultValue={vietnamToday()} disabled />
-        <DateTimeField name="readonlyDate" label="Ngày cũ giữ nguyên để xem lại" type="date" defaultValue="2025-12-31" readOnly />
-        <p className="form-note text-sm text-tertiary">
-          Dùng Tab để chuyển segment và nút mở lịch. Trong lịch dùng phím
+        <p className="form-note">
+          Dùng Tab để chuyển trường, Alt + ↓ để mở bộ chọn. Trong lịch dùng phím
           mũi tên; Escape để đóng. Dữ liệu trên trang này không gửi vào hệ thống
           đặt hoa.
         </p>

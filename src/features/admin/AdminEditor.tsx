@@ -1,15 +1,10 @@
 "use client";
-import { Checkbox } from "@/components/untitled/base/checkbox/checkbox";
-import { Form } from "@/components/ui/Form";
-import { ActionLink } from "@/components/ui/ActionLink";
-import { Action } from "@/components/ui/Action";
-
 import { useState, useEffect, useRef } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 import { MediaLibrary } from "./MediaLibrary";
-import { LibraryDialog } from "@/components/ui/LibraryDialog";
-import { focusError } from "@/components/Fields";
+import Modal from "react-bootstrap/Modal";
 import { displayDate } from "@/domain/date-time";
 import { totalLabel, priceLabel } from "@/domain/pricing";
 import { priceSchema } from "@/domain/schemas";
@@ -118,11 +113,11 @@ const entryTemplates: Record<string, Row> = {
 function AuditHistory({ rows }: { rows: unknown }) {
   if (!Array.isArray(rows) || !rows.length) return null;
   return (
-    <details className="hoe-optional rounded-xl bg-primary p-4 ring-1 ring-secondary">
+    <details className="hoe-optional">
       <summary>Lịch sử xử lý</summary>
       {rows.map((entry: Row) => (
-        <div className="admin-list-entry border-b border-secondary py-4" key={String(entry.id)}>
-          <p className="small text-sm muted text-tertiary">
+        <div className="admin-list-entry" key={String(entry.id)}>
+          <p className="small muted">
             {new Date(String(entry.createdAt)).toLocaleString("vi-VN", {
               timeZone: "Asia/Ho_Chi_Minh",
             })}{" "}
@@ -183,7 +178,7 @@ export function ReadOnly({
     return (
       <div>
         {value.map((v, i) => (
-          <div key={i} className="admin-list-entry border-b border-secondary py-4">
+          <div key={i} className="admin-list-entry">
             <ReadOnly value={v} />
           </div>
         ))}
@@ -201,7 +196,7 @@ export function ReadOnly({
       });
       return (
         <p>
-          <span className="admin-hint text-sm text-tertiary">{total.label}</span>
+          <span className="admin-hint">{total.label}</span>
           <br />
           <strong>{total.value}</strong>
         </p>
@@ -220,7 +215,7 @@ export function ReadOnly({
       );
     }
     return (
-      <dl className="admin-readonly flex flex-col gap-4">
+      <dl className="admin-readonly">
         {Object.entries(row)
           .filter(([, v]) => v !== "" && v !== null && v !== undefined)
           .map(([k, v]) => (
@@ -244,10 +239,10 @@ export function ReadOnly({
 }
 export function OrderSummary({ row }: { row: Row }) {
   return (
-    <section className="admin-order-detail grid grid-cols-1 gap-8 md:grid-cols-2" id="chi-tiet-don">
-      <div className="admin-detail-heading flex flex-wrap items-start justify-between gap-4">
+    <section className="admin-order-detail" id="chi-tiet-don">
+      <div className="admin-detail-heading">
         <div>
-          <span className="eyebrow mb-4 block text-sm font-semibold text-brand-secondary">ĐƠN HOA</span>
+          <span className="eyebrow">ĐƠN HOA</span>
           <h2>
             #
             {String(row.requestId || row.id)
@@ -257,19 +252,19 @@ export function OrderSummary({ row }: { row: Row }) {
         </div>
         <StatusBadge value={String(row.businessStatus || "received")} />
       </div>
-      <div className="admin-field-grid grid grid-cols-1 gap-4 md:grid-cols-2">
-        <section className="admin-panel rounded-xl bg-primary p-6 shadow-xs ring-1 ring-secondary">
+      <div className="admin-field-grid">
+        <section className="admin-panel">
           <h3>Người đặt</h3>
           <ReadOnly value={row.buyer} />
         </section>
-        <section className="admin-panel rounded-xl bg-primary p-6 shadow-xs ring-1 ring-secondary">
+        <section className="admin-panel">
           <h3>Người nhận & địa chỉ</h3>
           <ReadOnly value={row.recipient} />
           <p>{String(row.address || "")}</p>
         </section>
       </div>
-      <section className="admin-panel rounded-xl bg-primary p-6 shadow-xs ring-1 ring-secondary">
-        <div className="admin-panel-heading mb-4 flex flex-col gap-3">
+      <section className="admin-panel">
+        <div className="admin-panel-heading">
           <h3>Hoa và mong muốn</h3>
           <p>
             Ngày, giờ theo từng mẫu là mong muốn của khách, cần shop xác nhận.
@@ -278,10 +273,10 @@ export function OrderSummary({ row }: { row: Row }) {
         <ReadOnly value={row.items || []} />
         {Boolean(row.notes) && <p>{String(row.notes)}</p>}
       </section>
-      <section className="admin-panel rounded-xl bg-primary p-6 shadow-xs ring-1 ring-secondary admin-detail-total flex flex-col gap-3">
+      <section className="admin-panel admin-detail-total">
         <div>
           <h3>Giá & lịch nhận</h3>
-          <p className="admin-hint text-sm text-tertiary">
+          <p className="admin-hint">
             Phí giao, thiết kế và lịch nhận được shop xác nhận khi liên hệ.
           </p>
         </div>
@@ -369,7 +364,7 @@ function Fields({
             return (
               <div key={full} className="field">
                 <span>{label}</span>
-                <Action
+                <button
                   type="button"
                   className="button secondary"
                   onClick={() =>
@@ -381,12 +376,12 @@ function Fields({
                   }
                 >
                   Thêm ảnh
-                </Action>
+                </button>
               </div>
             );
           if (value && typeof value === "object" && !Array.isArray(value))
             return (
-              <fieldset className="admin-fieldset flex flex-col gap-4" key={full}>
+              <fieldset className="admin-fieldset" key={full}>
                 <legend>{label}</legend>
                 <Fields
                   data={value as Row}
@@ -398,13 +393,13 @@ function Fields({
                   errors={errors}
                 />
                 {["logo", "hero", "story"].includes(key) && (
-                  <Action
+                  <button
                     type="button"
                     className="text-link"
                     onClick={() => change(full, null)}
                   >
                     Gỡ ảnh này
-                  </Action>
+                  </button>
                 )}
               </fieldset>
             );
@@ -428,10 +423,10 @@ function Fields({
                 />
               );
             return (
-              <fieldset className="admin-fieldset flex flex-col gap-4" key={full}>
+              <fieldset className="admin-fieldset" key={full}>
                 <legend>{label}</legend>
                 {value.map((v, i) => (
-                  <div key={i} className="admin-list-entry border-b border-secondary py-4">
+                  <div key={i} className="admin-list-entry">
                     <Fields
                       data={v as Row}
                       change={change}
@@ -441,7 +436,7 @@ function Fields({
                       selectImage={selectImage}
                       errors={errors}
                     />
-                    <Action
+                    <button
                       type="button"
                       className="text-link"
                       onClick={() =>
@@ -452,10 +447,10 @@ function Fields({
                       }
                     >
                       Bỏ mục
-                    </Action>
+                    </button>
                   </div>
                 ))}
-                <Action
+                <button
                   type="button"
                   className="button secondary"
                   onClick={() =>
@@ -470,29 +465,41 @@ function Fields({
                   }
                 >
                   Thêm mục
-                </Action>
+                </button>
               </fieldset>
             );
           }
           if (["image", "src"].includes(key))
             return (
               <div className="field" key={full}>
-                <AdminField path={full} label={label} value={value} readOnly errors={errors} change={change} />
-                <div className="hero-actions mt-6 flex flex-wrap items-center gap-3">
-                  <Action
+                <label htmlFor={full}>{label}</label>
+                <input
+                  id={full}
+                  value={String(value || "")}
+                  readOnly
+                  aria-invalid={Boolean(errors[full])}
+                  aria-describedby={errors[full] ? `${full}-error` : undefined}
+                />
+                {errors[full] && (
+                  <small id={`${full}-error`} className="admin-field-error">
+                    {errors[full]}
+                  </small>
+                )}
+                <div className="hero-actions">
+                  <button
                     type="button"
                     className="button secondary"
                     onClick={() => selectImage(full)}
                   >
                     Chọn ảnh thư viện
-                  </Action>
-                  <Action
+                  </button>
+                  <button
                     type="button"
                     className="text-link"
                     onClick={() => change(full, key === "image" ? null : "")}
                   >
                     Gỡ ảnh
-                  </Action>
+                  </button>
                 </div>
               </div>
             );
@@ -530,7 +537,22 @@ function Fields({
               />
             );
           return (
-            <Checkbox key={full} id={full} name={full} data-field-name={full} size="sm" label={label} isSelected={value} isInvalid={Boolean(errors[full])} hint={errors[full]} onChange={next => change(full, next)} />
+            <label className="field" key={full}>
+              <span>{label}</span>
+              <input
+                id={full}
+                type="checkbox"
+                checked={value}
+                aria-invalid={Boolean(errors[full])}
+                aria-describedby={errors[full] ? `${full}-error` : undefined}
+                onChange={(e) => change(full, e.target.checked)}
+              />
+              {errors[full] && (
+                <small id={`${full}-error`} className="admin-field-error">
+                  {errors[full]}
+                </small>
+              )}
+            </label>
           );
         })}
     </>
@@ -598,7 +620,14 @@ export function AdminEditor({
     const mapped = issueMap(issues);
     setErrors(mapped);
     requestAnimationFrame(() => {
-      if (formRef.current) focusError(formRef.current, Object.keys(mapped)[0]);
+      const input = document.getElementById(Object.keys(mapped)[0]);
+      for (
+        let parent = input?.parentElement;
+        parent;
+        parent = parent.parentElement
+      )
+        if (parent instanceof HTMLDetailsElement) parent.open = true;
+      input?.focus();
     });
   }
   function change(path: string, value: unknown) {
@@ -736,15 +765,15 @@ export function AdminEditor({
   }
   return (
     <>
-      <ActionLink className="text-link" href={`/admin/${resource}`}>
+      <Link className="text-link" href={`/admin/${resource}`}>
         ← Quay lại danh sách
-      </ActionLink>
-      <Heading className="admin-title font-body text-display-xs font-semibold">
+      </Link>
+      <Heading className="admin-title">
         {row ? "Chi tiết & chỉnh sửa" : "Thêm nội dung mới"}
       </Heading>
       {resource === "orders" && row && <OrderSummary row={row} />}
       {["inquiries", "comments"].includes(resource) && row && (
-        <div className="admin-request-summary flex flex-col gap-8">
+        <div className="admin-request-summary">
           {Object.entries(row)
             .filter(([k]) =>
               [
@@ -769,9 +798,9 @@ export function AdminEditor({
         </div>
       )}
       <AuditHistory rows={row?.audit} />
-      <Form ref={formRef} onSubmit={save} className="admin-editor flex flex-col gap-8" noValidate>
+      <form ref={formRef} onSubmit={save} className="admin-editor" noValidate>
         {Object.keys(errors).length > 0 && (
-          <div className="admin-error-summary rounded-xl bg-primary p-4 text-error-primary ring-1 ring-error_subtle" role="alert">
+          <div className="admin-error-summary" role="alert">
             <strong>Cần kiểm tra trước khi lưu</strong>
             <ul>
               {Object.entries(errors).map(([path, error]) => (
@@ -780,7 +809,7 @@ export function AdminEditor({
                     href={`#${path}`}
                     onClick={(e) => {
                       e.preventDefault();
-                      if (formRef.current) focusError(formRef.current, path);
+                      document.getElementById(path)?.focus();
                     }}
                   >
                     {error}
@@ -811,15 +840,15 @@ export function AdminEditor({
           )}
           {["posts", "policies"].includes(resource) && (
             <>
-              <Action
+              <button
                 type="button"
                 className="button secondary"
                 onClick={() => setPreview(!preview)}
               >
                 {preview ? "Đóng" : "Xem thử"} nội dung
-              </Action>
+              </button>
               {preview && (
-                <article className="prose prose prose-neutral max-w-none">
+                <article className="prose">
                   <ReactMarkdown skipHtml>
                     {String(data.bodyMarkdown)}
                   </ReactMarkdown>
@@ -827,35 +856,35 @@ export function AdminEditor({
               )}
             </>
           )}
-          <div className="admin-save mt-6 flex flex-wrap items-center gap-3">
-            <Action className="button" type="submit">
+          <div className="admin-save">
+            <button className="button" type="submit">
               {saving
                 ? "Đang lưu…"
                 : demo
                   ? "Kiểm tra mẫu giao diện"
                   : "Lưu thay đổi"}
-            </Action>
+            </button>
             {row && ["products", "posts", "policies"].includes(resource) && (
-              <Action
+              <button
                 className="text-link"
                 type="button"
                 onClick={() => change("publicationStatus", "archived")}
               >
                 Chuyển sang lưu trữ
-              </Action>
+              </button>
             )}
           </div>
-          {dirty && <p className="admin-hint text-sm text-tertiary">Có thay đổi chưa lưu.</p>}
+          {dirty && <p className="admin-hint">Có thay đổi chưa lưu.</p>}
         </fieldset>
         <p role="status" aria-live="polite">
           {message}
         </p>
         {conflict && (
-          <div className="admin-warning rounded-xl bg-secondary p-4 text-warning-primary">
+          <div className="admin-warning">
             <p>
               Bản ghi có thể đã thay đổi. Nội dung đang nhập được giữ nguyên.
             </p>
-            <Action
+            <button
               type="button"
               className="button secondary"
               onClick={async () => {
@@ -878,11 +907,11 @@ export function AdminEditor({
               }}
             >
               Xem bản mới nhất
-            </Action>
+            </button>
             {latest && (
               <>
                 <ReadOnly value={latest} />
-                <Action
+                <button
                   type="button"
                   className="button secondary"
                   onClick={() => {
@@ -903,13 +932,28 @@ export function AdminEditor({
                   }}
                 >
                   Dùng bản mới nhất
-                </Action>
+                </button>
               </>
             )}
           </div>
         )}
-      </Form>
-      <LibraryDialog open={Boolean(imageField)} close={() => setImageField(null)}>
+      </form>
+      <Modal
+        show={Boolean(imageField)}
+        onHide={() => setImageField(null)}
+        className="hoe-library"
+        aria-labelledby="media-library-title"
+      >
+        <Modal.Header>
+          <Modal.Title id="media-library-title">Thư viện ảnh Hòe</Modal.Title>
+          <button
+            className="button secondary"
+            onClick={() => setImageField(null)}
+          >
+            Đóng thư viện
+          </button>
+        </Modal.Header>
+        <Modal.Body>
           {demo ? (
             <p>
               Chọn ảnh từ thư viện chỉ khả dụng trong vùng admin đã đăng nhập.
@@ -923,7 +967,8 @@ export function AdminEditor({
               }}
             />
           )}
-      </LibraryDialog>
+        </Modal.Body>
+      </Modal>
     </>
   );
 }

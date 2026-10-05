@@ -1,7 +1,4 @@
 "use client";
-import { Form } from "@/components/ui/Form";
-import { Action } from "@/components/ui/Action";
-
 import { Field, Honeypot } from "@/components/Fields";
 import {
   structuralInquirySchema,
@@ -46,21 +43,21 @@ export function InquiryForm({
   }
   if (submission.result)
     return (
-      <div className="success rounded-xl bg-primary p-4 text-success-primary ring-1 ring-success_secondary" role="status">
+      <div className="success" role="status">
         <strong>
           Hòe đã nhận yêu cầu tư vấn {submission.result.requestId}.
         </strong>
         Shop sẽ liên hệ trao đổi thêm về nhu cầu của bạn. Đây là yêu cầu tư vấn,
         chưa phải đơn đặt hoa.
         <div>
-          <Action className="link-button" onClick={submission.reset}>
+          <button className="link-button" onClick={submission.reset}>
             Gửi nhu cầu khác
-          </Action>
+          </button>
         </div>
       </div>
     );
   return (
-    <Form onSubmit={handleSubmit} noValidate className="card rounded-xl bg-primary p-6 shadow-xs ring-1 ring-secondary">
+    <form onSubmit={handleSubmit} noValidate className="card">
       <fieldset disabled={submission.phase === "submitting"}>
         <legend>
           {serviceType
@@ -75,10 +72,10 @@ export function InquiryForm({
               errors={submission.errors}
               guidance={guidance}
             />
-            <hr className="divider my-4 border-secondary" />
+            <hr className="divider" />
           </>
         ) : null}
-        <div className="form-grid grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div className="form-grid">
           <Field
             name="name"
             label="Họ tên"
@@ -128,21 +125,21 @@ export function InquiryForm({
           />
         </div>
         <Honeypot />
-        <p className="form-note text-sm text-tertiary">
+        <p className="form-note">
           Hòe sẽ liên hệ để tư vấn. Gửi form chưa tạo đơn hàng hoặc đăng ký gói
           định kỳ.
         </p>
         {submission.error ? (
-          <div className="error rounded-xl bg-primary p-4 text-error-primary ring-1 ring-error_subtle" role="alert">
+          <div className="error" role="alert">
             {submission.error}
           </div>
         ) : null}
-        <Action className="button" type="submit" isLoading={submission.phase === "submitting"}>
+        <button className="button" type="submit">
           {submission.phase === "submitting"
             ? "Đang gửi…"
             : "Gửi yêu cầu tư vấn"}
-        </Action>
+        </button>
       </fieldset>
-    </Form>
+    </form>
   );
 }

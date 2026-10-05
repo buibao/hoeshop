@@ -25,23 +25,23 @@ export default async function ServicePage({ params }: Props) {
   const products = (await getProducts()).filter((p) => p.serviceType === s.id),
     test = isTestContent();
   return (
-    <div className="container mx-auto w-full max-w-container px-4 md:px-8">
-      <div className="breadcrumb flex flex-wrap items-center gap-3 py-6 text-sm text-tertiary">
+    <div className="container">
+      <div className="breadcrumb">
         <Link href="/">Trang chủ</Link>
         <span>/</span>
         <Link href="/san-pham">Dịch vụ</Link>
         <span>/</span>
         <span>{s.name}</span>
       </div>
-      <div className="service-page-top grid grid-cols-1 items-center gap-8 py-8 md:grid-cols-2">
-        <div className="page-heading flex flex-col gap-4 py-8 md:py-12">
-          <span className="eyebrow mb-4 block text-sm font-semibold text-brand-secondary">
+      <div className="service-page-top">
+        <div className="page-heading">
+          <span className="eyebrow">
             / {s.number} — {s.name}
           </span>
           <h1>{s.subtitle}</h1>
           <p>{s.description}</p>
         </div>
-        <div className="service-art relative aspect-[4/5] overflow-hidden rounded-xl">
+        <div className="service-art">
           <Image
             src={
               s.image ||
@@ -61,14 +61,14 @@ export default async function ServicePage({ params }: Props) {
           />
         </div>
       </div>
-      <div className="section-heading mb-8 flex flex-wrap items-center justify-between gap-4">
+      <div className="section-heading">
         <h2>Mẫu hoa tham khảo</h2>
         <a href="#tu-van" className="text-link">
           Chưa chọn mẫu? Kể Hòe nghe
         </a>
       </div>
       {products.length ? (
-        <div className="product-grid grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="product-grid">
           {products.map((p) => (
             <ProductCard key={p.id} product={p} />
           ))}
@@ -79,7 +79,7 @@ export default async function ServicePage({ params }: Props) {
           body="Bạn có thể tìm hiểu dịch vụ và mô tả mong muốn ở phần bên dưới."
         />
       )}
-      <section className="inquiry-section flex flex-col gap-4 py-12" id="tu-van">
+      <section className="inquiry-section" id="tu-van">
         <h2>Một ý tưởng bắt đầu từ bạn</h2>
         <p>
           Chưa chọn mẫu? Hãy gửi nhu cầu để shop tư vấn.{" "}

@@ -1,8 +1,4 @@
-import { DataTable } from "@/components/ui/DataTable";
-import { Form } from "@/components/ui/Form";
-import { ActionLink } from "@/components/ui/ActionLink";
-import { Action } from "@/components/ui/Action";
-import { SelectField } from "@/components/ui/SelectField";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { adminPageActor } from "@/server/admin/auth";
 import { resourceSchema } from "@/server/admin/schemas";
@@ -40,24 +36,28 @@ export default async function ListPage({
     rows = result.slice(0, 50);
   return (
     <>
-      <div className="admin-page-heading mb-8 flex flex-wrap items-center justify-between gap-4">
-        <h1 className="admin-title font-body text-display-xs font-semibold">{labels[resource]}</h1>
+      <div className="admin-page-heading">
+        <h1 className="admin-title">{labels[resource]}</h1>
         {["products", "posts", "policies"].includes(resource) && (
-          <ActionLink className="button" href={`/admin/${resource}/moi`}>
+          <Link className="button" href={`/admin/${resource}/moi`}>
             Thêm mới
-          </ActionLink>
+          </Link>
         )}
       </div>
       {resource === "media" ? (
         <MediaLibrary />
       ) : (
         <>
-          <p className="muted text-tertiary">
+          <p className="muted">
             50 bản ghi mỗi trang. Nội dung lưu trữ vẫn giữ lịch sử.
           </p>
           {["orders", "inquiries"].includes(resource) && (
-            <Form method="get" className="admin-filter flex flex-wrap items-end gap-3">
-              <SelectField name="status" label="Trạng thái" defaultValue={status || ""} options={[{value:"", label:"Tất cả"}, ...(resource === "orders"
+            <form method="get" className="admin-filter">
+              <label className="field">
+                <span>Trạng thái</span>
+                <select name="status" defaultValue={status || ""}>
+                  <option value="">Tất cả</option>
+                  {(resource === "orders"
                     ? [
                         "received",
                         "contacted",
@@ -66,15 +66,21 @@ export default async function ListPage({
                         "cancelled",
                       ]
                     : ["received", "contacted", "resolved", "cancelled"]
-                  ).map(value => ({value, label:valueLabel(value)}))]} />
-              <Action className="button">Lọc danh sách</Action>
-            </Form>
+                  ).map((value) => (
+                    <option key={value} value={value}>
+                      {valueLabel(value)}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <button className="button">Lọc danh sách</button>
+            </form>
           )}
           {resource === "orders" ? (
             <OrderTable rows={rows as Record<string, unknown>[]} />
           ) : (
             <div className="admin-table-wrap">
-              <DataTable className="admin-table">
+              <table className="admin-table">
                 <thead>
                   <tr>
                     <th>Nội dung</th>
@@ -88,7 +94,7 @@ export default async function ListPage({
                     const r = row as Record<string, unknown>,
                       id = String(r.id || r.key);
                     return (
-                      <tr key={id} data-row-id={id}>
+                      <tr key={id}>
                         <td>
                           {String(
                             r.name ||
@@ -99,7 +105,7 @@ export default async function ListPage({
                               r.id,
                           )}
                           {r.body ? (
-                            <p className="small text-sm">
+                            <p className="small">
                               {String(r.body).slice(0, 150)}
                             </p>
                           ) : null}
@@ -122,38 +128,38 @@ export default async function ListPage({
                           })}
                         </td>
                         <td>
-                          <ActionLink
+                          <Link
                             className="text-link"
                             href={`/admin/${resource}/${encodeURIComponent(id)}`}
                           >
                             Mở chi tiết
-                          </ActionLink>
+                          </Link>
                         </td>
                       </tr>
                     );
                   })}
                 </tbody>
-              </DataTable>
+              </table>
               {!rows.length && <p>Chưa có nội dung.</p>}
             </div>
           )}
-          <nav className="admin-pagination mt-6 flex items-center justify-between gap-3" aria-label="Phân trang">
+          <nav className="admin-pagination" aria-label="Phân trang">
             {page > 0 && (
-              <ActionLink
+              <Link
                 className="button secondary"
                 href={`/admin/${resource}?${new URLSearchParams({ page: String(page - 1), ...(status ? { status } : {}) })}`}
               >
                 Trang trước
-              </ActionLink>
+              </Link>
             )}
             <span>Trang {page + 1}</span>
             {result.length > 50 && (
-              <ActionLink
+              <Link
                 className="button secondary"
                 href={`/admin/${resource}?${new URLSearchParams({ page: String(page + 1), ...(status ? { status } : {}) })}`}
               >
                 Trang sau
-              </ActionLink>
+              </Link>
             )}
           </nav>
         </>

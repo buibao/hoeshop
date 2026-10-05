@@ -9,8 +9,7 @@ export default defineConfig({
     { name: "desktop", use: { ...devices["Desktop Chrome"] } },
     {
       name: "mobile",
-      // Match the emulated platform to Chromium. Safari/iOS real-device UAT is separate.
-      use: { ...devices["Pixel 7"], viewport:{width:390,height:844}, defaultBrowserType: "chromium" },
+      use: { ...devices["iPhone 13"], defaultBrowserType: "chromium" },
     },
   ],
   webServer: {

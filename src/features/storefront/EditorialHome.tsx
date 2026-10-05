@@ -1,4 +1,3 @@
-import { ActionLink } from "@/components/ui/ActionLink";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Flower2, ArrowUpRight } from "lucide-react";
@@ -13,6 +12,8 @@ import {
 import { ProductCard } from "@/components/ProductCard";
 import { ServiceCards } from "@/components/ServiceCards";
 import { Empty } from "@/components/Empty";
+import { EditorialReveal } from "@/components/ui/EditorialReveal";
+import { EditorialHeroMotion } from "@/components/ui/EditorialHeroMotion";
 export async function EditorialHome() {
   const [home, catalog, articles, assets, site] = await Promise.all([
     getHome(),
@@ -32,33 +33,31 @@ export async function EditorialHome() {
     story = articles.find((a) => a.slug === home.storySlug);
   return (
     <div className="hoe-editorial">
-      <section className="editorial-hero grid grid-cols-1 items-center gap-8 py-12 md:grid-cols-2 md:py-16 container mx-auto w-full max-w-container px-4 md:px-8">
-        <div className="editorial-hero-copy flex flex-col items-start gap-4">
-          <span className="eyebrow mb-4 block text-sm font-semibold text-brand-secondary">
-            {home.eyebrow}
-          </span>
+      <section className="editorial-hero container">
+        <div className="editorial-hero-copy">
+          <span className="eyebrow">{home.eyebrow}</span>
           <h1>
             {home.title.split("\n")[0]}
             <br />
             <em>{home.title.split("\n").slice(1).join("\n")}</em>
           </h1>
           <p>{home.intro}</p>
-          <div className="hero-actions mt-6 flex flex-wrap items-center gap-3">
-            <ActionLink className="button" href={home.primaryCta.href}>
+          <div className="hero-actions">
+            <Link className="button" href={home.primaryCta.href}>
               {home.primaryCta.label}
               <ArrowUpRight size={17} />
-            </ActionLink>
-            <ActionLink className="text-link" href={home.secondaryCta.href}>
+            </Link>
+            <Link className="text-link" href={home.secondaryCta.href}>
               {home.secondaryCta.label}
-            </ActionLink>
+            </Link>
           </div>
-          <div className="editorial-hero-footnote flex items-center gap-3 text-sm text-tertiary">
+          <div className="editorial-hero-footnote">
             <Flower2 size={20} strokeWidth={1.2} aria-hidden="true" />
             <span>{home.footnote}</span>
           </div>
         </div>
-        <div className="editorial-hero-art flex flex-col gap-4">
-          <div className="editorial-hero-photo relative aspect-[4/5] overflow-hidden rounded-xl">
+        <EditorialHeroMotion>
+          <div className="editorial-hero-photo">
             <Image
               src={
                 assets.hero?.src ||
@@ -73,16 +72,16 @@ export async function EditorialHome() {
               fetchPriority="high"
             />
           </div>
-          <div className="editorial-photo-caption flex items-center gap-3 text-sm text-tertiary">
+          <div className="editorial-photo-caption">
             <Flower2 size={20} strokeWidth={1.2} aria-hidden="true" />
             <p>{home.imageNote}</p>
           </div>
-          <span className="editorial-orbit hidden" aria-hidden="true">
+          <span className="editorial-orbit" aria-hidden="true">
             <Flower2 size={42} strokeWidth={0.9} />
           </span>
-        </div>
+        </EditorialHeroMotion>
       </section>
-      <div className="editorial-benefits grid grid-cols-1 gap-8 py-8 md:grid-cols-3 container mx-auto w-full max-w-container px-4 md:px-8">
+      <div className="editorial-benefits container">
         {home.benefits.map((benefit, i) => (
           <div key={benefit.title}>
             <span>0{i + 1}</span>
@@ -93,42 +92,35 @@ export async function EditorialHome() {
           </div>
         ))}
       </div>
-      <section
-        id="dich-vu"
-        className="editorial-section py-12 md:py-16 editorial-services bg-secondary"
-      >
-        <div className="container mx-auto w-full max-w-container px-4 md:px-8">
-          <div className="editorial-section-heading mx-auto mb-8 flex max-w-3xl flex-col gap-4 text-center">
-            <span className="editorial-index mb-4 block text-sm font-semibold text-brand-secondary">
-              01 / CÁCH GỬI HOA
-            </span>
+      <section id="dich-vu" className="editorial-section editorial-services">
+        <div className="container">
+          <EditorialReveal className="editorial-section-heading">
+            <span className="editorial-index">01 / CÁCH GỬI HOA</span>
             <h2 className="copy-lines">{home.servicesTitle}</h2>
             <p>{home.servicesIntro}</p>
-          </div>
-          <div>
+          </EditorialReveal>
+          <EditorialReveal>
             <ServiceCards />
-          </div>
+          </EditorialReveal>
         </div>
       </section>
-      <section className="editorial-section py-12 md:py-16 container mx-auto w-full max-w-container px-4 md:px-8">
-        <div className="editorial-heading-row mb-8 flex flex-wrap items-end justify-between gap-4">
+      <section className="editorial-section container">
+        <div className="editorial-heading-row">
           <div>
-            <span className="eyebrow mb-4 block text-sm font-semibold text-brand-secondary">
-              02 / {home.featuredEyebrow}
-            </span>
+            <span className="eyebrow">02 / {home.featuredEyebrow}</span>
             <h2>{home.featuredTitle}</h2>
           </div>
-          <ActionLink className="text-link" href={home.featuredCta.href}>
+          <Link className="text-link" href={home.featuredCta.href}>
             {home.featuredCta.label}
             <ArrowRight size={17} />
-          </ActionLink>
+          </Link>
         </div>
         {products.length ? (
-          <div className="product-grid grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 editorial-products">
-            {products.map((p) => (
-              <div key={p.id}>
+          <div className="product-grid editorial-products">
+            {products.map((p, i) => (
+              <EditorialReveal key={p.id} delay={i * 0.09}>
                 <ProductCard product={p} />
-              </div>
+              </EditorialReveal>
             ))}
           </div>
         ) : (
@@ -140,9 +132,9 @@ export async function EditorialHome() {
           />
         )}
       </section>
-      <section className="editorial-story bg-secondary editorial-section py-12 md:py-16">
-        <div className="container mx-auto w-full max-w-container px-4 md:px-8 editorial-story-grid grid grid-cols-1 items-center gap-8 md:grid-cols-2">
-          <div className="editorial-story-photo relative aspect-[4/5] overflow-hidden rounded-xl">
+      <section className="editorial-story editorial-section">
+        <div className="container editorial-story-grid">
+          <EditorialReveal className="editorial-story-photo">
             <Image
               src={
                 assets.story?.src ||
@@ -154,52 +146,48 @@ export async function EditorialHome() {
               fill
               sizes="(max-width: 767px) 90vw, 42vw"
             />
-          </div>
-          <div className="editorial-story-copy flex flex-col gap-4">
-            <span className="eyebrow mb-4 block text-sm font-semibold text-brand-secondary">
-              03 / {home.storyEyebrow}
-            </span>
+          </EditorialReveal>
+          <EditorialReveal className="editorial-story-copy">
+            <span className="eyebrow">03 / {home.storyEyebrow}</span>
             <h2 className="copy-lines">{home.storyTitle}</h2>
             <p>{home.storyBody}</p>
-            <ActionLink
+            <Link
               className="text-link"
               href={story ? `/blog/${story.slug}` : "/ve-hoe"}
             >
               {home.storyCtaLabel}
               <ArrowUpRight size={17} />
-            </ActionLink>
+            </Link>
             <Flower2
-              className="editorial-story-flower size-8 text-fg-brand-primary"
+              className="editorial-story-flower"
               size={68}
               strokeWidth={0.7}
               aria-hidden="true"
             />
-          </div>
+          </EditorialReveal>
         </div>
       </section>
       {articles.length > 0 && (
-        <section className="editorial-section py-12 md:py-16 container mx-auto w-full max-w-container px-4 md:px-8">
-          <div className="editorial-heading-row mb-8 flex flex-wrap items-end justify-between gap-4">
+        <section className="editorial-section container">
+          <div className="editorial-heading-row">
             <div>
-              <span className="eyebrow mb-4 block text-sm font-semibold text-brand-secondary">
-                NHỮNG ĐIỀU NHỎ BÉ
-              </span>
+              <span className="eyebrow">NHỮNG ĐIỀU NHỎ BÉ</span>
               <h2>Chuyện hoa</h2>
             </div>
-            <ActionLink className="text-link" href="/blog">
+            <Link className="text-link" href="/blog">
               Đọc thêm chuyện hoa
               <ArrowRight size={17} />
-            </ActionLink>
+            </Link>
           </div>
-          <div className="editorial-journal grid grid-cols-1 gap-8 md:grid-cols-3">
-            {articles.slice(0, 3).map((a) => (
-              <div key={a.id}>
+          <div className="editorial-journal">
+            {articles.slice(0, 3).map((a, i) => (
+              <EditorialReveal key={a.id} delay={i * 0.09}>
                 <Link
                   href={`/blog/${a.slug}`}
                   key={a.id}
-                  className="editorial-journal-card flex h-full flex-col gap-4 rounded-xl bg-primary p-6 shadow-xs ring-1 ring-secondary"
+                  className="editorial-journal-card"
                 >
-                  <span className="eyebrow mb-4 block text-sm font-semibold text-brand-secondary">
+                  <span className="eyebrow">
                     {a.category || "Chuyện của Hòe"}
                   </span>
                   <h3>{a.title}</h3>
@@ -209,28 +197,26 @@ export async function EditorialHome() {
                     <ArrowUpRight size={16} />
                   </span>
                 </Link>
-              </div>
+              </EditorialReveal>
             ))}
           </div>
         </section>
       )}
-      <section className="editorial-process bg-secondary editorial-section py-12 md:py-16">
-        <div className="container mx-auto w-full max-w-container px-4 md:px-8">
-          <span className="eyebrow mb-4 block text-sm font-semibold text-brand-secondary">
-            TỪ MONG MUỐN ĐẾN MỘT CHÚT HOA
-          </span>
+      <section className="editorial-process editorial-section">
+        <div className="container">
+          <span className="eyebrow">TỪ MONG MUỐN ĐẾN MỘT CHÚT HOA</span>
           <h2>{home.processTitle}</h2>
-          <div className="hoe-process mt-8 grid grid-cols-1 gap-8 md:grid-cols-3">
+          <div className="hoe-process">
             {home.process.map((step, i) => (
-              <div key={step.title}>
+              <EditorialReveal key={step.title} delay={i * 0.09}>
                 <span>0{i + 1}</span>
                 <h3>{step.title}</h3>
                 <p>{step.body}</p>
-              </div>
+              </EditorialReveal>
             ))}
           </div>
           {site.faq.length > 0 && (
-            <div className="hoe-faq mt-8 flex flex-col gap-4">
+            <div className="hoe-faq">
               <h2>{home.faqTitle}</h2>
               {site.faq.map((q) => (
                 <details key={q.question}>
@@ -242,24 +228,22 @@ export async function EditorialHome() {
           )}
         </div>
       </section>
-      <section className="editorial-cta flex flex-col items-center gap-4 border-t border-secondary px-4 py-12 text-center md:py-16">
-        <div>
+      <section className="editorial-cta">
+        <EditorialReveal>
           <Flower2 size={40} strokeWidth={1} aria-hidden="true" />
-          <span className="eyebrow mb-4 block text-sm font-semibold text-brand-secondary">
-            {home.ctaEyebrow}
-          </span>
+          <span className="eyebrow">{home.ctaEyebrow}</span>
           <h2>{home.ctaTitle}</h2>
           <p>{home.ctaBody}</p>
-          <div className="hero-actions mt-6 flex flex-wrap items-center gap-3">
-            <ActionLink className="button" href={home.primaryCta.href}>
+          <div className="hero-actions">
+            <Link className="button" href={home.primaryCta.href}>
               {home.primaryCta.label}
               <ArrowUpRight size={17} />
-            </ActionLink>
-            <ActionLink className="text-link" href={home.secondaryCta.href}>
+            </Link>
+            <Link className="text-link" href={home.secondaryCta.href}>
               {home.secondaryCta.label}
-            </ActionLink>
+            </Link>
           </div>
-        </div>
+        </EditorialReveal>
       </section>
     </div>
   );

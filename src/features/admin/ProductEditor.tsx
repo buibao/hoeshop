@@ -1,8 +1,4 @@
 "use client";
-import { Checkbox } from "@/components/untitled/base/checkbox/checkbox";
-
-import { Action } from "@/components/ui/Action";
-
 import Image from "next/image";
 import { shapeChoices, valueLabel } from "@/domain/labels";
 import { priceLabel, effectivePrice } from "@/domain/pricing";
@@ -73,15 +69,15 @@ export function ProductEditor({
         )
       : "Hoàn thiện thiết kế để xem giá";
   return (
-    <div className="product-editor-layout grid grid-cols-1 items-start gap-8 xl:grid-cols-3">
+    <div className="product-editor-layout">
       <div>
-        <section className="admin-panel rounded-xl bg-primary p-6 shadow-xs ring-1 ring-secondary">
-          <div className="admin-panel-heading mb-4 flex flex-col gap-3">
+        <section className="admin-panel">
+          <div className="admin-panel-heading">
             <h2>Thông tin mẫu hoa</h2>
             <p>Những gì khách nhìn thấy khi chọn mẫu.</p>
           </div>
           {field("product.name", "Tên mẫu hoa", p.name)}
-          <div className="admin-field-grid grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div className="admin-field-grid">
             {field("product.id", "ID cố định", p.id, {
               readOnly: !creating,
               hint: "Chữ thường, số và dấu gạch ngang. Giữ nguyên sau khi tạo.",
@@ -96,8 +92,8 @@ export function ProductEditor({
             type: "textarea",
           })}
         </section>
-        <section className="admin-panel rounded-xl bg-primary p-6 shadow-xs ring-1 ring-secondary">
-          <div className="admin-panel-heading mb-4 flex flex-col gap-3">
+        <section className="admin-panel">
+          <div className="admin-panel-heading">
             <h2>Thiết kế và giá</h2>
             <p>
               Giá áp dụng cho mẫu mặc định và những lựa chọn shop đánh dấu đã
@@ -111,7 +107,7 @@ export function ProductEditor({
                 ? ["quote"]
                 : ["quote", "fixed", "range"],
           })}
-          <div className="admin-field-grid grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div className="admin-field-grid">
             {price.mode === "fixed" &&
               field(
                 "product.price.amount",
@@ -141,15 +137,14 @@ export function ProductEditor({
                 { type: "select", options: ["", ...shapeChoices] },
               )}
               {price.mode !== "quote" && !defaults.shape && (
-                <p className="admin-warning rounded-xl bg-secondary p-4 text-warning-primary">
+                <p className="admin-warning">
                   Chưa có hình thức mặc định. Bạn có thể lưu nháp; cần chọn
                   trước khi công khai mẫu có giá.
                 </p>
               )}
               <fieldset
                 id="product.pricedOptions.shape"
-                data-field-name="product.pricedOptions.shape"
-                className="admin-choice-group flex flex-col gap-3"
+                className="admin-choice-group"
                 tabIndex={-1}
                 aria-invalid={Boolean(errors["product.pricedOptions.shape"])}
                 aria-describedby={
@@ -159,17 +154,33 @@ export function ProductEditor({
                 }
               >
                 <legend>Hình thức khác đã bao gồm trong giá</legend>
-                <p id="shape-options-hint" className="admin-hint text-sm text-tertiary">
+                <p id="shape-options-hint" className="admin-hint">
                   Không chọn nghĩa là khách cần shop báo giá khi đổi sang hình
                   thức đó.
                 </p>
-                <div className="admin-shape-choices flex flex-wrap gap-3">
+                <div className="admin-shape-choices">
                   {shapeChoices.map((shape) => (
-                    <Checkbox key={shape} size="sm" label={valueLabel(shape)} isSelected={(options.shape || []).includes(shape)} onChange={selected => change("product.pricedOptions.shape", selected ? [...(options.shape || []), shape] : (options.shape || []).filter(v => v !== shape))} />
+                    <label key={shape}>
+                      <input
+                        type="checkbox"
+                        checked={(options.shape || []).includes(shape)}
+                        onChange={(e) =>
+                          change(
+                            "product.pricedOptions.shape",
+                            e.target.checked
+                              ? [...(options.shape || []), shape]
+                              : (options.shape || []).filter(
+                                  (v) => v !== shape,
+                                ),
+                          )
+                        }
+                      />
+                      {valueLabel(shape)}
+                    </label>
                   ))}
                 </div>
                 {errors["product.pricedOptions.shape"] && (
-                  <p id="shape-options-error" className="admin-field-error text-sm text-error-primary">
+                  <p id="shape-options-error" className="admin-field-error">
                     {errors["product.pricedOptions.shape"]}
                   </p>
                 )}
@@ -177,7 +188,7 @@ export function ProductEditor({
             </>
           )}
           {fields.map((key) => (
-            <div className="admin-field-grid grid grid-cols-1 gap-4 md:grid-cols-2" key={key}>
+            <div className="admin-field-grid" key={key}>
               {field(
                 `product.defaultDesign.${key}`,
                 `${labels[key]} mặc định`,
@@ -205,9 +216,9 @@ export function ProductEditor({
           ))}
         </section>
       </div>
-      <aside className="product-editor-aside flex flex-col gap-8">
-        <section className="admin-panel rounded-xl bg-primary p-6 shadow-xs ring-1 ring-secondary">
-          <div className="admin-panel-heading mb-4 flex flex-col gap-3">
+      <aside className="product-editor-aside">
+        <section className="admin-panel">
+          <div className="admin-panel-heading">
             <h2>Xuất bản</h2>
             <p>Giữ bản nháp đến khi thông tin đã sẵn sàng.</p>
           </div>
@@ -216,19 +227,19 @@ export function ProductEditor({
             options: ["draft", "published", "archived"],
           })}
           {field("sortOrder", "Thứ tự", data.sortOrder, { type: "number" })}
-          <div className="admin-price-preview flex flex-col gap-3 rounded-xl bg-brand-primary p-4">
+          <div className="admin-price-preview">
             <span>Giá theo thiết kế mặc định</span>
             <strong>{previewPrice}</strong>
             <small>Thay đổi ngoài phạm vi có giá cần shop báo giá.</small>
           </div>
         </section>
-        <section className="admin-panel rounded-xl bg-primary p-6 shadow-xs ring-1 ring-secondary">
-          <div className="admin-panel-heading mb-4 flex flex-col gap-3">
+        <section className="admin-panel">
+          <div className="admin-panel-heading">
             <h2>Hình ảnh</h2>
             <p>Ảnh từ thư viện đã được xác minh.</p>
           </div>
           {p.image ? (
-            <div className="admin-product-image relative aspect-[4/5] overflow-hidden rounded-xl">
+            <div className="admin-product-image">
               <Image
                 src={String(p.image)}
                 alt={String(p.imageAlt || p.name || "Mẫu hoa")}
@@ -237,28 +248,28 @@ export function ProductEditor({
               />
             </div>
           ) : (
-            <div className="admin-image-empty rounded-xl bg-secondary p-6 text-tertiary">Chưa chọn ảnh mẫu hoa</div>
+            <div className="admin-image-empty">Chưa chọn ảnh mẫu hoa</div>
           )}
-          <div className="admin-image-actions mt-4 flex flex-wrap gap-3">
-            <Action
+          <div className="admin-image-actions">
+            <button
               className="button secondary"
               type="button"
               onClick={() => selectImage("product.image")}
             >
               Chọn ảnh thư viện
-            </Action>
+            </button>
             {Boolean(p.image) && (
-              <Action
+              <button
                 className="text-link"
                 type="button"
                 onClick={() => change("product.image", null)}
               >
                 Gỡ ảnh
-              </Action>
+              </button>
             )}
           </div>
           {errors["product.image"] && (
-            <p className="admin-field-error text-sm text-error-primary">{errors["product.image"]}</p>
+            <p className="admin-field-error">{errors["product.image"]}</p>
           )}
           {field("product.imageAlt", "Mô tả ảnh", p.imageAlt)}
         </section>
