@@ -11,12 +11,12 @@
 .date-time-input input {
   padding-right: 52px !important;
   font-size: 16px !important;
-  height: 50px;
+  height: 44px;
 }
 .picker-trigger {
   position: absolute;
   right: 5px;
-  top: 3px;
+  /* top: 3px; */
   width: 44px;
   height: 44px;
   display: grid;
