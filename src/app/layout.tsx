@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Lora, Be_Vietnam_Pro } from "next/font/google";
 import { connection } from "next/server";
 import { MotionProvider } from "@/components/ui/MotionProvider";
+import { SmoothScroll } from "@/components/ui/SmoothScroll";
+import "lenis/dist/lenis.css";
 import "./globals.css";
 import "@/styles/widgets.css";
 import "@/styles/phase3.css";
@@ -32,6 +34,7 @@ export default async function RootLayout({
     <html lang="vi" className={`${heading.variable} ${body.variable}`}>
       {/* Grammarly can add attributes to body before React hydrates. */}
       <body suppressHydrationWarning>
+        <SmoothScroll />
         <MotionProvider>{children}</MotionProvider>
       </body>
     </html>
