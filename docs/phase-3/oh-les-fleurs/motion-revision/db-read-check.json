@@ -1,0 +1,19 @@
+{
+  "environment": "preview",
+  "shopLive": "false",
+  "adapter": "postgres",
+  "products": [
+    {
+      "publication_status": "draft",
+      "count": 1
+    },
+    {
+      "publication_status": "published",
+      "count": 3
+    }
+  ],
+  "heroConfigured": false,
+  "storyConfigured": false,
+  "readOnly": true,
+  "writes": 0
+}

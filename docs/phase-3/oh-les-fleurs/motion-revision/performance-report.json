@@ -1,0 +1,333 @@
+{
+  "method": "Same Chromium/Lighthouse mobile simulated preset, three runs each; fresh Home access and final URL checked for final sequential sets; no dev/build/E2E/uploads during final measurements",
+  "firstBefore": {
+    "url": "https://hoeshop-6kizqf7up-buibaos-projects.vercel.app",
+    "sourceSha": "adb136ede9c77e68450478bbfe110d49e70a64e4",
+    "runs": [
+      {
+        "run": 1,
+        "score": 97,
+        "lcp": 2099.9390000000003,
+        "cls": 0,
+        "tbt": 156,
+        "transfer": 492296,
+        "jsBytes": 245991
+      },
+      {
+        "run": 2,
+        "score": 86,
+        "lcp": 3836.867,
+        "cls": 0,
+        "tbt": 179,
+        "transfer": 492204,
+        "jsBytes": 246184
+      },
+      {
+        "run": 3,
+        "score": 96,
+        "lcp": 2385.109,
+        "cls": 0,
+        "tbt": 169.5,
+        "transfer": 492279,
+        "jsBytes": 245998
+      }
+    ]
+  },
+  "firstAfter": {
+    "url": "https://hoeshop-8fb4n980g-buibaos-projects.vercel.app",
+    "sourceSha": "7595fe10404333a9cdf2d9372b99966b7c79ec49",
+    "runs": [
+      {
+        "run": 1,
+        "score": 88,
+        "lcp": 3253.83,
+        "cls": 0.000603621166905925,
+        "tbt": 212,
+        "transfer": 494500,
+        "jsBytes": 247651
+      },
+      {
+        "run": 2,
+        "score": 75,
+        "lcp": 3716.143500000001,
+        "cls": 0,
+        "tbt": 169,
+        "transfer": 494541,
+        "jsBytes": 247786
+      },
+      {
+        "run": 3,
+        "score": 94,
+        "lcp": 2707.9790000000003,
+        "cls": 0,
+        "tbt": 176.5,
+        "transfer": 494410,
+        "jsBytes": 247626
+      }
+    ]
+  },
+  "additionalValidAfterOn7595": {
+    "url": "https://hoeshop-8fb4n980g-buibaos-projects.vercel.app",
+    "sourceSha": "7595fe10404333a9cdf2d9372b99966b7c79ec49",
+    "runs": [
+      {
+        "run": 1,
+        "score": 96,
+        "lcp": 2238.8869999999997,
+        "cls": 0,
+        "tbt": 108.5,
+        "transfer": 494487,
+        "jsBytes": 247833
+      },
+      {
+        "run": 2,
+        "score": 96,
+        "lcp": 2117.085,
+        "cls": 0,
+        "tbt": 197,
+        "transfer": 494450,
+        "jsBytes": 247816
+      },
+      {
+        "run": 3,
+        "score": 95,
+        "lcp": 2348.7414999999996,
+        "cls": 0,
+        "tbt": 186.51,
+        "transfer": 494480,
+        "jsBytes": 247864
+      }
+    ]
+  },
+  "rejectedComparison": {
+    "reason": "paired baseline final URL was vercel.com/login; excluded as not Home",
+    "scores": [
+      40,
+      43,
+      34
+    ]
+  },
+  "before": {
+    "url": "https://hoeshop-6kizqf7up-buibaos-projects.vercel.app",
+    "sourceSha": "adb136ede9c77e68450478bbfe110d49e70a64e4",
+    "runs": [
+      {
+        "run": 1,
+        "score": 91,
+        "lcp": 2919.0275,
+        "cls": 0,
+        "tbt": 201,
+        "transfer": 492236,
+        "jsBytes": 245794
+      },
+      {
+        "run": 2,
+        "score": 88,
+        "lcp": 3263.6105,
+        "cls": 0.003311172316526508,
+        "tbt": 248,
+        "transfer": 492201,
+        "jsBytes": 246037
+      },
+      {
+        "run": 3,
+        "score": 89,
+        "lcp": 2658.483,
+        "cls": 0,
+        "tbt": 214.5,
+        "transfer": 492233,
+        "jsBytes": 245993
+      }
+    ]
+  },
+  "after": {
+    "url": "https://hoeshop-3531mkt9t-buibaos-projects.vercel.app",
+    "sourceSha": "db96d5ac3124198e1f06d682bfbbeb7609f5870b",
+    "runs": [
+      {
+        "run": 1,
+        "score": 68,
+        "lcp": 4340.1365000000005,
+        "cls": 0.0001137257270982178,
+        "tbt": 178.5,
+        "transfer": 494477,
+        "jsBytes": 247817
+      },
+      {
+        "run": 2,
+        "score": 56,
+        "lcp": 6601.410000000002,
+        "cls": 0,
+        "tbt": 175.5,
+        "transfer": 494511,
+        "jsBytes": 248074
+      },
+      {
+        "run": 3,
+        "score": 89,
+        "lcp": 2500.5240000000013,
+        "cls": 0.0001210366666973889,
+        "tbt": 179,
+        "transfer": 494630,
+        "jsBytes": 247938
+      }
+    ]
+  },
+  "medians": {
+    "before": {
+      "score": 89,
+      "lcp": 2919.0275,
+      "cls": 0,
+      "tbt": 214.5,
+      "jsBytes": 245993,
+      "transfer": 492233
+    },
+    "after": {
+      "score": 68,
+      "lcp": 4340.1365000000005,
+      "cls": 0.0001137257270982178,
+      "tbt": 178.5,
+      "jsBytes": 247938,
+      "transfer": 494511
+    }
+  },
+  "targetMet": false,
+  "noRegressionProven": false,
+  "finalTrace": [
+    {
+      "run": 1,
+      "finalHost": "hoeshop-3531mkt9t-buibaos-projects.vercel.app",
+      "lcpBreakdown": [
+        {
+          "type": "table",
+          "headings": [
+            {
+              "key": "label",
+              "valueType": "text",
+              "label": "Subpart"
+            },
+            {
+              "key": "duration",
+              "valueType": "ms",
+              "label": "Duration"
+            }
+          ],
+          "items": [
+            {
+              "subpart": "timeToFirstByte",
+              "label": "Time to first byte",
+              "duration": 2965.751000015259
+            },
+            {
+              "subpart": "resourceLoadDelay",
+              "label": "Resource load delay",
+              "duration": 17.232999984741213
+            },
+            {
+              "subpart": "resourceLoadDuration",
+              "label": "Resource load duration",
+              "duration": 3458.683
+            },
+            {
+              "subpart": "elementRenderDelay",
+              "label": "Element render delay",
+              "duration": 76.378
+            }
+          ]
+        }
+      ],
+      "fcp": 3432.779,
+      "speedIndex": 9319.803911598023
+    },
+    {
+      "run": 2,
+      "finalHost": "hoeshop-3531mkt9t-buibaos-projects.vercel.app",
+      "lcpBreakdown": [
+        {
+          "type": "table",
+          "headings": [
+            {
+              "key": "label",
+              "valueType": "text",
+              "label": "Subpart"
+            },
+            {
+              "key": "duration",
+              "valueType": "ms",
+              "label": "Duration"
+            }
+          ],
+          "items": [
+            {
+              "subpart": "timeToFirstByte",
+              "label": "Time to first byte",
+              "duration": 18709.223
+            },
+            {
+              "subpart": "resourceLoadDelay",
+              "label": "Resource load delay",
+              "duration": 160.13
+            },
+            {
+              "subpart": "resourceLoadDuration",
+              "label": "Resource load duration",
+              "duration": 4093.688
+            },
+            {
+              "subpart": "elementRenderDelay",
+              "label": "Element render delay",
+              "duration": 86.861
+            }
+          ]
+        }
+      ],
+      "fcp": 4510.9400000000005,
+      "speedIndex": 33959.95849399137
+    },
+    {
+      "run": 3,
+      "finalHost": "hoeshop-3531mkt9t-buibaos-projects.vercel.app",
+      "lcpBreakdown": [
+        {
+          "type": "table",
+          "headings": [
+            {
+              "key": "label",
+              "valueType": "text",
+              "label": "Subpart"
+            },
+            {
+              "key": "duration",
+              "valueType": "ms",
+              "label": "Duration"
+            }
+          ],
+          "items": [
+            {
+              "subpart": "timeToFirstByte",
+              "label": "Time to first byte",
+              "duration": 2647.43
+            },
+            {
+              "subpart": "resourceLoadDelay",
+              "label": "Resource load delay",
+              "duration": 121.425
+            },
+            {
+              "subpart": "resourceLoadDuration",
+              "label": "Resource load duration",
+              "duration": 657.664
+            },
+            {
+              "subpart": "elementRenderDelay",
+              "label": "Element render delay",
+              "duration": 132.713
+            }
+          ]
+        }
+      ],
+      "fcp": 1777.0160000000008,
+      "speedIndex": 5719.672318005138
+    }
+  ]
+}

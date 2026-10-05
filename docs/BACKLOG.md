@@ -2,6 +2,8 @@
 
 Motion revision Home từ `bea475c`: đã bổ sung timeline hero và benefits sticky, có reference runtime desktop/mobile. Mobile benefits là adaptation tĩnh. [Kiểm chứng mới](phase-3/oh-les-fleurs/motion-revision/VERIFICATION.md); còn shop duyệt, thay ảnh test/lặp bằng assets thật, Safari/iOS và screen reader thiết bị thật.
 
+Motion source cuối `db96d5a`: Preview runtime đã kiểm tra, local 66 unit/20 Home E2E sau corner fix đạt (full 58 trước corner fix). Hiệu năng chưa nghiệm thu: ba lượt source cuối median 68, LCP 4340ms; cần tuning/đo lại trước release, không dùng các lượt cao trước đó để đánh dấu hoàn tất. Production tiếp tục đóng.
+
 Checkpoint Home Oh les Fleurs từ `0217f4d`, nhánh `feat/oh-les-fleurs-home`: triển khai Home/header/footer/variant card cùng motion; [bằng chứng](phase-3/oh-les-fleurs/VERIFICATION.md). Còn shop duyệt Preview và thay assets thật. Chưa mở rộng redesign các trang Store khác/Admin. Untitled UI không được nghiệm thu và đã hoàn tác. Production tiếp tục đóng.
 
 Phase 1 baseline giữ trong REQUIREMENTS/VERIFICATION.md; adapter Sheets và Apps Script là lịch sử. Phase 2 bắt đầu từ `474cc71`, runtime dùng Postgres. Không dùng lại deadline 06/10/2026.

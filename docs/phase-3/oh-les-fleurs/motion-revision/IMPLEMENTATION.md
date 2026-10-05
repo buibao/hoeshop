@@ -24,6 +24,8 @@ Xem [runtime observations](reference/observations.json), [desktop video](referen
 
 Benefits 0 bị bỏ; 1 dùng card tĩnh; 2–10 có journey desktop khi đủ chiều cao. Copy dài khiến card/stage không vừa viewport sẽ dùng flow, tránh nội dung bị clip. Không khóa wheel/touch hoặc thêm thư viện.
 
+Card desktop giữ cùng padding/font/min-height trong cả flow và sticky; tránh ResizeObserver bật/tắt chế độ liên tục trên cửa sổ thấp. 580/600/620px dùng flow ổn định. Số thứ tự 10 hiển thị đúng hai chữ số.
+
 ## Phạm vi bảo toàn
 
 Query/content vẫn ở Server Components. API, DB schema, giỏ, receipt, pricing, retry, Clerk, Blob và Admin giữ nguyên. Không seed/migration hoặc ghi dữ liệu Preview. Assets vẫn là test/fallback; cần ảnh hero/story thật và ảnh thứ ba phù hợp, hiện một ảnh bouquet được lặp. `SHOP_LIVE=false`.
