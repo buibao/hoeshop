@@ -89,6 +89,7 @@ const labels: Record<string, string> = {
   createdAt: "Tiếp nhận",
   updatedAt: "Cập nhật",
   editVersion: "Phiên bản",
+  displayName: "Tên",
 };
 const enums: Record<string, string[]> = {
   publicationStatus: ["draft", "published", "archived"],
@@ -791,7 +792,7 @@ export function AdminEditor({
             )
             .map(([k, v]) => (
               <div key={k}>
-                <strong>{labels[k] || k}</strong>
+                <strong>{labels[k] || k}: </strong>
                 <ReadOnly value={v} field={k} />
               </div>
             ))}

@@ -271,6 +271,7 @@
   align-items: flex-end;
   gap: 16px;
   margin-top: 16px;
+  margin-bottom: 8px;
 }
 .admin-filter .field {
   margin-bottom: 0;
@@ -488,7 +489,7 @@
   display: block;
   color: var(--ui-error);
   font-size: 12px;
-  margin-top: 6px;
+  /* margin-top: 6px; */
 }
 .admin-warning {
   background: #fff7e7;
@@ -612,6 +613,7 @@
   border: 1px solid var(--border);
   border-radius: 12px;
   background: white;
+  margin-top: 8px;
 }
 .admin-table {
   margin-top: 0;
