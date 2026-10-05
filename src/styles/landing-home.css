@@ -85,8 +85,7 @@
 .olf-benefits[data-benefits-motion="true"] .olf-benefits-intro { margin-bottom: 0; }
 .olf-benefits[data-benefits-motion="true"] .olf-benefits-viewport { position: absolute; inset: 0; display: grid; align-items: center; overflow: clip; }
 .olf-benefits[data-benefits-motion="true"] .olf-benefit-grid { display: flex; gap: 48px; width: max-content; align-items: center; }
-.olf-benefits[data-benefits-motion="true"] .olf-benefit-card { flex: 0 0 var(--benefit-card-width); width: var(--benefit-card-width); padding: 48px 32px; min-height: 430px; }
-.olf-benefits[data-benefits-motion="true"] .olf-benefit-card h3 { font-size: 32px; }
+.olf-benefits[data-benefits-motion="true"] .olf-benefit-card { flex: 0 0 var(--benefit-card-width); width: var(--benefit-card-width); }
 .olf-step-number { display: inline-grid; place-items: center; width: 48px; height: 48px; border: 1px solid var(--accent); color: var(--accent); border-radius: 50%; font-size: 14px; margin-bottom: 24px; }
 .olf-benefit-grid h3, .olf-process-grid h3 { font-size: 25px; line-height: 1.25; }
 .olf-benefit-grid p, .olf-process-grid p { color: var(--muted); margin-top: 14px; font-size: 14px; }
@@ -113,6 +112,11 @@
 .olf-cta h2 { font-size: clamp(44px, 5vw, 72px); }
 .olf-cta p { max-width: 540px; margin: 24px auto 0; color: var(--muted); font-size: 16px; }
 .olf-home .empty { background: var(--surface-soft); padding: 48px 24px; border: 0; }
+/* Measure the same card geometry in both modes, avoiding a resize feedback loop on short windows. */
+@media (min-width: 1024px) {
+  .olf-benefit-card { padding: 48px 32px; min-height: 430px; }
+  .olf-benefit-card h3 { font-size: 32px; }
+}
 @media (max-width: 1023px) {
   .olf-shell { padding-inline: 32px; }
   .olf-hero { padding-top: 40px; }

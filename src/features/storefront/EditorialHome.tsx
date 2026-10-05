@@ -96,7 +96,7 @@ export async function EditorialHome() {
           {home.benefits.length > 0 && <LandingBenefitsMotion intro={<><span className="olf-eyebrow">{home.benefitEyebrow}</span><h3 className="copy-lines">{home.benefitTitle}</h3><p>{home.benefitIntro}</p></>}
             cards={home.benefits.map((benefit, index) => <div key={index}>
               <Flower2 className="olf-benefit-art" aria-hidden="true" />
-              <span className="olf-step-number">0{index + 1}</span><h3>{benefit.title}</h3><p>{benefit.body}</p>
+              <span className="olf-step-number">{String(index + 1).padStart(2, "0")}</span><h3>{benefit.title}</h3><p>{benefit.body}</p>
             </div>)} />}
         </div>
       </section>
