@@ -30,7 +30,8 @@ export default async function RootLayout({
   await connection();
   return (
     <html lang="vi" className={`${heading.variable} ${body.variable}`}>
-      <body>
+      {/* Grammarly can add attributes to body before React hydrates. */}
+      <body suppressHydrationWarning>
         <MotionProvider>{children}</MotionProvider>
       </body>
     </html>

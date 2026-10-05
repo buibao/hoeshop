@@ -12,7 +12,7 @@
 .hoe-store-product-navigation { position: relative; }
 .hoe-store-product-navigation .product-navigation-heading { display: flex; align-items: center; gap: 4px; }
 .hoe-store-product-navigation .product-navigation-heading > button { display: grid; place-items: center; min-width: 36px; min-height: 44px; color: var(--accent); border: 0; border-radius: 50%; background: transparent; cursor: pointer; transition: background 160ms; }
-.hoe-store-product-navigation .product-navigation-heading > button:hover, .hoe-store-product-navigation .product-navigation-heading > button[aria-expanded="true"] { background: var(--brand-blush); }
+.hoe-store-product-navigation .product-navigation-heading > button:hover, .hoe-store-product-navigation .product-navigation-heading > button[aria-expanded="true"] { /* background: var(--brand-blush);*/ }
 .hoe-store-product-navigation .product-navigation-heading > button svg { transition: transform 240ms; }
 .hoe-store-product-navigation .product-navigation-heading > button[aria-expanded="true"] svg { transform: rotate(180deg); }
 .hoe-store-submenu { position: absolute; z-index: 50; top: 100%; left: -20px; width: 310px; padding: 16px; border: 1px solid var(--border); border-radius: 8px; background: var(--background); box-shadow: 0 16px 40px #332c2a12; }

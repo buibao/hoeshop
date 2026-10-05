@@ -42,11 +42,11 @@ export default async function ShopLayout({
       </a>
       {test ? (
         <div className="banner test">
-          BẢN TEST — Mẫu hoa, giá và ảnh minh họa để kiểm thử.{" "}
+          Demo
           {process.env.DATA_ADAPTER === "mock"
             ? "Dữ liệu lưu tạm trên máy local, mất khi khởi động lại."
             : process.env.DATABASE_URL && process.env.RATE_LIMIT_SECRET
-              ? "Dữ liệu được lưu vào DB test riêng; không tiếp nhận đơn thật."
+              ? ""
               : "Chưa kết nối DB test; yêu cầu chưa được tiếp nhận."}
         </div>
       ) : !shopLive() ? (
