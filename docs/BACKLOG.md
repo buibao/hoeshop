@@ -2,15 +2,15 @@
 
 Phase 1 baseline giữ trong REQUIREMENTS/VERIFICATION.md; adapter Sheets và Apps Script là lịch sử. Phase 2 bắt đầu từ `474cc71`, runtime dùng Postgres. Không dùng lại deadline 06/10/2026.
 
-| Mốc phase 2          | Đã triển khai                                                                                                  | Chưa nghiệm thu                                                                |
-| -------------------- | -------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
-| A: retry/giỏ         | Metadata 7 ngày, normalize/fingerprint, retry trước validation động, reconcile; retry mất response/reload đạt trên Neon Preview desktop/mobile. | Shop nghiệm thu giỏ/retry. |
-| A: DB                | 13 bảng/migration, marker, seed no overwrite; Neon Free test/Preview riêng Singapore đã migrate/import. | DB production và dữ liệu thật. |
-| A: dữ liệu phát sinh | Transaction/idempotency/rate; 13 integration cases đạt trên Neon test. Public Preview lưu đơn/tư vấn/bình luận, đối chiếu SQL và retry không trùng. | Shop nghiệm thu/vận hành. |
-| A: content/admin     | Async content/cache, runtime slug, CRUD/archive, status/note audit, allowlist và stale edit.                   | Clerk Google admin/non-admin thật.                                             |
-| B: media             | Direct upload, xác minh bytes/MIME/kích thước, thư viện, chống xóa tham chiếu. Blob SDK thật upload/read/delete đã đạt. | UAT token/direct upload/finish/xóa tham chiếu qua admin UI; integration admin hiện mock provider. |
-| B: widget/storefront | Calendar/giờ tiếng Việt tùy biến, popup/bottom sheet, form nhóm, presets, quantity, menu và motion.            | Shop duyệt Preview desktop/mobile; copy/ảnh thật.                              |
-| C: release           | Checks, screenshots, UAT suite, readiness/runbook/rollback.                                                    | Dịch vụ thật, tài khoản, UAT, tên miền/OAuth production và quyết định mở shop. |
+| Mốc phase 2          | Đã triển khai                                                                                                                                       | Chưa nghiệm thu                                                                                   |
+| -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| A: retry/giỏ         | Metadata 7 ngày, normalize/fingerprint, retry trước validation động, reconcile; retry mất response/reload đạt trên Neon Preview desktop/mobile.     | Shop nghiệm thu giỏ/retry.                                                                        |
+| A: DB                | 13 bảng/migration, marker, seed no overwrite; Neon Free test/Preview riêng Singapore đã migrate/import.                                             | DB production và dữ liệu thật.                                                                    |
+| A: dữ liệu phát sinh | Transaction/idempotency/rate; 13 integration cases đạt trên Neon test. Public Preview lưu đơn/tư vấn/bình luận, đối chiếu SQL và retry không trùng. | Shop nghiệm thu/vận hành.                                                                         |
+| A: content/admin     | Async content/cache, runtime slug, CRUD/archive, status/note audit, allowlist và stale edit.                                                        | Clerk Google admin/non-admin thật.                                                                |
+| B: media             | Direct upload, xác minh bytes/MIME/kích thước, thư viện, chống xóa tham chiếu. Blob SDK thật upload/read/delete đã đạt.                             | UAT token/direct upload/finish/xóa tham chiếu qua admin UI; integration admin hiện mock provider. |
+| B: widget/storefront | Calendar/giờ tiếng Việt tùy biến, popup/bottom sheet, form nhóm, presets, quantity, menu và motion.                                                 | Shop duyệt Preview desktop/mobile; copy/ảnh thật.                                                 |
+| C: release           | Checks, screenshots, UAT suite, readiness/runbook/rollback.                                                                                         | Dịch vụ thật, tài khoản, UAT, tên miền/OAuth production và quyết định mở shop.                    |
 
 ## Đầu vào còn thiếu
 
@@ -24,6 +24,12 @@ Phase 1 baseline giữ trong REQUIREMENTS/VERIFICATION.md; adapter Sheets và Ap
 
 Lighthouse local median mobile phase 2 là 83 (baseline 85); mục tiêu ≥90 còn tuning trên deployment. Payload và JS đã giảm, nhưng chưa xác nhận cải thiện LCP/điểm. Xem docs/phase-2/PERFORMANCE.md. Dev tooling còn 9 audit advisories; production dependencies audit 0.
 
-## Ngoài scope
+## Phase 3 — checkpoint A/B
+
+Nhánh feat/phase3 từ e53bbbf: đã sửa cấu hình Hoa Ý/hiển thị tổng/nhãn trạng thái/field error và dựng Home/detail, sidebar/bảng-thẻ/chi tiết đơn/ProductEditor mẫu. Preview có dữ liệu test riêng; chờ shop duyệt checkpoint B trước áp dụng rộng.
+
+Còn C/D/E: tách ArticleEditor/SettingsEditor; dashboard/media UX; áp dụng listing/dịch vụ/giỏ/checkout/blog/contact/policy/widget; full Google admin/non-admin/Blob UI UAT, Safari/iOS thật, Lighthouse phase 3, ảnh/logo/copy thật và production readiness. Xem docs/phase-3/PHASE3_PLAN.md và VERIFICATION_PHASE3.md. Không đánh dấu phase 3 hoàn tất khi chỉ có mẫu được triển khai.
+
+## Ngoài scope phase 3
 
 Thanh toán, tài khoản khách, tìm kiếm công khai, upload ảnh khách, CMS/page builder, gói Hoa Thời/lịch tự động/gia hạn, tồn kho/theo dõi giao, thông báo tự động và reply/like/rating.

@@ -4,6 +4,9 @@ import { adminPageActor } from "@/server/admin/auth";
 import { resourceSchema } from "@/server/admin/schemas";
 import { adminList } from "@/server/admin/repository";
 import { MediaLibrary } from "@/features/admin/MediaLibrary";
+import { OrderTable } from "@/features/admin/OrderTable";
+import { StatusBadge } from "@/components/ui/StatusBadge";
+import { valueLabel } from "@/domain/labels";
 const labels: Record<string, string> = {
   orders: "Đơn hoa",
   inquiries: "Tư vấn",
@@ -65,7 +68,7 @@ export default async function ListPage({
                     : ["received", "contacted", "resolved", "cancelled"]
                   ).map((value) => (
                     <option key={value} value={value}>
-                      {value}
+                      {valueLabel(value)}
                     </option>
                   ))}
                 </select>
@@ -73,67 +76,73 @@ export default async function ListPage({
               <button className="button">Lọc danh sách</button>
             </form>
           )}
-          <div className="admin-table-wrap">
-            <table className="admin-table">
-              <thead>
-                <tr>
-                  <th>Nội dung</th>
-                  <th>Trạng thái</th>
-                  <th>Cập nhật</th>
-                  <th>Thao tác</th>
-                </tr>
-              </thead>
-              <tbody>
-                {rows.map((row) => {
-                  const r = row as Record<string, unknown>,
-                    id = String(r.id || r.key);
-                  return (
-                    <tr key={id}>
-                      <td>
-                        {String(
-                          r.name ||
-                            r.title ||
-                            r.displayName ||
-                            r.key ||
-                            r.requestId ||
-                            r.id,
-                        )}
-                        {r.body ? (
-                          <p className="small">
-                            {String(r.body).slice(0, 150)}
-                          </p>
-                        ) : null}
-                      </td>
-                      <td>
-                        {String(
-                          r.publicationStatus ||
-                            r.businessStatus ||
-                            r.visibility ||
-                            "—",
-                        )}
-                      </td>
-                      <td>
-                        {new Date(
-                          String(r.updatedAt || r.createdAt),
-                        ).toLocaleDateString("vi-VN", {
-                          timeZone: "Asia/Ho_Chi_Minh",
-                        })}
-                      </td>
-                      <td>
-                        <Link
-                          className="text-link"
-                          href={`/admin/${resource}/${encodeURIComponent(id)}`}
-                        >
-                          Mở chi tiết
-                        </Link>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-            {!rows.length && <p>Chưa có nội dung.</p>}
-          </div>
+          {resource === "orders" ? (
+            <OrderTable rows={rows as Record<string, unknown>[]} />
+          ) : (
+            <div className="admin-table-wrap">
+              <table className="admin-table">
+                <thead>
+                  <tr>
+                    <th>Nội dung</th>
+                    <th>Trạng thái</th>
+                    <th>Cập nhật</th>
+                    <th>Thao tác</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {rows.map((row) => {
+                    const r = row as Record<string, unknown>,
+                      id = String(r.id || r.key);
+                    return (
+                      <tr key={id}>
+                        <td>
+                          {String(
+                            r.name ||
+                              r.title ||
+                              r.displayName ||
+                              r.key ||
+                              r.requestId ||
+                              r.id,
+                          )}
+                          {r.body ? (
+                            <p className="small">
+                              {String(r.body).slice(0, 150)}
+                            </p>
+                          ) : null}
+                        </td>
+                        <td>
+                          <StatusBadge
+                            value={String(
+                              r.publicationStatus ||
+                                r.businessStatus ||
+                                r.visibility ||
+                                "—",
+                            )}
+                          />
+                        </td>
+                        <td>
+                          {new Date(
+                            String(r.updatedAt || r.createdAt),
+                          ).toLocaleDateString("vi-VN", {
+                            timeZone: "Asia/Ho_Chi_Minh",
+                          })}
+                        </td>
+                        <td>
+                          <Link
+                            className="text-link"
+                            href={`/admin/${resource}/${encodeURIComponent(id)}`}
+                          >
+                            Mở chi tiết
+                          </Link>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+              {!rows.length && <p>Chưa có nội dung.</p>}
+            </div>
+          )}
           <nav className="admin-pagination" aria-label="Phân trang">
             {page > 0 && (
               <Link

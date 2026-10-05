@@ -1,5 +1,6 @@
 import * as z from "zod";
 import { productSchema } from "@/domain/schemas";
+import { shapeChoices } from "@/domain/labels";
 import {
   siteSchema,
   homeSchema,
@@ -33,7 +34,37 @@ export const adminProductSchema = z
     publicationStatus: status,
     sortOrder: z.number().int().min(0).max(9999).default(0),
   })
-  .strict();
+  .strict()
+  .superRefine((v, ctx) => {
+    const p = v.product;
+    const shape = p.defaultDesign.shape?.trim();
+    if (shape && !shapeChoices.includes(shape as (typeof shapeChoices)[number]))
+      ctx.addIssue({
+        code: "custom",
+        path: ["product", "defaultDesign", "shape"],
+        message: "Chọn Bó, Hộp, Bình hoặc Cành.",
+      });
+    for (const [i, choice] of (p.pricedOptions.shape || []).entries())
+      if (
+        !shapeChoices.includes(choice.trim() as (typeof shapeChoices)[number])
+      )
+        ctx.addIssue({
+          code: "custom",
+          path: ["product", "pricedOptions", "shape", i],
+          message: "Hình thức có giá không hợp lệ.",
+        });
+    if (
+      p.serviceType === "hoa-y" &&
+      p.price.mode !== "quote" &&
+      v.publicationStatus === "published" &&
+      !shape
+    )
+      ctx.addIssue({
+        code: "custom",
+        path: ["product", "defaultDesign", "shape"],
+        message: "Chọn hình thức mặc định trước khi công khai Hoa Ý có giá.",
+      });
+  });
 export const articleSchema = z
   .object({
     id: slug,

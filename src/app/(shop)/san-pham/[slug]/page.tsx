@@ -23,7 +23,7 @@ export default async function ProductDetail({ params }: Props) {
   if (!product) notFound();
   const service = (await getService(product.serviceType))!;
   return (
-    <div className="container">
+    <div className="container hoe-editorial-detail">
       <div className="breadcrumb">
         <Link href="/">Trang chủ</Link>
         <span>/</span>
@@ -33,20 +33,26 @@ export default async function ProductDetail({ params }: Props) {
       </div>
       <div className="detail-grid">
         <div className="detail-image">
-          <Image
-            src={product.image || "/images/floral-mark.svg"}
-            alt={product.imageAlt || product.name}
-            fill
-            sizes="(max-width: 700px) 90vw, 45vw"
-            preload
-            unoptimized={product.fixture}
-          />
+          <div className="editorial-detail-photo">
+            <Image
+              src={product.image || "/images/floral-mark.svg"}
+              alt={product.imageAlt || product.name}
+              fill
+              sizes="(max-width: 700px) 90vw, 45vw"
+              loading="eager"
+              fetchPriority="high"
+              unoptimized={product.fixture}
+            />
+          </div>
         </div>
         <div className="detail-copy">
           <span className="eyebrow">{service.name}</span>
           <h1>{product.name}</h1>
           <p>{product.description}</p>
           <div className="detail-price">{priceLabel(product.price)}</div>
+          <p className="editorial-price-note">
+            Thiết kế, giá cuối và lịch nhận được Hòe xác nhận khi liên hệ.
+          </p>
           {product.fixture ? (
             <p className="form-note">
               Mẫu test — không phải sản phẩm đang bán.

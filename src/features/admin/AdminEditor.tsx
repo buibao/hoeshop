@@ -1,13 +1,19 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 import { MediaLibrary } from "./MediaLibrary";
 import Modal from "react-bootstrap/Modal";
 import { displayDate } from "@/domain/date-time";
-import { money, priceLabel } from "@/domain/pricing";
+import { totalLabel, priceLabel } from "@/domain/pricing";
 import { priceSchema } from "@/domain/schemas";
+import { valueLabels } from "@/domain/labels";
+import { productEditorData, issueMap, type FieldIssue } from "./form-model";
+import { ProductEditor } from "./ProductEditor";
+import { AdminField } from "./AdminField";
+import { adminProductSchema, articleSchema } from "@/server/admin/schemas";
+import { StatusBadge } from "@/components/ui/StatusBadge";
 type Row = Record<string, unknown>;
 const labels: Record<string, string> = {
   id: "ID cố định",
@@ -77,6 +83,12 @@ const labels: Record<string, string> = {
   processTitle: "Tiêu đề quy trình",
   faqTitle: "Tiêu đề FAQ",
   publishedAt: "Thời điểm xuất bản",
+  status: "Trạng thái",
+  note: "Ghi chú",
+  notes: "Lời nhắn của khách",
+  createdAt: "Tiếp nhận",
+  updatedAt: "Cập nhật",
+  editVersion: "Phiên bản",
 };
 const enums: Record<string, string[]> = {
   publicationStatus: ["draft", "published", "archived"],
@@ -91,22 +103,7 @@ const enums: Record<string, string[]> = {
   serviceType: ["hoa-thoi", "hoa-tam", "hoa-y"],
   mode: ["quote", "fixed", "range"],
 };
-const choices: Record<string, string> = {
-  draft: "Bản nháp",
-  published: "Công khai",
-  archived: "Lưu trữ",
-  received: "Mới nhận",
-  contacted: "Đã liên hệ",
-  confirmed: "Đã xác nhận",
-  completed: "Hoàn thành",
-  cancelled: "Đã hủy",
-  resolved: "Đã giải quyết",
-  visible: "Công khai",
-  hidden: "Đã ẩn",
-  quote: "Chờ báo giá",
-  fixed: "Giá cố định",
-  range: "Khoảng giá",
-};
+const choices = valueLabels;
 const entryTemplates: Record<string, Row> = {
   benefits: { title: "", body: "" },
   process: { title: "", body: "" },
@@ -170,7 +167,13 @@ Object.assign(labels, {
   ctaTitle: "Tiêu đề cuối trang",
   ctaBody: "Nội dung cuối trang",
 });
-function ReadOnly({ value, field = "" }: { value: unknown; field?: string }) {
+export function ReadOnly({
+  value,
+  field = "",
+}: {
+  value: unknown;
+  field?: string;
+}) {
   if (Array.isArray(value))
     return (
       <div>
@@ -184,15 +187,21 @@ function ReadOnly({ value, field = "" }: { value: unknown; field?: string }) {
   if (value && typeof value === "object") {
     const row = value as Row;
     if (row.snapshot) return <ReadOnly value={row.snapshot} />;
-    if (row.pricedCount !== undefined)
+    if (row.pricedCount !== undefined) {
+      const total = totalLabel({
+        min: Number(row.min),
+        max: Number(row.max),
+        pricedCount: Number(row.pricedCount),
+        quoteCount: Number(row.quoteCount),
+      });
       return (
         <p>
-          {Number(row.min) === Number(row.max)
-            ? money(Number(row.min))
-            : `${money(Number(row.min))} – ${money(Number(row.max))}`}
-          {Number(row.quoteCount) > 0 ? " · Chưa gồm phần chờ báo giá" : ""}
+          <span className="admin-hint">{total.label}</span>
+          <br />
+          <strong>{total.value}</strong>
         </p>
       );
+    }
     if (row.productId && row.configuration) {
       const price = priceSchema.safeParse(row.price);
       return (
@@ -228,41 +237,56 @@ function ReadOnly({ value, field = "" }: { value: unknown; field?: string }) {
     </span>
   );
 }
+export function OrderSummary({ row }: { row: Row }) {
+  return (
+    <section className="admin-order-detail" id="chi-tiet-don">
+      <div className="admin-detail-heading">
+        <div>
+          <span className="eyebrow">ĐƠN HOA</span>
+          <h2>
+            #
+            {String(row.requestId || row.id)
+              .slice(0, 8)
+              .toUpperCase()}
+          </h2>
+        </div>
+        <StatusBadge value={String(row.businessStatus || "received")} />
+      </div>
+      <div className="admin-field-grid">
+        <section className="admin-panel">
+          <h3>Người đặt</h3>
+          <ReadOnly value={row.buyer} />
+        </section>
+        <section className="admin-panel">
+          <h3>Người nhận & địa chỉ</h3>
+          <ReadOnly value={row.recipient} />
+          <p>{String(row.address || "")}</p>
+        </section>
+      </div>
+      <section className="admin-panel">
+        <div className="admin-panel-heading">
+          <h3>Hoa và mong muốn</h3>
+          <p>
+            Ngày, giờ theo từng mẫu là mong muốn của khách, cần shop xác nhận.
+          </p>
+        </div>
+        <ReadOnly value={row.items || []} />
+        {Boolean(row.notes) && <p>{String(row.notes)}</p>}
+      </section>
+      <section className="admin-panel admin-detail-total">
+        <div>
+          <h3>Giá & lịch nhận</h3>
+          <p className="admin-hint">
+            Phí giao, thiết kế và lịch nhận được shop xác nhận khi liên hệ.
+          </p>
+        </div>
+        <ReadOnly value={row.totals} />
+      </section>
+    </section>
+  );
+}
 function initial(resource: string, row: Row | null): Row {
-  if (resource === "products") {
-    const r = row || {};
-    return {
-      product: {
-        id: r.id || "",
-        slug: r.slug || "",
-        name: r.name || "",
-        description: r.description || "",
-        serviceType: r.serviceType || "hoa-tam",
-        image: r.image || null,
-        imageAlt: r.imageAlt || "",
-        published: r.publicationStatus === "published",
-        fixture: Boolean(r.fixture),
-        price:
-          r.priceMode === "fixed"
-            ? { mode: "fixed", amount: r.amount, unit: r.unit }
-            : r.priceMode === "range"
-              ? { mode: "range", min: r.min, max: r.max, unit: r.unit }
-              : { mode: "quote" },
-        defaultDesign: {
-          color: "",
-          style: "",
-          ...((r.defaultDesign as Row) || {}),
-        },
-        pricedOptions: {
-          color: [],
-          style: [],
-          ...((r.pricedOptions as Row) || {}),
-        },
-      },
-      publicationStatus: r.publicationStatus || "draft",
-      sortOrder: r.sortOrder || 0,
-    };
-  }
+  if (resource === "products") return productEditorData(row);
   if (resource === "posts" || resource === "policies")
     return Object.fromEntries(
       [
@@ -316,6 +340,7 @@ function Fields({
   creating,
   resource,
   selectImage,
+  errors,
 }: {
   data: Row;
   change: (key: string, value: unknown) => void;
@@ -323,6 +348,7 @@ function Fields({
   creating: boolean;
   resource: string;
   selectImage: (key: string) => void;
+  errors: Record<string, string>;
 }) {
   return (
     <>
@@ -364,6 +390,7 @@ function Fields({
                   creating={creating}
                   resource={resource}
                   selectImage={selectImage}
+                  errors={errors}
                 />
                 {["logo", "hero", "story"].includes(key) && (
                   <button
@@ -382,17 +409,18 @@ function Fields({
               (!value.length || typeof value[0] === "string")
             )
               return (
-                <label className="field" key={full}>
-                  <span>
-                    {label} <small>(mỗi dòng một lựa chọn)</small>
-                  </span>
-                  <textarea
-                    value={value.join("\n")}
-                    onChange={(e) =>
-                      change(full, e.target.value.split("\n").filter(Boolean))
-                    }
-                  />
-                </label>
+                <AdminField
+                  key={full}
+                  path={full}
+                  label={label}
+                  value={value.join("\n")}
+                  type="textarea"
+                  hint="Mỗi dòng một lựa chọn."
+                  errors={errors}
+                  change={(path, next) =>
+                    change(path, String(next).split("\n").filter(Boolean))
+                  }
+                />
               );
             return (
               <fieldset className="admin-fieldset" key={full}>
@@ -406,6 +434,7 @@ function Fields({
                       creating={creating}
                       resource={resource}
                       selectImage={selectImage}
+                      errors={errors}
                     />
                     <button
                       type="button"
@@ -444,7 +473,18 @@ function Fields({
             return (
               <div className="field" key={full}>
                 <label htmlFor={full}>{label}</label>
-                <input id={full} value={String(value || "")} readOnly />
+                <input
+                  id={full}
+                  value={String(value || "")}
+                  readOnly
+                  aria-invalid={Boolean(errors[full])}
+                  aria-describedby={errors[full] ? `${full}-error` : undefined}
+                />
+                {errors[full] && (
+                  <small id={`${full}-error`} className="admin-field-error">
+                    {errors[full]}
+                  </small>
+                )}
                 <div className="hero-actions">
                   <button
                     type="button"
@@ -467,46 +507,50 @@ function Fields({
             key === "businessStatus" && resource === "inquiries"
               ? ["received", "contacted", "resolved", "cancelled"]
               : enums[key];
+          if (typeof value !== "boolean")
+            return (
+              <AdminField
+                key={full}
+                path={full}
+                label={label}
+                value={value}
+                errors={errors}
+                change={change}
+                options={options}
+                readOnly={key === "id" && !creating}
+                type={
+                  options
+                    ? "select"
+                    : typeof value === "number"
+                      ? "number"
+                      : [
+                            "bodyMarkdown",
+                            "description",
+                            "body",
+                            "answer",
+                            "internalNote",
+                          ].includes(key)
+                        ? "textarea"
+                        : "text"
+                }
+                rows={key === "bodyMarkdown" ? 16 : 4}
+              />
+            );
           return (
             <label className="field" key={full}>
               <span>{label}</span>
-              {options ? (
-                <select
-                  value={String(value)}
-                  onChange={(e) => change(full, e.target.value)}
-                >
-                  {options.map((v) => (
-                    <option key={v} value={v}>
-                      {choices[v] || v}
-                    </option>
-                  ))}
-                </select>
-              ) : typeof value === "boolean" ? (
-                <input
-                  type="checkbox"
-                  checked={value}
-                  onChange={(e) => change(full, e.target.checked)}
-                />
-              ) : typeof value === "number" ? (
-                <input
-                  type="number"
-                  min="0"
-                  value={value}
-                  onChange={(e) => change(full, Number(e.target.value))}
-                />
-              ) : (
-                <textarea
-                  rows={
-                    key === "bodyMarkdown"
-                      ? 16
-                      : String(value || "").length > 150
-                        ? 4
-                        : 1
-                  }
-                  readOnly={key === "id" && !creating}
-                  value={String(value || "")}
-                  onChange={(e) => change(full, e.target.value)}
-                />
+              <input
+                id={full}
+                type="checkbox"
+                checked={value}
+                aria-invalid={Boolean(errors[full])}
+                aria-describedby={errors[full] ? `${full}-error` : undefined}
+                onChange={(e) => change(full, e.target.checked)}
+              />
+              {errors[full] && (
+                <small id={`${full}-error`} className="admin-field-error">
+                  {errors[full]}
+                </small>
               )}
             </label>
           );
@@ -517,16 +561,75 @@ function Fields({
 export function AdminEditor({
   resource,
   row,
+  demo = false,
 }: {
   resource: string;
   row: Row | null;
+  demo?: boolean;
 }) {
   const router = useRouter(),
     [data, setData] = useState(() => initial(resource, row)),
     [message, setMessage] = useState(""),
     [saving, setSaving] = useState(false),
     [imageField, setImageField] = useState<string | null>(null),
-    [preview, setPreview] = useState(false);
+    [preview, setPreview] = useState(false),
+    [errors, setErrors] = useState<Record<string, string>>({}),
+    [version, setVersion] = useState(Number(row?.editVersion || 0)),
+    [baseline, setBaseline] = useState(() =>
+      JSON.stringify(initial(resource, row)),
+    ),
+    [conflict, setConflict] = useState(false),
+    [latest, setLatest] = useState<Row | null>(null);
+  const formRef = useRef<HTMLFormElement>(null);
+  const Heading = demo ? "h3" : "h1";
+  const dirty = JSON.stringify(data) !== baseline;
+  useEffect(() => {
+    if (!dirty) return;
+    const unload = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = "";
+    };
+    const navigate = (e: MouseEvent) => {
+      const anchor = (e.target as Element).closest?.(
+        "a[href]",
+      ) as HTMLAnchorElement | null;
+      if (
+        !anchor ||
+        anchor.target === "_blank" ||
+        anchor.origin !== location.origin ||
+        anchor.pathname + anchor.search === location.pathname + location.search
+      )
+        return;
+      if (
+        !window.confirm(
+          "Bạn có thay đổi chưa lưu. Rời trang và bỏ các thay đổi này?",
+        )
+      ) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    };
+    window.addEventListener("beforeunload", unload);
+    document.addEventListener("click", navigate, true);
+    return () => {
+      window.removeEventListener("beforeunload", unload);
+      document.removeEventListener("click", navigate, true);
+    };
+  }, [dirty]);
+  function showErrors(issues: FieldIssue[]) {
+    const mapped = issueMap(issues);
+    setErrors(mapped);
+    requestAnimationFrame(() => {
+      const input = document.getElementById(Object.keys(mapped)[0]);
+      for (
+        let parent = input?.parentElement;
+        parent;
+        parent = parent.parentElement
+      )
+        if (parent instanceof HTMLDetailsElement) parent.open = true;
+      input?.focus();
+    });
+  }
   function change(path: string, value: unknown) {
     setData((previous) => {
       const next = structuredClone(previous),
@@ -534,6 +637,30 @@ export function AdminEditor({
       let target: Row = next;
       for (const part of parts.slice(0, -1)) target = target[part] as Row;
       target[parts.at(-1)!] = value;
+      if (path === "product.serviceType") {
+        const product = next.product as Row;
+        const allowed =
+          value === "hoa-y"
+            ? [
+                "color",
+                "style",
+                "shape",
+                "flowerType",
+                "size",
+                "requirements",
+                "referenceUrl",
+              ]
+            : value === "hoa-tam"
+              ? ["color", "style", "dislikedFlowers"]
+              : ["color", "style"];
+        for (const key of ["defaultDesign", "pricedOptions"])
+          product[key] = Object.fromEntries(
+            Object.entries(product[key] as Row).filter(([key]) =>
+              allowed.includes(key),
+            ),
+          );
+        if (value === "hoa-thoi") product.price = { mode: "quote" };
+      }
       if (path === "product.price.mode") {
         const p = (next.product as Row).price as Row;
         (next.product as Row).price =
@@ -555,37 +682,79 @@ export function AdminEditor({
       return next;
     });
     setMessage("");
+    setErrors((previous) => {
+      const next = { ...previous };
+      delete next[path];
+      return next;
+    });
   }
   async function save(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
     setMessage("");
+    setErrors({});
     const id = String(
       row?.id || row?.key || (data.product as Row)?.id || data.id || "",
     );
     try {
+      const schema =
+        resource === "products"
+          ? adminProductSchema
+          : ["posts", "policies"].includes(resource)
+            ? articleSchema
+            : null;
+      const checked = schema?.safeParse(data);
+      if (checked && !checked.success) {
+        setMessage("Vui lòng kiểm tra các trường thông tin.");
+        showErrors(
+          checked.error.issues.map((i) => ({
+            path: i.path.join("."),
+            message: i.message,
+          })),
+        );
+        return;
+      }
+      if (demo) {
+        const parsed = adminProductSchema.safeParse(data);
+        if (!parsed.success) {
+          setMessage("Vui lòng kiểm tra các trường thông tin.");
+          showErrors(
+            parsed.error.issues.map((i) => ({
+              path: i.path.join("."),
+              message: i.message,
+            })),
+          );
+        } else {
+          setMessage(
+            "Cấu hình hợp lệ. Đây là mẫu giao diện, chưa ghi dữ liệu.",
+          );
+          setBaseline(JSON.stringify(data));
+        }
+        return;
+      }
       const response = await fetch(
         `/api/admin/${resource}/${encodeURIComponent(id)}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            editVersion: Number(row?.editVersion || 0),
+            editVersion: version,
             data,
           }),
         },
       );
       const result = await response.json();
       if (!response.ok) {
-        setMessage(
-          result.error.message +
-            (result.error.fields
-              ?.map((v: { message: string }) => " " + v.message)
-              .join("") || ""),
-        );
+        setMessage(result.error.message);
+        showErrors(result.error.fields || []);
+        setConflict(response.status === 409);
         return;
       }
       setMessage("Đã lưu nội dung.");
+      // PUT returns SQL column names; keep the entered model and use its receipt version.
+      setBaseline(JSON.stringify(data));
+      setVersion(Number(result.row.editVersion ?? result.row.edit_version));
+      setConflict(false);
       if (!row) router.replace(`/admin/${resource}/${encodeURIComponent(id)}`);
       router.refresh();
     } catch {
@@ -599,10 +768,11 @@ export function AdminEditor({
       <Link className="text-link" href={`/admin/${resource}`}>
         ← Quay lại danh sách
       </Link>
-      <h1 className="admin-title">
+      <Heading className="admin-title">
         {row ? "Chi tiết & chỉnh sửa" : "Thêm nội dung mới"}
-      </h1>
-      {["orders", "inquiries", "comments"].includes(resource) && row && (
+      </Heading>
+      {resource === "orders" && row && <OrderSummary row={row} />}
+      {["inquiries", "comments"].includes(resource) && row && (
         <div className="admin-request-summary">
           {Object.entries(row)
             .filter(([k]) =>
@@ -628,15 +798,46 @@ export function AdminEditor({
         </div>
       )}
       <AuditHistory rows={row?.audit} />
-      <form onSubmit={save} className="admin-editor">
+      <form ref={formRef} onSubmit={save} className="admin-editor" noValidate>
+        {Object.keys(errors).length > 0 && (
+          <div className="admin-error-summary" role="alert">
+            <strong>Cần kiểm tra trước khi lưu</strong>
+            <ul>
+              {Object.entries(errors).map(([path, error]) => (
+                <li key={path}>
+                  <a
+                    href={`#${path}`}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      document.getElementById(path)?.focus();
+                    }}
+                  >
+                    {error}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
         <fieldset disabled={saving}>
-          <Fields
-            data={data}
-            change={change}
-            creating={!row}
-            resource={resource}
-            selectImage={setImageField}
-          />
+          {resource === "products" ? (
+            <ProductEditor
+              data={data}
+              change={change}
+              errors={errors}
+              creating={!row}
+              selectImage={setImageField}
+            />
+          ) : (
+            <Fields
+              data={data}
+              change={change}
+              creating={!row}
+              resource={resource}
+              selectImage={setImageField}
+              errors={errors}
+            />
+          )}
           {["posts", "policies"].includes(resource) && (
             <>
               <button
@@ -657,7 +858,11 @@ export function AdminEditor({
           )}
           <div className="admin-save">
             <button className="button" type="submit">
-              {saving ? "Đang lưu…" : "Lưu thay đổi"}
+              {saving
+                ? "Đang lưu…"
+                : demo
+                  ? "Kiểm tra mẫu giao diện"
+                  : "Lưu thay đổi"}
             </button>
             {row && ["products", "posts", "policies"].includes(resource) && (
               <button
@@ -669,10 +874,69 @@ export function AdminEditor({
               </button>
             )}
           </div>
+          {dirty && <p className="admin-hint">Có thay đổi chưa lưu.</p>}
         </fieldset>
         <p role="status" aria-live="polite">
           {message}
         </p>
+        {conflict && (
+          <div className="admin-warning">
+            <p>
+              Bản ghi có thể đã thay đổi. Nội dung đang nhập được giữ nguyên.
+            </p>
+            <button
+              type="button"
+              className="button secondary"
+              onClick={async () => {
+                try {
+                  const id = String(
+                    row?.id || row?.key || (data.product as Row)?.id || data.id,
+                  );
+                  const response = await fetch(
+                    `/api/admin/${resource}/${encodeURIComponent(id)}`,
+                    { cache: "no-store" },
+                  );
+                  const body = await response.json();
+                  if (!response.ok) throw new Error(body.error.message);
+                  setLatest(body.rows[0] || null);
+                } catch {
+                  setMessage(
+                    "Chưa tải được bản mới. Nội dung đang nhập vẫn được giữ.",
+                  );
+                }
+              }}
+            >
+              Xem bản mới nhất
+            </button>
+            {latest && (
+              <>
+                <ReadOnly value={latest} />
+                <button
+                  type="button"
+                  className="button secondary"
+                  onClick={() => {
+                    if (
+                      window.confirm(
+                        "Thay nội dung đang nhập bằng bản mới nhất?",
+                      )
+                    ) {
+                      const next = initial(resource, latest);
+                      setData(next);
+                      setBaseline(JSON.stringify(next));
+                      setVersion(Number(latest.editVersion));
+                      setLatest(null);
+                      setConflict(false);
+                      setErrors({});
+                      setMessage("Đã tải bản mới nhất.");
+                    }
+                  }}
+                >
+                  Dùng bản mới nhất
+                </button>
+              </>
+            )}
+          </div>
+        )}
       </form>
       <Modal
         show={Boolean(imageField)}
@@ -690,12 +954,19 @@ export function AdminEditor({
           </button>
         </Modal.Header>
         <Modal.Body>
-          <MediaLibrary
-            onSelect={(url) => {
-              if (imageField) change(imageField, url);
-              setImageField(null);
-            }}
-          />
+          {demo ? (
+            <p>
+              Chọn ảnh từ thư viện chỉ khả dụng trong vùng admin đã đăng nhập.
+              Mẫu này không gọi API quản trị.
+            </p>
+          ) : (
+            <MediaLibrary
+              onSelect={(url) => {
+                if (imageField) change(imageField, url);
+                setImageField(null);
+              }}
+            />
+          )}
         </Modal.Body>
       </Modal>
     </>

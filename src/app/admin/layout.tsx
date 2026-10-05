@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { requireAdmin, authConfigured } from "@/server/admin/auth";
 import { DomainError } from "@/domain/schemas";
 import "@/styles/admin.css";
+import { AdminNav } from "@/features/admin/AdminNav";
 export const metadata = {
   title: "Quản trị Hòe",
   robots: { index: false, follow: false },
@@ -46,31 +47,9 @@ export default async function AdminLayout({
   return (
     <ClerkProvider>
       <div className="admin-shell">
-        <aside className="admin-sidebar">
-          <Link className="brand" href="/admin">
-            hòe<small>góc của shop</small>
-          </Link>
-          <nav aria-label="Quản trị">
-            {[
-              ["", "Tổng quan"],
-              ["orders", "Đơn hoa"],
-              ["inquiries", "Tư vấn"],
-              ["products", "Sản phẩm"],
-              ["posts", "Chuyện hoa"],
-              ["policies", "Chính sách"],
-              ["services", "Dịch vụ"],
-              ["settings", "Website"],
-              ["comments", "Bình luận"],
-              ["media", "Thư viện ảnh"],
-            ].map(([path, label]) => (
-              <Link key={path} href={`/admin/${path}`}>
-                {label}
-              </Link>
-            ))}
-          </nav>
+        <AdminNav>
           <UserButton />
-          <Link href="/">Xem storefront</Link>
-        </aside>
+        </AdminNav>
         <main className="admin-main">{children}</main>
       </div>
     </ClerkProvider>

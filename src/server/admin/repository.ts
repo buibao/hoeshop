@@ -96,6 +96,23 @@ export async function adminList(
       },
     ];
   }
+  if (resource === "orders" && rows.length) {
+    // One grouped query for this page; never load all items or issue N+1 queries.
+    const ids = rows.map((row) => String((row as { id: string }).id));
+    const groups = await getDb().execute(
+      sql`SELECT order_id, array_agg(DISTINCT snapshot->'configuration'->>'serviceType') AS services FROM order_items WHERE order_id IN (${sql.join(
+        ids.map((id) => sql`${id}`),
+        sql`,`,
+      )}) GROUP BY order_id`,
+    );
+    const services = new Map(
+      groups.rows.map((row) => [row.order_id, row.services]),
+    );
+    return rows.map((row) => ({
+      ...row,
+      serviceTypes: services.get((row as { id: string }).id) || [],
+    }));
+  }
   return rows;
 }
 async function mediaReferences(
@@ -135,14 +152,17 @@ export async function adminSave(
     const p = {
       ...v.product,
       defaultDesign: Object.fromEntries(
-        Object.entries(v.product.defaultDesign).filter(
-          ([, value]) => value !== "",
-        ),
+        Object.entries(v.product.defaultDesign)
+          .map(([key, value]) => [key, value.trim()] as const)
+          .filter(([, value]) => value !== ""),
       ),
       pricedOptions: Object.fromEntries(
-        Object.entries(v.product.pricedOptions).filter(
-          ([, values]) => values.length > 0,
-        ),
+        Object.entries(v.product.pricedOptions)
+          .map(([key, values]): [string, string[]] => [
+            key,
+            [...new Set(values.map((value) => value.trim()).filter(Boolean))],
+          ])
+          .filter(([, values]) => values.length > 0),
       ),
     };
     if (id !== p.id) throw invalid("Không thay đổi ID nội dung.");
@@ -246,34 +266,32 @@ export async function adminSave(
       );
     }
     if (!saved.rows.length) throw stale();
-    await tx
-      .insert(s.adminAuditLogs)
-      .values({
-        actorId: actor,
-        action: version ? "update:" + resource : "create:" + resource,
-        resourceId: id,
-        metadata: {
-          previousVersion: version,
-          changedFields: Object.keys(values),
-          status:
-            values.business_status ||
-            values.publication_status ||
-            values.visibility ||
-            null,
-          ...(previous
-            ? {
-                before: {
-                  status: previous.business_status,
-                  note: previous.internal_note,
-                },
-                after: {
-                  status: values.business_status,
-                  note: values.internal_note,
-                },
-              }
-            : {}),
-        },
-      });
+    await tx.insert(s.adminAuditLogs).values({
+      actorId: actor,
+      action: version ? "update:" + resource : "create:" + resource,
+      resourceId: id,
+      metadata: {
+        previousVersion: version,
+        changedFields: Object.keys(values),
+        status:
+          values.business_status ||
+          values.publication_status ||
+          values.visibility ||
+          null,
+        ...(previous
+          ? {
+              before: {
+                status: previous.business_status,
+                note: previous.internal_note,
+              },
+              after: {
+                status: values.business_status,
+                note: values.internal_note,
+              },
+            }
+          : {}),
+      },
+    });
     return saved.rows[0];
   });
   if (

@@ -30,7 +30,7 @@ test("home, navigation, keyboard and images work without horizontal overflow", a
   await expect(page.getByRole("heading", { level: 1 })).toContainText(
     "Hòe gửi hoa",
   );
-  await expect(page.getByText("BẢN TEST", { exact: false })).toBeVisible();
+  await expect(page.locator(".banner.test")).toContainText("BẢN TEST");
   await page.keyboard.press("Tab");
   await expect(
     page.getByRole("link", { name: "Đến nội dung chính" }),

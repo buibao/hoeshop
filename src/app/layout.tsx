@@ -4,6 +4,7 @@ import { connection } from "next/server";
 import { MotionProvider } from "@/components/ui/MotionProvider";
 import "./globals.css";
 import "@/styles/widgets.css";
+import "@/styles/phase3.css";
 const heading = Lora({
   subsets: ["latin", "vietnamese"],
   display: "swap",

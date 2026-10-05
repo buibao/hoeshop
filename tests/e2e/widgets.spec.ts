@@ -1,6 +1,7 @@
 import { test, expect } from "./fixtures";
 import fs from "node:fs";
-const shots = "docs/phase-2/screenshots";
+// Keep phase 2 acceptance evidence immutable; fresh test artifacts stay ignored.
+const shots = ".local/phase3-widget-screenshots";
 test("custom calendar/time picker support Vietnamese, keyboard, cancel, clear and canonical values", async ({
   page,
 }) => {
