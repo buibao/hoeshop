@@ -1,0 +1,48 @@
+{
+  "results": [
+    {
+      "count": 0,
+      "rendered": 0,
+      "enhanced": false,
+      "overflow": false
+    },
+    {
+      "count": 1,
+      "rendered": 1,
+      "enhanced": false,
+      "overflow": false
+    },
+    {
+      "count": 10,
+      "rendered": 10,
+      "enhanced": true,
+      "overflow": false
+    },
+    {
+      "longContent": true,
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "longContent": true,
+      "width": 1024,
+      "overflow": false
+    },
+    {
+      "longContent": true,
+      "width": 768,
+      "overflow": false
+    },
+    {
+      "longContent": true,
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "longContent": true,
+      "width": 360,
+      "overflow": false
+    }
+  ],
+  "errors": []
+}

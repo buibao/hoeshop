@@ -1,5 +1,7 @@
 # Kiểm chứng checkpoint Home
 
+**Lịch sử trước revision.** Review `bea475c` xác nhận hero/benefits dưới đây chưa đủ motion đặc trưng. Bằng chứng triển khai sửa nằm trong [motion-revision/VERIFICATION.md](motion-revision/VERIFICATION.md); phần còn lại của tài liệu này giữ nguyên kết quả cũ.
+
 Baseline `0217f4d`, ngày 05/10/2026. Kết quả đang được bổ sung sau khi chạy; chưa được shop duyệt.
 
 - Unit: 61 ca đạt, gồm 58 nghiệp vụ baseline và ba ca composition featured/empty/fallback/long copy.

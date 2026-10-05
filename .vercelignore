@@ -2,6 +2,8 @@
 .env*
 !.env.example
 .local/
+# Documentation, screenshots and videos are review artifacts, not runtime assets.
+docs/
 .agents/
 skills-lock.json
 .git/

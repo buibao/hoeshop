@@ -5,7 +5,9 @@ import { getHome, getProducts, getArticles, getAssets, getSite, isTestContent } 
 import { ProductCard } from "@/components/ProductCard";
 import { ServiceCards } from "@/components/ServiceCards";
 import { Empty } from "@/components/Empty";
-import { LandingPhoto, LandingReveal } from "./LandingMotion";
+import { LandingReveal } from "./LandingMotion";
+import { LandingHeroMotion, LandingTitleLine, LandingHeroPhoto, LandingHeroOrnament, LandingStoryPhoto } from "./LandingHeroMotion";
+import { LandingBenefitsMotion } from "./LandingBenefitsMotion";
 
 export async function EditorialHome() {
   const [home, catalog, articles, assets, site] = await Promise.all([
@@ -26,31 +28,30 @@ export async function EditorialHome() {
   const lines = home.title.split("\n");
   return (
     <div className="olf-home" data-home-design="oh-les-fleurs">
-      <section className="olf-hero" aria-labelledby="home-title">
+      <LandingHeroMotion>
         <div className="olf-shell olf-hero-stage">
           <div className="olf-hero-heading">
             <span className="olf-eyebrow">{home.eyebrow}</span>
             <h1 id="home-title">
-              {lines.map((line, index) => <span className="olf-title-line" key={index}>
+              {lines.map((line, index) => <LandingTitleLine key={index} index={index}>
                 {index === 0 ? line : <em>{line}</em>}
-                {index === 0 ? <Flower2 className="olf-title-flower" aria-hidden="true" /> : index === lines.length - 1 ? <Heart className="olf-title-heart" aria-hidden="true" /> : null}
+                {index === 0 ? <LandingHeroOrnament kind="flower"><Flower2 className="olf-title-flower" /></LandingHeroOrnament> : index === lines.length - 1 ? <LandingHeroOrnament kind="heart"><Heart className="olf-title-heart" /></LandingHeroOrnament> : null}
                 {index < lines.length - 1 ? " " : null}
-              </span>)}
+              </LandingTitleLine>)}
             </h1>
           </div>
           <div className="olf-hero-photos">
-            <LandingPhoto className="olf-hero-photo olf-hero-photo--one">
-              <div className="olf-photo-frame"><Image src={hero.src} alt={hero.alt} fill sizes="(max-width: 767px) 36vw, 18vw" loading="eager" fetchPriority="high" /></div>
-            </LandingPhoto>
-            <LandingPhoto className="olf-hero-photo olf-hero-photo--two" depth={-18}>
-              <div className="olf-photo-frame"><Image src={photoTwo} alt="" fill sizes="(max-width: 767px) 26vw, 18vw" loading="eager" /></div>
-            </LandingPhoto>
-            <LandingPhoto className="olf-hero-photo olf-hero-photo--three" depth={16}>
-              <div className="olf-photo-frame"><Image src={photoThree} alt="" fill sizes="(max-width: 767px) 26vw, 12vw" /></div>
-            </LandingPhoto>
+            <LandingHeroPhoto index={0}>
+              <div className="olf-photo-frame"><Image src={hero.src} alt={hero.alt} fill sizes="(max-width: 767px) 36vw, 27vw" loading="eager" fetchPriority="high" /></div>
+            </LandingHeroPhoto>
+            <LandingHeroPhoto index={1}>
+              <div className="olf-photo-frame"><Image src={photoTwo} alt="" fill sizes="(max-width: 767px) 26vw, 27vw" loading="eager" /></div>
+            </LandingHeroPhoto>
+            <LandingHeroPhoto index={2}>
+              <div className="olf-photo-frame"><Image src={photoThree} alt="" fill sizes="(max-width: 767px) 26vw, 27vw" loading="eager" /></div>
+            </LandingHeroPhoto>
           </div>
-        </div>
-        <div className="olf-hero-description olf-shell">
+        <div className="olf-hero-description">
           <p>{home.intro}</p>
           <div className="olf-actions">
             <Link className="olf-button" href={home.primaryCta.href}>{home.primaryCta.label}<ArrowUpRight aria-hidden="true" size={20} /></Link>
@@ -59,7 +60,9 @@ export async function EditorialHome() {
           <p className="olf-hero-note">{home.footnote}</p>
           <p className="olf-image-note">{home.imageNote}</p>
         </div>
-      </section>
+        <div className="olf-hero-gallery" aria-hidden="true" />
+        </div>
+      </LandingHeroMotion>
 
       <section id="dich-vu" className="olf-section olf-services" aria-labelledby="services-title">
         <div className="olf-shell">
@@ -83,17 +86,18 @@ export async function EditorialHome() {
       <section className="olf-section olf-story" aria-labelledby="story-title">
         <div className="olf-shell">
           <div className="olf-story-grid">
-            <LandingReveal className="olf-story-photo"><Image src={storyPhoto.src} alt={storyPhoto.alt} fill sizes="(max-width: 767px) 90vw, 42vw" /></LandingReveal>
+            <LandingStoryPhoto><Image src={storyPhoto.src} alt={storyPhoto.alt} fill sizes="(max-width: 767px) 90vw, 42vw" /></LandingStoryPhoto>
             <LandingReveal className="olf-story-copy"><span className="olf-eyebrow">{home.storyEyebrow}</span>
               <h2 id="story-title" className="copy-lines">{home.storyTitle}</h2><p>{home.storyBody}</p>
               <Link className="olf-link" href={story ? `/blog/${story.slug}` : "/ve-hoe"}>{home.storyCtaLabel}<ArrowUpRight aria-hidden="true" size={19} /></Link>
               <Flower2 className="olf-story-flower" aria-hidden="true" />
             </LandingReveal>
           </div>
-          {home.benefits.length > 0 && <div className="olf-benefits"><div className="olf-benefits-intro"><span className="olf-eyebrow">{home.benefitEyebrow}</span><h3 className="copy-lines">{home.benefitTitle}</h3><p>{home.benefitIntro}</p></div>
-            <div className="olf-benefit-grid">{home.benefits.map((benefit, index) => <LandingReveal key={benefit.title} delay={Math.min(index, 2) * 0.08}>
+          {home.benefits.length > 0 && <LandingBenefitsMotion intro={<><span className="olf-eyebrow">{home.benefitEyebrow}</span><h3 className="copy-lines">{home.benefitTitle}</h3><p>{home.benefitIntro}</p></>}
+            cards={home.benefits.map((benefit, index) => <div key={index}>
+              <Flower2 className="olf-benefit-art" aria-hidden="true" />
               <span className="olf-step-number">0{index + 1}</span><h3>{benefit.title}</h3><p>{benefit.body}</p>
-            </LandingReveal>)}</div></div>}
+            </div>)} />}
         </div>
       </section>
 

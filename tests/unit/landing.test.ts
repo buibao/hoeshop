@@ -9,6 +9,8 @@ import {EditorialHome} from '@/features/storefront/EditorialHome';
 vi.mock('@/server/content',()=>({getHome:vi.fn(),getProducts:vi.fn(),getArticles:vi.fn(),getAssets:vi.fn(),getSite:vi.fn(),getServices:vi.fn(),isTestContent:vi.fn()}));
 // Render client leaves as visible wrappers to inspect server-selected content independently of animation.
 vi.mock('@/features/storefront/LandingMotion',()=>({LandingPhoto:({children,...props}: {children:React.ReactNode})=>createElement('div',props,children),LandingReveal:({children}: {children:React.ReactNode})=>createElement('div',null,children)}));
+vi.mock('@/features/storefront/LandingHeroMotion',()=>({LandingHeroMotion:({children}: {children:React.ReactNode})=>createElement('section',{className:'olf-hero'},children),LandingTitleLine:({children}: {children:React.ReactNode})=>createElement('span',{className:'olf-title-line'},children),LandingHeroOrnament:({children}: {children:React.ReactNode})=>createElement('span',{'aria-hidden':true},children),LandingHeroPhoto:({children}: {children:React.ReactNode})=>createElement('div',null,children),LandingStoryPhoto:({children}: {children:React.ReactNode})=>createElement('div',null,children)}));
+vi.mock('@/features/storefront/LandingBenefitsMotion',()=>({LandingBenefitsMotion:({intro,cards}: {intro:React.ReactNode;cards:React.ReactNode[]})=>createElement('div',{className:'olf-benefits'},intro,...cards.map((card,index)=>createElement('article',{key:index},card)))}));
 vi.mock('@/components/ServiceCards',()=>({ServiceCards:()=>createElement('div',null,'Ba dịch vụ')}));
 afterEach(()=>vi.unstubAllEnvs());
 
@@ -23,6 +25,14 @@ beforeEach(()=>{
 });
 
 describe('landing content composition',()=>{
+  it.each([0,1,10])('keeps exactly %i configured benefits without reference claims',async(count)=>{
+    const home=await content.getHome();
+    vi.mocked(content.getHome).mockResolvedValue({...home,benefits:Array.from({length:count},(_,i)=>({title:`Benefit ${i}`,body:'Configured content'}))});
+    const html=renderToStaticMarkup(await EditorialHome());
+    expect(html.match(/Configured content/g)||[]).toHaveLength(count);
+    expect(html.includes('class="olf-benefits"')).toBe(count>0);
+    expect(html).not.toContain('24 ans');
+  });
   it('respects featured ordering/limit and does not insert missing IDs',async()=>{
     const catalog=await content.getProducts();
     const home=await content.getHome();
