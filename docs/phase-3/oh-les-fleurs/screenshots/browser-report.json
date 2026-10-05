@@ -1,0 +1,47 @@
+{
+  "url": "https://hoeshop-6kizqf7up-buibaos-projects.vercel.app",
+  "sourceSha": "adb136ede9c77e68450478bbfe110d49e70a64e4",
+  "reports": [
+    {
+      "width": 1440,
+      "home": 200,
+      "guestAdmin": 401,
+      "draft": 404,
+      "homeToProductToCheckout": true,
+      "apiWrites": 0,
+      "consoleErrors": 0,
+      "pageErrors": 0,
+      "overflow": false,
+      "menuKeyboard": true,
+      "reducedMotion": true
+    },
+    {
+      "width": 390,
+      "home": 200,
+      "guestAdmin": 401,
+      "draft": 404,
+      "homeToProductToCheckout": true,
+      "apiWrites": 0,
+      "consoleErrors": 0,
+      "pageErrors": 0,
+      "overflow": false,
+      "menuKeyboard": true,
+      "reducedMotion": true
+    },
+    {
+      "width": 360,
+      "home": 200,
+      "overflow": false
+    },
+    {
+      "width": 768,
+      "home": 200,
+      "overflow": false
+    },
+    {
+      "width": 1024,
+      "home": 200,
+      "overflow": false
+    }
+  ]
+}

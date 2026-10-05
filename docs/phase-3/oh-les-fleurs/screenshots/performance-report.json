@@ -1,0 +1,85 @@
+{
+  "tool": "Lighthouse mobile simulated throttling, three independent Chromium runs",
+  "before": {
+    "url": "https://hoeshop-dc61i5vcn-buibaos-projects.vercel.app",
+    "sourceSha": "0217f4d11b093b9912a9ac8ba878b656aed3bc07",
+    "runs": [
+      {
+        "run": 1,
+        "score": 85,
+        "lcp": 3206.3885,
+        "cls": 0,
+        "tbt": 323,
+        "transfer": 483792,
+        "jsBytes": 246029
+      },
+      {
+        "run": 2,
+        "score": 91,
+        "lcp": 2910.3925,
+        "cls": 0,
+        "tbt": 201.5,
+        "transfer": 483929,
+        "jsBytes": 245726
+      },
+      {
+        "run": 3,
+        "score": 84,
+        "lcp": 3754.5535,
+        "cls": 0,
+        "tbt": 239,
+        "transfer": 484014,
+        "jsBytes": 245856
+      }
+    ]
+  },
+  "after": {
+    "url": "https://hoeshop-6kizqf7up-buibaos-projects.vercel.app",
+    "sourceSha": "adb136ede9c77e68450478bbfe110d49e70a64e4",
+    "runs": [
+      {
+        "run": 1,
+        "score": 95,
+        "lcp": 2467.757,
+        "cls": 0,
+        "tbt": 161.5,
+        "transfer": 492258,
+        "jsBytes": 246017
+      },
+      {
+        "run": 2,
+        "score": 95,
+        "lcp": 2430.094,
+        "cls": 0.003306733747737598,
+        "tbt": 181,
+        "transfer": 492196,
+        "jsBytes": 246005
+      },
+      {
+        "run": 3,
+        "score": 90,
+        "lcp": 3126.8885,
+        "cls": 0,
+        "tbt": 215,
+        "transfer": 492375,
+        "jsBytes": 246197
+      }
+    ]
+  },
+  "medianBefore": {
+    "score": 85,
+    "lcp": 3206.3885,
+    "cls": 0,
+    "tbt": 239,
+    "transfer": 483929,
+    "jsBytes": 245856
+  },
+  "medianAfter": {
+    "score": 95,
+    "lcp": 2467.757,
+    "cls": 0,
+    "tbt": 181,
+    "transfer": 492258,
+    "jsBytes": 246017
+  }
+}
