@@ -13,7 +13,19 @@ Build, typecheck và lint bản A/B đạt. Public Playwright 40/40 đạt (20 d
 
 Các lần chạy đầu phát hiện overflow trên trang admin mẫu và giả định môi trường/selector của tests cũ; đã sửa rồi chạy lại đủ 40 cases. E2E giờ scrub credentials operator khỏi webServer, ảnh test mới ghi vào .local để không thay bằng chứng phase 2. Dev còn warning LCP khi cuộn đến ảnh mẫu và thông báo reduced motion; chưa dùng kết quả dev để kết luận performance production.
 
-Deployment/screenshots Preview thật được cập nhật sau deploy. Không suy diễn build hoặc screenshot là bằng chứng tiếp nhận đơn/Blob.
+Preview code `73d4f6d`: deployment `dpl_2i344oiydr5YcoKhhDsqQHPPGNwS`, READY, sin1, [website](https://hoeshop-alt0lt5fe-buibaos-projects.vercel.app), [trang duyệt](https://hoeshop-alt0lt5fe-buibaos-projects.vercel.app/xem-thu/giao-dien). Alias nhánh: https://hoeshop-git-feat-phase3-buibaos-projects.vercel.app . Vercel bảo vệ Preview; dùng share link cấp riêng hoặc đăng nhập chủ project, không commit token.
+
+Browser thật 1440/390px: sáu page checks và mười screenshots; Home/detail HTTP 200, ảnh decode đúng và không overflow, zero page errors; admin mẫu không ghi API, shape missing có inline error/focus và sửa Bình/Hộp kiểm tra hợp lệ; guest /api/admin/orders 401 + no-store. Neon Preview read-only xác nhận pooled/direct cùng DB, marker preview và 13 bảng. Không chạy migration/seed hay sửa nội dung Preview.
+
+| Màn | Desktop 1440 | Mobile 390 |
+| --- | --- | --- |
+| Home | [Ảnh](screenshots/1440-home.png) | [Ảnh](screenshots/390-home.png) |
+| Chi tiết sản phẩm | [Ảnh](screenshots/1440-product.png) | [Ảnh](screenshots/390-product.png) |
+| Đơn mẫu | [Ảnh](screenshots/1440-admin-orders.png) | [Ảnh](screenshots/390-admin-orders.png) |
+| ProductEditor | [Ảnh](screenshots/1440-product-editor.png) | [Ảnh](screenshots/390-product-editor.png) |
+| Field error / focus | [Ảnh](screenshots/1440-field-error-focus.png) | [Ảnh](screenshots/390-field-error-focus.png) |
+
+Ảnh trên deployment code 73d4f6d; commit bàn giao sau đó chỉ thêm tài liệu/ảnh. Toolbar Vercel chỉ được ẩn lúc chụp, không thay source. Không suy diễn build hoặc screenshot là bằng chứng tiếp nhận đơn/Blob. UAT Google admin/non-admin và media qua UI vẫn cần hoàn tất ở C/E.
 
 ## Chưa nghiệm thu
 
