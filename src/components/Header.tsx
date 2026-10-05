@@ -24,7 +24,7 @@ export function Header({
   const { items } = useCart();
   const count = items.reduce((n, item) => n + item.quantity, 0);
   return (
-    <header className="header">
+    <header className="header hoe-store-header">
       <div className="container header-inner">
         <Link href="/" className="brand" aria-label="Hòe — Trang chủ">
           {logo ? (
@@ -83,7 +83,7 @@ export function Header({
         onHide={() => setOpen(false)}
         placement="end"
         restoreFocusOptions={{ preventScroll: true }}
-        className="hoe-menu"
+        className="hoe-menu hoe-store-menu"
         id="mobile-navigation"
         aria-labelledby="mobile-menu-title"
       >

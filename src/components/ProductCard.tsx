@@ -4,17 +4,18 @@ import { ArrowUpRight } from "lucide-react";
 import { priceLabel } from "@/domain/pricing";
 import { valueLabel } from "@/domain/labels";
 import type { Product } from "@/domain/schemas";
-export function ProductCard({ product }: { product: Product }) {
+export function ProductCard({ product, variant = "default" }: { product: Product; variant?: "default" | "home" }) {
   const href = "/san-pham/" + product.slug;
+  const placeholder = variant === "home" && product.fixture && product.image === "/images/preview/peonies.jpg";
   return (
-    <article className="product-card hoe-product-card">
+    <article className={variant === "home" ? "olf-product-card hoe-product-card" : "product-card hoe-product-card"}>
       <Link href={href} aria-label={`Xem ${product.name}`}>
         <div className="product-image">
           <Image
-            src={product.image || "/images/floral-mark.svg"}
-            alt={product.imageAlt || product.name}
+            src={placeholder ? "/images/floral-mark.svg" : product.image || "/images/floral-mark.svg"}
+            alt={placeholder ? `Hoa minh họa tạm cho ${product.name}` : product.imageAlt || product.name}
             fill
-            sizes="(max-width: 700px) 45vw, 30vw"
+            sizes={variant === "home" ? "(max-width: 767px) 44vw, (max-width: 1023px) 45vw, 30vw" : "(max-width: 700px) 45vw, 30vw"}
           />
         </div>
       </Link>
@@ -25,7 +26,7 @@ export function ProductCard({ product }: { product: Product }) {
       <div className="product-price">{priceLabel(product.price)}</div>
       <div className="product-link">
         <Link href={href} className="text-link">
-          Khám phá mẫu hoa <ArrowUpRight size={15} />
+          {variant === "home" ? "Xem mẫu hoa" : "Khám phá mẫu hoa"} <ArrowUpRight size={15} aria-hidden="true" />
         </Link>
       </div>
     </article>

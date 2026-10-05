@@ -1,0 +1,63 @@
+/* Shared Store shell only. Drawer is portalled, so it carries its own namespace. */
+.hoe-store-header { border-bottom: 0; background: var(--background); z-index: 30; }
+.hoe-store-header .container, .hoe-store-footer .container { max-width: 1400px; padding-inline: 48px; }
+.hoe-store-header .header-inner { min-height: 100px; gap: 24px; }
+.hoe-store-header .brand { font-size: 44px; }
+.hoe-store-header .nav { gap: 28px; font-size: 13px; }
+.hoe-store-header .nav a { color: var(--ink); }
+.hoe-store-header .nav a:hover, .hoe-store-header .nav a[aria-current="page"], .hoe-store-header .nav a[data-active="true"] { color: var(--accent); }
+.hoe-store-header .cart-link { font-size: 13px; }
+.hoe-store-header .cart-link, .hoe-store-header .menu-button, .hoe-store-menu .icon-button { min-height: 44px; }
+.hoe-store-header .menu-button, .hoe-store-menu .icon-button { min-width: 44px; }
+.hoe-store-product-navigation { position: relative; }
+.hoe-store-product-navigation .product-navigation-heading { display: flex; align-items: center; gap: 4px; }
+.hoe-store-product-navigation .product-navigation-heading > button { display: grid; place-items: center; min-width: 36px; min-height: 44px; color: var(--accent); border: 0; border-radius: 50%; background: transparent; cursor: pointer; transition: background 160ms; }
+.hoe-store-product-navigation .product-navigation-heading > button:hover, .hoe-store-product-navigation .product-navigation-heading > button[aria-expanded="true"] { background: var(--brand-blush); }
+.hoe-store-product-navigation .product-navigation-heading > button svg { transition: transform 240ms; }
+.hoe-store-product-navigation .product-navigation-heading > button[aria-expanded="true"] svg { transform: rotate(180deg); }
+.hoe-store-submenu { position: absolute; z-index: 50; top: 100%; left: -20px; width: 310px; padding: 16px; border: 1px solid var(--border); border-radius: 8px; background: var(--background); box-shadow: 0 16px 40px #332c2a12; }
+.hoe-store-submenu .product-submenu-eyebrow { display: block; padding: 8px 12px 16px; color: var(--muted); font-size: 11px; }
+.hoe-store-submenu ul { list-style: none; margin: 0; padding: 0; }
+.hoe-store-header .hoe-store-submenu a, .hoe-store-menu nav .hoe-store-submenu a { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 12px; min-height: 68px; border: 0; border-radius: 4px; transition: background 160ms; }
+.hoe-store-submenu strong { display: block; font-family: var(--font-heading),serif; font-size: 24px; font-weight: 400; color: var(--ink); }
+.hoe-store-submenu small { display: block; font-size: 11px; margin-top: 3px; color: var(--muted); }
+.hoe-store-header .hoe-store-submenu a:hover, .hoe-store-header .hoe-store-submenu a[aria-current="page"], .hoe-store-menu nav .hoe-store-submenu a:hover, .hoe-store-menu nav .hoe-store-submenu a[aria-current="page"] { background: var(--brand-blush); color: var(--accent); }
+.hoe-store-submenu a svg { color: var(--accent); }
+.hoe-store-menu .product-navigation-heading { justify-content: space-between; border-bottom: 1px solid var(--border); }
+.hoe-store-menu nav .product-navigation-heading > a { flex: 1; border: 0; }
+.hoe-store-menu .product-navigation-heading > button { min-width: 48px; min-height: 48px; }
+.hoe-store-menu .hoe-store-submenu { position: static; width: auto; box-shadow: none; margin-block: 8px 12px; padding: 8px; }
+.hoe-store-menu .offcanvas-title { font-family: var(--font-heading),serif; color: var(--accent); }
+.hoe-store-footer { padding-block: 80px 32px; background: var(--accent); color: var(--background); border: 0; }
+.hoe-store-footer .footer-grid { grid-template-columns: 1.3fr 1fr 1fr; gap: 64px; }
+.hoe-store-footer .brand { font-size: 76px; color: var(--background); }
+.hoe-store-footer .footer-grid > div > p { margin-top: 24px; max-width: 280px; color: var(--brand-blush); font-size: 14px; }
+.hoe-store-footer h3 { font-family: var(--font-body),sans-serif; font-size: 13px; letter-spacing: .05em; color: var(--brand-blush); margin-bottom: 24px; }
+.hoe-store-footer .footer-links { gap: 14px; font-size: 14px; }
+.hoe-store-footer a { color: var(--background); }
+.hoe-store-footer a:hover { text-decoration: underline; text-underline-offset: 5px; }
+.hoe-store-footer .footer-bottom { border-top-color: #fffcf73b; margin-top: 56px; padding-top: 24px; color: var(--brand-blush); font-size: 11px; gap: 24px; }
+.hoe-store-footer :focus-visible { outline-color: var(--background); }
+@media (max-width: 1023px) {
+  .hoe-store-header .container, .hoe-store-footer .container { padding-inline: 32px; }
+  .hoe-store-header .nav { display: none; }
+  .hoe-store-header .menu-button { display: inline-flex; }
+  .hoe-store-header .header-inner { min-height: 84px; }
+  .hoe-store-footer .footer-grid { gap: 32px; }
+}
+@media (max-width: 767px) {
+  .hoe-store-header .container, .hoe-store-footer .container { padding-inline: 20px; }
+  .hoe-store-header .header-inner { min-height: 80px; gap: 12px; }
+  .hoe-store-header .brand { font-size: 38px; }
+  .hoe-store-header .brand small { font-size: 7px; letter-spacing: .14em; }
+  .hoe-store-header .header-actions { gap: 12px; }
+  .hoe-store-header .cart-link > span:first-of-type { display: none; }
+  .hoe-store-footer { padding-top: 56px; }
+  .hoe-store-footer .footer-grid { grid-template-columns: 1fr; gap: 40px; }
+  .hoe-store-footer .brand { font-size: 64px; }
+  .hoe-store-footer .footer-bottom { align-items: flex-start; flex-direction: column; gap: 16px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hoe-store-product-navigation * { transition: none; }
+  .hoe-store-product-navigation .product-navigation-heading > button svg { transform: none; }
+}

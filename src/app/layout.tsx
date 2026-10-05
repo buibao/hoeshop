@@ -5,6 +5,8 @@ import { MotionProvider } from "@/components/ui/MotionProvider";
 import "./globals.css";
 import "@/styles/widgets.css";
 import "@/styles/phase3.css";
+import "@/styles/landing-home.css";
+import "@/styles/store-shell.css";
 const heading = Lora({
   subsets: ["latin", "vietnamese"],
   display: "swap",

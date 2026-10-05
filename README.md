@@ -1,5 +1,7 @@
 # Hòe
 
+Checkpoint Home theo Oh les Fleurs trên `feat/oh-les-fleurs-home`, bắt đầu từ phase 3 `0217f4d`: hero chữ trung tâm/ảnh collage, Home sections, menu/footer và card riêng. Xem [plan](docs/phase-3/oh-les-fleurs/PLAN.md), [mapping reference](docs/phase-3/oh-les-fleurs/REFERENCE_MAPPING.md), [kiểm chứng và Preview](docs/phase-3/oh-les-fleurs/VERIFICATION.md), [assets](docs/phase-3/oh-les-fleurs/ASSETS.md). Catalog/detail/forms/Admin giữ baseline; chờ shop duyệt Home, không mở production. Migration Untitled UI đã bị từ chối và hoàn tác; không có trong nhánh này.
+
 Phase 3 đang ở checkpoint A/B trên nhánh `feat/phase3`: sửa Hoa Ý/giá/trạng thái/field errors và mẫu Home, chi tiết sản phẩm, admin. Xem [plan](docs/phase-3/PHASE3_PLAN.md), [UI spec](docs/phase-3/UI_SPEC.md), [bằng chứng](docs/phase-3/VERIFICATION_PHASE3.md). `/xem-thu/giao-dien` dùng admin mẫu cố định, không đọc đơn thật hoặc lưu dữ liệu; chỉ có trong chế độ test và không mở trên Vercel production. Chờ shop duyệt thiết kế trước C/D/E; `SHOP_LIVE=false`.
 
 Revision checkpoint B: ghi chú hero bên dưới ảnh, khung card sản phẩm thống nhất, submenu Sản phẩm theo ba dịch vụ, fade/scroll/hover/click và reduced motion. Preview và bằng chứng desktop/mobile được ghi trong VERIFICATION_PHASE3; assets vẫn là ảnh test.

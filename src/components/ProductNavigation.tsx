@@ -27,7 +27,7 @@ function ProductSubmenu({
   return (
     <m.div
       id={id}
-      className="product-submenu"
+      className="product-submenu hoe-store-submenu"
       inert={!present}
       initial={reduced ? false : { opacity: 0, y: mobile ? 0 : 10 }}
       animate={{ opacity: 1, y: 0 }}
@@ -77,7 +77,7 @@ export function ProductNavigation({
   return (
     <div
       ref={wrapper}
-      className={`product-navigation${mobile ? " product-navigation--mobile" : ""}`}
+      className={`product-navigation hoe-store-product-navigation${mobile ? " product-navigation--mobile" : ""}`}
       onMouseEnter={() => {
         if (!mobile)
           hoverTimer.current = setTimeout(() => setExpanded(true), 120);

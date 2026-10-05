@@ -1,21 +1,16 @@
 import Link from "next/link";
 import { getArticles, getSite } from "@/server/content";
 export async function Footer() {
-  const site = await getSite();
-  const policies = await getArticles("policies");
+  const [site, policies, articles] = await Promise.all([getSite(), getArticles("policies"), getArticles()]);
   return (
-    <footer className="footer">
+    <footer className="footer hoe-store-footer">
       <div className="container">
         <div className="footer-grid">
           <div>
             <Link href="/" className="brand">
               hòe
             </Link>
-            <p>
-              Hòe — nơi những điều khó nói
-              <br />
-              được kể bằng hoa.
-            </p>
+            <p>{site.tagline}</p>
           </div>
           <div>
             <h3>Khám phá Hòe</h3>
@@ -23,7 +18,7 @@ export async function Footer() {
               <Link href="/dich-vu/hoa-thoi">Hoa Thời</Link>
               <Link href="/dich-vu/hoa-tam">Hoa Tâm</Link>
               <Link href="/dich-vu/hoa-y">Hoa Ý</Link>
-              <Link href="/blog">Chuyện của những đóa hoa</Link>
+              {articles.length > 0 ? <Link href="/blog">Chuyện của những đóa hoa</Link> : null}
             </div>
           </div>
           <div>

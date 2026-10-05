@@ -15,7 +15,7 @@ test("product navigation works with hover, keyboard, mobile and service links", 
   if (!mobile) {
     await nav.getByRole("link", { name: "Sản phẩm", exact: true }).hover();
     await expect(toggle).toHaveAttribute("aria-expanded", "true");
-    await page.getByRole("heading", { level: 1 }).hover();
+    await page.locator(".olf-hero-description").hover();
     await expect(toggle).toHaveAttribute("aria-expanded", "false");
   }
   await toggle.focus();
@@ -57,24 +57,24 @@ test("product navigation works with hover, keyboard, mobile and service links", 
   if (mobile) await expect(page.getByRole("dialog")).toBeHidden();
 });
 
-test("hero caption sits below the photo and product crops share a layout", async ({
+test("centered hero keeps copy clear of photos and Home crops are consistent", async ({
   page,
 }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   for (const width of [360, 390, 768, 1024, 1440]) {
     await page.setViewportSize({ width, height: 900 });
     await page.goto("/");
-    const caption = await page
-      .locator(".editorial-photo-caption")
-      .boundingBox();
-    const photo = await page.locator(".editorial-hero-photo").boundingBox();
-    const art = await page.locator(".editorial-hero-art").boundingBox();
-    expect(caption && photo && art).toBeTruthy();
-    expect(caption!.y).toBeGreaterThanOrEqual(photo!.y + photo!.height);
-    expect(caption!.x).toBeGreaterThanOrEqual(art!.x);
-    expect(caption!.x + caption!.width).toBeLessThanOrEqual(
-      art!.x + art!.width + 1,
-    );
+    await expect(page.locator('[data-home-design="oh-les-fleurs"]')).toHaveCount(1);
+    const heading = await page.locator(".olf-hero-heading").boundingBox();
+    const description = await page.locator(".olf-hero-description").boundingBox();
+    expect(heading && description).toBeTruthy();
+    expect(description!.y).toBeGreaterThanOrEqual(heading!.y + heading!.height);
+    await expect(page.getByRole("heading", {level: 1})).toHaveCount(1);
+    if (width < 768) {
+      const photos = await page.locator('.olf-hero-photos').boundingBox();
+      expect(photos!.y).toBeGreaterThanOrEqual(heading!.y+heading!.height);
+      expect(description!.y).toBeGreaterThanOrEqual(photos!.y+photos!.height);
+    }
     const crops = await page
       .locator(".editorial-products .product-image")
       .evaluateAll((nodes) =>
@@ -106,11 +106,11 @@ test("scroll reveals settle visibly and reduced motion keeps content immediate",
     if (message.type() === "error") errors.push(message.text());
   });
   await page.goto("/");
-  await expect(page.locator(".editorial-hero-copy .button")).toBeVisible();
+  await expect(page.locator(".olf-hero-description .olf-button")).toBeVisible();
   const products = page.locator(".editorial-products");
   await products.scrollIntoViewIfNeeded();
   for (const reveal of await products
-    .locator("[data-editorial-reveal]")
+    .locator("[data-landing-reveal]")
     .all()) {
     await expect
       .poll(() =>
@@ -123,7 +123,7 @@ test("scroll reveals settle visibly and reduced motion keeps content immediate",
   await page.reload();
   await products.scrollIntoViewIfNeeded();
   for (const reveal of await products
-    .locator("[data-editorial-reveal]")
+    .locator("[data-landing-reveal]")
     .all()) {
     expect(
       await reveal.evaluate((node) => Number(getComputedStyle(node).opacity)),
