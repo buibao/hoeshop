@@ -28,6 +28,8 @@ Lighthouse local median mobile phase 2 là 83 (baseline 85); mục tiêu ≥90 c
 
 Nhánh feat/phase3 từ e53bbbf: đã sửa cấu hình Hoa Ý/hiển thị tổng/nhãn trạng thái/field error và dựng Home/detail, sidebar/bảng-thẻ/chi tiết đơn/ProductEditor mẫu. Preview có dữ liệu test riêng; chờ shop duyệt checkpoint B trước áp dụng rộng.
 
+Revision B theo feedback: bỏ caption hero chồng lệch, đồng nhất card 4:5, thêm submenu sản phẩm Hoa Thời/Tâm/Ý và nâng fade/scroll/hover/click với reduced motion. Chờ duyệt bản Preview cập nhật; không coi feedback sửa mẫu là nghiệm thu để tự mở rộng C/D/E.
+
 Còn C/D/E: tách ArticleEditor/SettingsEditor; dashboard/media UX; áp dụng listing/dịch vụ/giỏ/checkout/blog/contact/policy/widget; full Google admin/non-admin/Blob UI UAT, Safari/iOS thật, Lighthouse phase 3, ảnh/logo/copy thật và production readiness. Xem docs/phase-3/PHASE3_PLAN.md và VERIFICATION_PHASE3.md. Không đánh dấu phase 3 hoàn tất khi chỉ có mẫu được triển khai.
 
 ## Ngoài scope phase 3

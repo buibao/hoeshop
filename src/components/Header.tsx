@@ -6,6 +6,7 @@ import { useState } from "react";
 import { Menu, ShoppingBag, X } from "lucide-react";
 import Offcanvas from "react-bootstrap/Offcanvas";
 import { useCart } from "@/features/cart/store";
+import { ProductNavigation } from "@/components/ProductNavigation";
 const navigation = [
   ["/", "Trang chủ"],
   ["/san-pham", "Sản phẩm"],
@@ -41,16 +42,20 @@ export function Header({
           )}
         </Link>
         <nav id="main-nav" className="nav" aria-label="Điều hướng chính">
-          {navigation.map(([href, title]) => (
-            <Link
-              key={href}
-              href={href}
-              aria-current={pathname === href ? "page" : undefined}
-              onClick={() => setOpen(false)}
-            >
-              {title}
-            </Link>
-          ))}
+          {navigation.map(([href, title]) =>
+            href === "/san-pham" ? (
+              <ProductNavigation key={href} />
+            ) : (
+              <Link
+                key={href}
+                href={href}
+                aria-current={pathname === href ? "page" : undefined}
+                onClick={() => setOpen(false)}
+              >
+                {title}
+              </Link>
+            ),
+          )}
         </nav>
         <div className="header-actions">
           <Link
@@ -96,16 +101,24 @@ export function Header({
         </Offcanvas.Header>
         <Offcanvas.Body>
           <nav aria-label="Điều hướng trên điện thoại">
-            {navigation.map(([href, title]) => (
-              <Link
-                key={href}
-                href={href}
-                aria-current={pathname === href ? "page" : undefined}
-                onClick={() => setOpen(false)}
-              >
-                {title}
-              </Link>
-            ))}
+            {navigation.map(([href, title]) =>
+              href === "/san-pham" ? (
+                <ProductNavigation
+                  key={href}
+                  mobile
+                  onNavigate={() => setOpen(false)}
+                />
+              ) : (
+                <Link
+                  key={href}
+                  href={href}
+                  aria-current={pathname === href ? "page" : undefined}
+                  onClick={() => setOpen(false)}
+                >
+                  {title}
+                </Link>
+              ),
+            )}
           </nav>
           <Link
             className="button"

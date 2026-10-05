@@ -24,4 +24,6 @@ Store: Foglia + Orphic, ảnh lớn, nền ivory và chi tiết lãng mạn; mot
 
 Shop duyệt Home desktop/mobile, trang mẫu Hoa Ý, bảng/thẻ và chi tiết đơn mẫu, editor sản phẩm cùng các trạng thái lỗi/focus. Ghi phản hồi thành thay đổi cụ thể trong UI_SPEC; chỉ áp dụng rộng sau duyệt. Không coi lựa chọn reference là nghiệm thu giao diện đã triển khai.
 
+Revision 1 theo feedback: sửa caption hero, đồng nhất khung ảnh sản phẩm, thêm submenu theo dịch vụ và làm rõ fade/scroll/hover/click. Bàn giao lại Preview, ảnh và video chuyển động desktop/mobile; chưa chuyển sang C/D/E khi shop chưa duyệt.
+
 Không mở production, mua dịch vụ trả phí hoặc thêm payment/login khách/public search/subscription trong phase UI này. Rollback A/B bằng deployment phase 2 cùng schema; không dùng lại Sheets adapter hoặc migration phá dữ liệu.

@@ -99,6 +99,7 @@
   max-width: 380px;
   color: var(--muted);
   line-height: 1.85;
+  animation: editorial-copy-in 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 .editorial-hero-footnote {
   display: flex;
@@ -107,17 +108,11 @@
   margin-top: 48px;
   font-size: 12px;
   color: var(--muted);
+  animation: editorial-copy-in 700ms 120ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 .editorial-hero-art {
   position: relative;
-  padding: 16px 14px 0;
-}
-.editorial-hero-art::before {
-  content: "";
-  position: absolute;
-  inset: 0 0 24px;
-  border: 1px solid #d5bda8;
-  border-radius: 48% 48% 6px 6px;
+  padding: 12px;
 }
 .editorial-hero-photo {
   height: 565px;
@@ -125,45 +120,41 @@
   position: relative;
   overflow: hidden;
   background: var(--surface-soft);
+  outline: 1px solid #d5bda8;
+  outline-offset: 11px;
 }
 .editorial-hero-photo img {
   object-fit: cover;
+  animation: editorial-photo-in 1000ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
-.editorial-photo-label {
-  position: absolute;
-  left: -26px;
-  right: 40px;
-  bottom: 28px;
-  background: #fffcf7f5;
-  padding: 18px 24px;
+.editorial-photo-caption {
+  padding: 26px 4px 0;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 18px;
-  border: 1px solid var(--border);
+  gap: 12px;
 }
-.editorial-photo-label > span {
-  font-family: var(--font-heading), serif;
-  font-size: 40px;
+.editorial-photo-caption svg {
+  flex-shrink: 0;
   color: var(--accent);
-  letter-spacing: -0.06em;
 }
-.editorial-photo-label p {
-  white-space: pre-line;
+.editorial-photo-caption p {
   font-size: 13px;
   color: var(--muted);
+  line-height: 1.7;
+  margin: 0;
 }
 .editorial-orbit {
   display: grid;
   place-items: center;
   position: absolute;
-  right: -26px;
+  right: 0;
   top: 95px;
   width: 88px;
   height: 88px;
   border-radius: 50%;
   background: var(--brand-jasmine);
   color: #674a22;
+  animation: editorial-flower-in 900ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 .editorial-benefits {
   display: grid;
@@ -248,12 +239,18 @@
   gap: 30px;
   margin-bottom: 42px;
 }
-.hoe-editorial .product-image {
+.hoe-product-card .product-image {
   aspect-ratio: 4/5;
-  border-radius: 6px;
+  border-radius: 8px;
 }
-.hoe-editorial .product-card:nth-child(2) .product-image {
-  border-radius: 170px 170px 6px 6px;
+.hoe-product-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.hoe-product-card .product-link {
+  margin-top: auto;
+  padding-top: 14px;
 }
 .hoe-editorial .product-card h3 {
   font-size: 27px;
@@ -323,14 +320,14 @@
   text-align: center;
   border-top: 1px solid var(--border);
 }
-.editorial-cta > svg {
+.editorial-cta > div > svg {
   color: var(--accent);
   margin: 0 auto 20px;
 }
 .editorial-cta h2 {
   font-size: clamp(42px, 5vw, 64px);
 }
-.editorial-cta > p {
+.editorial-cta > div > p {
   max-width: 450px;
   margin: 24px auto;
   color: var(--muted);
@@ -475,14 +472,11 @@
   .editorial-hero-photo {
     height: 420px;
   }
-  .editorial-photo-label {
-    left: 2px;
-    right: 22px;
-    bottom: 24px;
-    padding: 12px 18px;
+  .editorial-photo-caption {
+    padding-top: 24px;
   }
   .editorial-orbit {
-    right: -8px;
+    right: 0;
     top: 55px;
     width: 64px;
     height: 64px;
@@ -551,7 +545,7 @@
   .editorial-cta {
     padding-block: 56px;
   }
-  .editorial-cta > p {
+  .editorial-cta > div > p {
     font-size: 14px;
   }
   .hoe-editorial-detail .detail-grid {
@@ -574,6 +568,201 @@
     grid-template-columns: repeat(2, 1fr);
   }
 }
+/* Navigation and interaction states share the brand, without changing Preflight. */
+.product-navigation {
+  position: relative;
+}
+.product-navigation-heading {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.product-navigation-heading > button {
+  display: grid;
+  place-items: center;
+  min-width: 36px;
+  min-height: 44px;
+  color: var(--muted);
+  border-radius: 20px;
+  cursor: pointer;
+  transition:
+    background 160ms,
+    color 160ms;
+}
+.product-navigation-heading > button:hover,
+.product-navigation-heading > button[aria-expanded="true"] {
+  background: var(--brand-blush);
+  color: var(--accent);
+}
+.product-navigation-heading > button svg {
+  transition: transform 240ms;
+}
+.product-navigation-heading > button[aria-expanded="true"] svg {
+  transform: rotate(180deg);
+}
+.nav a[data-active="true"] {
+  color: var(--accent);
+}
+.product-submenu {
+  position: absolute;
+  z-index: 50;
+  top: 100%;
+  left: -22px;
+  width: 310px;
+  padding: 18px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--background);
+  box-shadow: 0 18px 48px #332c2a18;
+}
+.product-submenu-eyebrow {
+  display: block;
+  padding: 6px 10px 14px;
+  color: var(--muted);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+}
+.product-submenu ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.nav .product-submenu a,
+.hoe-menu nav .product-submenu a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 13px 12px;
+  border: 0;
+  border-radius: 8px;
+  min-height: 66px;
+  transition:
+    background 160ms,
+    color 160ms;
+}
+.product-submenu strong {
+  display: block;
+  font-family: var(--font-heading), serif;
+  font-size: 22px;
+  font-weight: 400;
+  color: var(--ink);
+}
+.product-submenu small {
+  display: block;
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+.nav .product-submenu a:hover,
+.nav .product-submenu a[aria-current="page"],
+.hoe-menu nav .product-submenu a:hover,
+.hoe-menu nav .product-submenu a[aria-current="page"] {
+  background: var(--brand-blush);
+  color: var(--accent);
+}
+.product-submenu a svg {
+  transition: transform 160ms;
+}
+.product-submenu a:hover svg {
+  transform: translate(2px, -2px);
+}
+.product-navigation--mobile .product-navigation-heading {
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+}
+.hoe-menu nav .product-navigation-heading > a {
+  flex: 1;
+  border: 0;
+}
+.product-navigation--mobile .product-navigation-heading > button {
+  min-width: 48px;
+  min-height: 48px;
+}
+.product-navigation--mobile .product-submenu {
+  position: static;
+  width: auto;
+  box-shadow: none;
+  margin-block: 8px 12px;
+  padding: 8px;
+}
+.hoe-editorial .text-link svg,
+.hoe-product-card .text-link svg {
+  transition: transform 160ms;
+}
+.hoe-editorial .text-link:hover svg,
+.hoe-product-card .text-link:hover svg {
+  transform: translate(3px, -2px);
+}
+.hoe-editorial .button:hover {
+  box-shadow: 0 6px 20px #91274720;
+}
+.hoe-editorial .button:active {
+  transform: translateY(1px) scale(0.98);
+}
+.hoe-product-card .product-image {
+  transition: box-shadow 240ms;
+}
+.hoe-product-card:hover .product-image {
+  box-shadow: 0 12px 28px #332c2a12;
+}
+.hoe-product-card:has(a:active) .product-image img {
+  transform: scale(1.015);
+}
+.hoe-editorial .service-card {
+  transition:
+    transform 240ms,
+    box-shadow 240ms;
+}
+.hoe-editorial .service-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 16px 32px #332c2a0c;
+}
+.hoe-editorial .service-card:active {
+  transform: translateY(-2px);
+}
+.editorial-journal-card {
+  transition: border-color 160ms;
+}
+.editorial-journal-card:hover {
+  border-color: var(--accent);
+}
+@keyframes editorial-flower-in {
+  from {
+    opacity: 0;
+    transform: rotate(-30deg) scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: rotate(0) scale(1);
+  }
+}
+@keyframes editorial-copy-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes editorial-photo-in {
+  from {
+    transform: scale(1.035);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+@media (max-width: 767px) {
+  .header .nav {
+    display: none;
+  }
+  .header .menu-button {
+    display: inline-flex;
+  }
+}
 @media (prefers-reduced-motion: reduce) {
   .hoe-editorial *,
   .hoe-editorial-detail * {
@@ -583,6 +772,18 @@
   .hoe-editorial .product-card:hover img,
   .hoe-editorial .button:hover,
   .hoe-editorial-detail .button:hover {
+    transform: none;
+  }
+  .product-navigation *,
+  .hoe-product-card * {
+    transition: none !important;
+  }
+  .hoe-editorial .service-card:hover,
+  .hoe-editorial .service-card:active,
+  .hoe-product-card:has(a:active) .product-image img,
+  .hoe-product-card:hover img,
+  .product-submenu a:hover svg,
+  .hoe-product-card .text-link:hover svg {
     transform: none;
   }
 }

@@ -13,6 +13,7 @@ import { ProductCard } from "@/components/ProductCard";
 import { ServiceCards } from "@/components/ServiceCards";
 import { Empty } from "@/components/Empty";
 import { EditorialReveal } from "@/components/ui/EditorialReveal";
+import { EditorialHeroMotion } from "@/components/ui/EditorialHeroMotion";
 export async function EditorialHome() {
   const [home, catalog, articles, assets, site] = await Promise.all([
     getHome(),
@@ -55,7 +56,7 @@ export async function EditorialHome() {
             <span>{home.footnote}</span>
           </div>
         </div>
-        <EditorialReveal className="editorial-hero-art">
+        <EditorialHeroMotion>
           <div className="editorial-hero-photo">
             <Image
               src={
@@ -71,14 +72,14 @@ export async function EditorialHome() {
               fetchPriority="high"
             />
           </div>
-          <div className="editorial-photo-label">
-            <span>hòe</span>
+          <div className="editorial-photo-caption">
+            <Flower2 size={20} strokeWidth={1.2} aria-hidden="true" />
             <p>{home.imageNote}</p>
           </div>
           <span className="editorial-orbit" aria-hidden="true">
             <Flower2 size={42} strokeWidth={0.9} />
           </span>
-        </EditorialReveal>
+        </EditorialHeroMotion>
       </section>
       <div className="editorial-benefits container">
         {home.benefits.map((benefit, i) => (
@@ -93,11 +94,11 @@ export async function EditorialHome() {
       </div>
       <section id="dich-vu" className="editorial-section editorial-services">
         <div className="container">
-          <div className="editorial-section-heading">
+          <EditorialReveal className="editorial-section-heading">
             <span className="editorial-index">01 / CÁCH GỬI HOA</span>
             <h2 className="copy-lines">{home.servicesTitle}</h2>
             <p>{home.servicesIntro}</p>
-          </div>
+          </EditorialReveal>
           <EditorialReveal>
             <ServiceCards />
           </EditorialReveal>
@@ -115,13 +116,13 @@ export async function EditorialHome() {
           </Link>
         </div>
         {products.length ? (
-          <EditorialReveal>
-            <div className="product-grid editorial-products">
-              {products.map((p) => (
-                <ProductCard product={p} key={p.id} />
-              ))}
-            </div>
-          </EditorialReveal>
+          <div className="product-grid editorial-products">
+            {products.map((p, i) => (
+              <EditorialReveal key={p.id} delay={i * 0.09}>
+                <ProductCard product={p} />
+              </EditorialReveal>
+            ))}
+          </div>
         ) : (
           <Empty
             title="Những mùa hoa đang được chuẩn bị"
@@ -133,7 +134,7 @@ export async function EditorialHome() {
       </section>
       <section className="editorial-story editorial-section">
         <div className="container editorial-story-grid">
-          <div className="editorial-story-photo">
+          <EditorialReveal className="editorial-story-photo">
             <Image
               src={
                 assets.story?.src ||
@@ -145,7 +146,7 @@ export async function EditorialHome() {
               fill
               sizes="(max-width: 767px) 90vw, 42vw"
             />
-          </div>
+          </EditorialReveal>
           <EditorialReveal className="editorial-story-copy">
             <span className="eyebrow">03 / {home.storyEyebrow}</span>
             <h2 className="copy-lines">{home.storyTitle}</h2>
@@ -179,22 +180,24 @@ export async function EditorialHome() {
             </Link>
           </div>
           <div className="editorial-journal">
-            {articles.slice(0, 3).map((a) => (
-              <Link
-                href={`/blog/${a.slug}`}
-                key={a.id}
-                className="editorial-journal-card"
-              >
-                <span className="eyebrow">
-                  {a.category || "Chuyện của Hòe"}
-                </span>
-                <h3>{a.title}</h3>
-                <p>{a.excerpt}</p>
-                <span className="text-link">
-                  Đọc câu chuyện
-                  <ArrowUpRight size={16} />
-                </span>
-              </Link>
+            {articles.slice(0, 3).map((a, i) => (
+              <EditorialReveal key={a.id} delay={i * 0.09}>
+                <Link
+                  href={`/blog/${a.slug}`}
+                  key={a.id}
+                  className="editorial-journal-card"
+                >
+                  <span className="eyebrow">
+                    {a.category || "Chuyện của Hòe"}
+                  </span>
+                  <h3>{a.title}</h3>
+                  <p>{a.excerpt}</p>
+                  <span className="text-link">
+                    Đọc câu chuyện
+                    <ArrowUpRight size={16} />
+                  </span>
+                </Link>
+              </EditorialReveal>
             ))}
           </div>
         </section>
@@ -205,11 +208,11 @@ export async function EditorialHome() {
           <h2>{home.processTitle}</h2>
           <div className="hoe-process">
             {home.process.map((step, i) => (
-              <div key={step.title}>
+              <EditorialReveal key={step.title} delay={i * 0.09}>
                 <span>0{i + 1}</span>
                 <h3>{step.title}</h3>
                 <p>{step.body}</p>
-              </div>
+              </EditorialReveal>
             ))}
           </div>
           {site.faq.length > 0 && (
@@ -226,19 +229,21 @@ export async function EditorialHome() {
         </div>
       </section>
       <section className="editorial-cta">
-        <Flower2 size={40} strokeWidth={1} aria-hidden="true" />
-        <span className="eyebrow">{home.ctaEyebrow}</span>
-        <h2>{home.ctaTitle}</h2>
-        <p>{home.ctaBody}</p>
-        <div className="hero-actions">
-          <Link className="button" href={home.primaryCta.href}>
-            {home.primaryCta.label}
-            <ArrowUpRight size={17} />
-          </Link>
-          <Link className="text-link" href={home.secondaryCta.href}>
-            {home.secondaryCta.label}
-          </Link>
-        </div>
+        <EditorialReveal>
+          <Flower2 size={40} strokeWidth={1} aria-hidden="true" />
+          <span className="eyebrow">{home.ctaEyebrow}</span>
+          <h2>{home.ctaTitle}</h2>
+          <p>{home.ctaBody}</p>
+          <div className="hero-actions">
+            <Link className="button" href={home.primaryCta.href}>
+              {home.primaryCta.label}
+              <ArrowUpRight size={17} />
+            </Link>
+            <Link className="text-link" href={home.secondaryCta.href}>
+              {home.secondaryCta.label}
+            </Link>
+          </div>
+        </EditorialReveal>
       </section>
     </div>
   );

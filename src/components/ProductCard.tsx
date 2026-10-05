@@ -2,11 +2,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { priceLabel } from "@/domain/pricing";
+import { valueLabel } from "@/domain/labels";
 import type { Product } from "@/domain/schemas";
 export function ProductCard({ product }: { product: Product }) {
   const href = "/san-pham/" + product.slug;
   return (
-    <article className="product-card">
+    <article className="product-card hoe-product-card">
       <Link href={href} aria-label={`Xem ${product.name}`}>
         <div className="product-image">
           <Image
@@ -17,9 +18,7 @@ export function ProductCard({ product }: { product: Product }) {
           />
         </div>
       </Link>
-      <span className="category">
-        {product.serviceType.replace("hoa-", "Hoa ")}
-      </span>
+      <span className="category">{valueLabel(product.serviceType)}</span>
       <h3>
         <Link href={href}>{product.name}</Link>
       </h3>

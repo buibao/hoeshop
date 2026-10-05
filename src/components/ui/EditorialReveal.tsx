@@ -5,18 +5,25 @@ import * as m from "motion/react-m";
 export function EditorialReveal({
   children,
   className,
+  delay = 0,
 }: {
   children: React.ReactNode;
   className?: string;
+  delay?: number;
 }) {
   const reduced = useReducedMotion();
   return (
     <m.div
       className={className}
       initial={false}
-      whileInView={reduced ? {} : { y: [16, 0] }}
-      viewport={{ once: true, amount: 0.15 }}
-      transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+      data-editorial-reveal="true"
+      whileInView={reduced ? {} : { opacity: [0, 1], y: [28, 0] }}
+      viewport={{ once: true, amount: 0.12 }}
+      transition={{
+        duration: reduced ? 0 : 0.7,
+        delay: reduced ? 0 : delay,
+        ease: [0.22, 1, 0.36, 1],
+      }}
     >
       {children}
     </m.div>

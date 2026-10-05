@@ -2,6 +2,8 @@
 
 Phase 3 đang ở checkpoint A/B trên nhánh `feat/phase3`: sửa Hoa Ý/giá/trạng thái/field errors và mẫu Home, chi tiết sản phẩm, admin. Xem [plan](docs/phase-3/PHASE3_PLAN.md), [UI spec](docs/phase-3/UI_SPEC.md), [bằng chứng](docs/phase-3/VERIFICATION_PHASE3.md). `/xem-thu/giao-dien` dùng admin mẫu cố định, không đọc đơn thật hoặc lưu dữ liệu; chỉ có trong chế độ test và không mở trên Vercel production. Chờ shop duyệt thiết kế trước C/D/E; `SHOP_LIVE=false`.
 
+Revision checkpoint B: ghi chú hero bên dưới ảnh, khung card sản phẩm thống nhất, submenu Sản phẩm theo ba dịch vụ, fade/scroll/hover/click và reduced motion. Preview và bằng chứng desktop/mobile được ghi trong VERIFICATION_PHASE3; assets vẫn là ảnh test.
+
 Website tiếng Việt với Next.js App Router/TypeScript/Tailwind/Zod. Phase 2 bổ sung Postgres/Drizzle, admin Clerk Google, thư viện Vercel Blob và calendar/time picker mang giao diện Hòe. Giữ Lora, Be Vietnam Pro, Tailwind Preflight và bảng màu hiện tại.
 
 Luồng khách: mẫu hoa → cấu hình dịch vụ → giỏ → gửi yêu cầu → shop xác nhận giá/lịch. Không thanh toán online, tài khoản khách hoặc gói Hoa Thời.

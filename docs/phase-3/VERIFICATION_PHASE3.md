@@ -27,6 +27,14 @@ Browser thật 1440/390px: sáu page checks và mười screenshots; Home/detail
 
 Ảnh trên deployment code 73d4f6d; commit bàn giao sau đó chỉ thêm tài liệu/ảnh. Toolbar Vercel chỉ được ẩn lúc chụp, không thay source. Không suy diễn build hoặc screenshot là bằng chứng tiếp nhận đơn/Blob. UAT Google admin/non-admin và media qua UI vẫn cần hoàn tất ở C/E.
 
+## Revision 1 — phản hồi bố cục và motion
+
+05/10/2026: chuyển caption hero xuống dưới ảnh, bỏ khung vòm riêng của card thứ hai; card Home/catalog/dịch vụ cùng 4:5/8px. Thêm submenu Sản phẩm tới ba trang dịch vụ, giữ link catalog. Bổ sung fade in/out của menu, fade/scroll reveal, stagger card, hero parallax nhẹ và hover/click; reduced motion không dịch chuyển hoặc giấu nội dung. Các link đang fade-out trở thành inert ngay để Tab không đi vào menu đã đóng.
+
+Kiểm tra revision: 58 unit, 14 integration Neon test, build và lint đạt; full public E2E 46/46 đạt (23 desktop + 23 mobile), sau chỉnh Tab order chạy riêng sáu ca landing/navigation đạt. Có kiểm tra hover, ArrowDown/Tab/Escape và return focus, link Hoa Ý tới catalog đúng loại, caption nằm dưới ảnh, khung ảnh đồng nhất, overflow tại 360/390/768/1024/1440px, trạng thái cuối reveal và reduced motion. Kiểm tra console trong ca motion không có hydration error sau khi sửa SSR style của hero. Mock browser tests vẫn tách khỏi dữ liệu Neon Preview.
+
+Preview revision và ảnh/video desktop/mobile sẽ được ghi sau khi kiểm tra deployment. Bằng chứng A/B bên trên được giữ làm lịch sử; chưa coi feedback sửa mẫu là shop duyệt checkpoint B.
+
 ## Chưa nghiệm thu
 
 - Shop duyệt checkpoint B: Home/detail và admin mẫu desktop/mobile.
