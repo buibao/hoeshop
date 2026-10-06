@@ -41,7 +41,8 @@ export function LandingBenefitsMotion({intro, cards}: {intro: React.ReactNode; c
     void document.fonts.ready.then(measure);
     return () => {active = false; observer.disconnect(); window.removeEventListener("resize", measure);};
   }, [cards.length]);
-  return <div ref={ref} className="olf-benefits" data-benefits-motion={enabled} style={enabled ? {height: journey.height, "--benefit-card-width": `${size.cardWidth}px`, "--benefit-stage-height": `${stageHeight}px`} as React.CSSProperties : {}}>
+  // className="olf-benefits"
+  return <div ref={ref} className="" data-benefits-motion={enabled} style={enabled ? {height: journey.height, "--benefit-card-width": `${size.cardWidth}px`, "--benefit-stage-height": `${stageHeight}px`} as React.CSSProperties : {}}>
     <div ref={stage} className="olf-benefits-stage">
       <div className="olf-benefits-intro">{intro}</div>
       <div className="olf-benefits-viewport">

@@ -55,7 +55,7 @@ export async function EditorialHome() {
           <p>{home.intro}</p>
           <div className="olf-actions">
             <Link className="olf-button" href={home.primaryCta.href}>{home.primaryCta.label}<ArrowUpRight aria-hidden="true" size={20} /></Link>
-            <Link className="olf-link" href={home.secondaryCta.href}>{home.secondaryCta.label}</Link>
+            {/* <Link className="olf-link" href={home.secondaryCta.href}>{home.secondaryCta.label}</Link> */}
           </div>
           <p className="olf-hero-note">{home.footnote}</p>
           <p className="olf-image-note">{home.imageNote}</p>
@@ -63,6 +63,20 @@ export async function EditorialHome() {
         <div className="olf-hero-gallery" aria-hidden="true" />
         </div>
       </LandingHeroMotion>
+
+      <section className="olf-section olf-story" aria-labelledby="story-title">
+        <div className="olf-shell">
+          {home.benefits.length > 0 && <LandingBenefitsMotion intro={<>
+          <span className="olf-eyebrow">{home.benefitEyebrow}</span>
+          <h3 className="copy-lines">{home.benefitTitle}</h3>
+          <p>{home.benefitIntro}</p>
+          </>}
+            cards={home.benefits.map((benefit, index) => <div key={index}>
+              <Flower2 className="olf-benefit-art" aria-hidden="true" />
+              <span className="olf-step-number">{String(index + 1).padStart(2, "0")}</span><h3>{benefit.title}</h3><p>{benefit.body}</p>
+            </div>)} />}
+        </div>
+      </section>
 
       <section id="dich-vu" className="olf-section olf-services" aria-labelledby="services-title">
         <div className="olf-shell">
@@ -93,7 +107,7 @@ export async function EditorialHome() {
               <Flower2 className="olf-story-flower" aria-hidden="true" />
             </LandingReveal>
           </div>
-          {home.benefits.length > 0 && <LandingBenefitsMotion intro={<>
+          {/* {home.benefits.length > 0 && <LandingBenefitsMotion intro={<>
           <span className="olf-eyebrow">{home.benefitEyebrow}</span>
           <h3 className="copy-lines">{home.benefitTitle}</h3>
           <p>{home.benefitIntro}</p>
@@ -101,7 +115,7 @@ export async function EditorialHome() {
             cards={home.benefits.map((benefit, index) => <div key={index}>
               <Flower2 className="olf-benefit-art" aria-hidden="true" />
               <span className="olf-step-number">{String(index + 1).padStart(2, "0")}</span><h3>{benefit.title}</h3><p>{benefit.body}</p>
-            </div>)} />}
+            </div>)} />} */}
         </div>
       </section>
 
