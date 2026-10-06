@@ -93,7 +93,11 @@ export async function EditorialHome() {
               <Flower2 className="olf-story-flower" aria-hidden="true" />
             </LandingReveal>
           </div>
-          {home.benefits.length > 0 && <LandingBenefitsMotion intro={<><span className="olf-eyebrow">{home.benefitEyebrow}</span><h3 className="copy-lines">{home.benefitTitle}</h3><p>{home.benefitIntro}</p></>}
+          {home.benefits.length > 0 && <LandingBenefitsMotion intro={<>
+          <span className="olf-eyebrow">{home.benefitEyebrow}</span>
+          <h3 className="copy-lines">{home.benefitTitle}</h3>
+          <p>{home.benefitIntro}</p>
+          </>}
             cards={home.benefits.map((benefit, index) => <div key={index}>
               <Flower2 className="olf-benefit-art" aria-hidden="true" />
               <span className="olf-step-number">{String(index + 1).padStart(2, "0")}</span><h3>{benefit.title}</h3><p>{benefit.body}</p>
@@ -101,7 +105,7 @@ export async function EditorialHome() {
         </div>
       </section>
 
-      <section className="olf-section olf-shell" aria-labelledby="journal-title">
+      {/* <section className="olf-section olf-shell" aria-labelledby="journal-title">
         <div className="olf-heading-row"><div><span className="olf-eyebrow">NHỮNG ĐIỀU NHỎ BÉ</span><h2 id="journal-title">Chuyện hoa</h2></div>
           {articles.length > 0 && <Link className="olf-link" href="/blog">Đọc thêm chuyện hoa<ArrowUpRight aria-hidden="true" size={19} /></Link>}
         </div>
@@ -109,7 +113,7 @@ export async function EditorialHome() {
           <Link href={`/blog/${a.slug}`} className="olf-journal-card"><span className="olf-journal-art" aria-hidden="true">{a.image ? <Image src={a.image} alt="" fill sizes="(max-width: 767px) 90vw, 30vw" /> : <Flower2 strokeWidth={0.8} />}</span>
             <div><span className="olf-eyebrow">{a.category || "Chuyện của Hòe"}</span><h3>{a.title}</h3><p>{a.excerpt}</p><span className="olf-link">Đọc câu chuyện<ArrowUpRight aria-hidden="true" size={18} /></span></div>
           </Link></LandingReveal>)}</div> : <Empty title="Chuyện hoa đang được viết" body="Hòe sẽ gửi bạn những câu chuyện và cảm hứng khi bài viết đã sẵn sàng." />}
-      </section>
+      </section> */}
 
       <section className="olf-section olf-process" aria-labelledby="process-title">
         <div className="olf-shell">

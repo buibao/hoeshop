@@ -210,6 +210,6 @@ legend { font-family: var(--font-heading),serif; font-size: 24px; margin-bottom:
  .blog-grid { grid-template-columns: 1fr; } .blog-card { padding: 27px; }
  .article-title h1 { font-size: 39px; } .contact-layout { margin-bottom: 50px; }
 }
-@media(prefers-reduced-motion: reduce) {
+/* @media(prefers-reduced-motion: reduce) {
  html { scroll-behavior: auto; } *,*:before,*:after { transition: none !important; animation: none !important; }
-}
+} */

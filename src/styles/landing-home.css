@@ -73,7 +73,7 @@
 .olf-benefits-intro h3 { font-size: 40px; }
 .olf-benefits-intro p { margin-top: 16px; color: var(--muted); font-size: 15px; }
 .olf-benefit-grid, .olf-process-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 40px; }
-.olf-benefit-card { padding: 32px; border-radius: 4px; background: var(--brand-blush); min-width: 0; overflow-wrap: anywhere; }
+.olf-benefit-card { padding: 32px; border-radius: 48px; background: var(--brand-blush); min-width: 0; overflow-wrap: anywhere; }
 .olf-benefit-art { width: 52px; height: 52px; stroke-width: 1; margin-bottom: 24px; }
 .olf-benefit-card:nth-child(3n + 2) { background: color-mix(in srgb, var(--brand-jasmine) 40%, var(--background)); }
 .olf-benefit-card:nth-child(3n) { background: var(--brand-berry); color: var(--background); }
@@ -114,7 +114,7 @@
 .olf-home .empty { background: var(--surface-soft); padding: 48px 24px; border: 0; }
 /* Measure the same card geometry in both modes, avoiding a resize feedback loop on short windows. */
 @media (min-width: 1024px) {
-  .olf-benefit-card { padding: 48px 32px; min-height: 430px; }
+  .olf-benefit-card { padding: 32px 32px; /* min-height: 430px;*/ }
   .olf-benefit-card h3 { font-size: 32px; }
 }
 @media (max-width: 1023px) {
@@ -178,8 +178,8 @@
   .olf-faq summary { font-size: 14px; }
   .olf-cta p { font-size: 14px; }
 }
-@media (prefers-reduced-motion: reduce) {
+/* @media (prefers-reduced-motion: reduce) {
   .olf-home *, .olf-home *::before, .olf-home *::after { animation: none; transition: none; }
   .olf-home [data-landing-photo], .olf-home [data-landing-reveal], .olf-home [data-hero-line], .olf-home .olf-hero-ornament, .olf-home [data-story-motion], .olf-home [data-benefit-track], .olf-home [data-benefit-card] { transform: none; }
   .olf-home .olf-photo-frame, .olf-home .olf-title-heart, .olf-home .olf-product-card img, .olf-home .olf-service-card, .olf-home .olf-button, .olf-home .olf-link svg { transform: none; }
-}
+} */

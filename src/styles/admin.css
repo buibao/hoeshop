@@ -771,8 +771,8 @@
     flex-wrap: wrap;
   }
 }
-@media (prefers-reduced-motion: reduce) {
+/* @media (prefers-reduced-motion: reduce) {
   .hoe-admin-menu {
     transition: none !important;
   }
-}
+} */

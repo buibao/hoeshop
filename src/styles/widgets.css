@@ -334,13 +334,13 @@
     height: 264px;
   }
 }
-@media (prefers-reduced-motion: reduce) {
+/* @media (prefers-reduced-motion: reduce) {
   .hoe-widget * {
     transition: none !important;
     animation: none !important;
     scroll-behavior: auto !important;
   }
-}
+} */
 .copy-lines {
   white-space: pre-line;
 }
@@ -474,11 +474,11 @@
     padding: 24px;
   }
 }
-@media (prefers-reduced-motion: reduce) {
+/* @media (prefers-reduced-motion: reduce) {
   .hoe-menu {
     transition: none;
   }
-}
+} */
 .widget-preview-page {
   padding-top: 42px;
 }

@@ -20,7 +20,7 @@ export function LandingBenefitsMotion({intro, cards}: {intro: React.ReactNode; c
   const [size, setSize] = useState({width: 0, cardWidth: 0, cardHeight: 0, introHeight: 0, viewportHeight: 0});
   const stageHeight = Math.max(size.cardHeight + 120, size.introHeight + 100, size.viewportHeight - 120);
   // Very tall copy falls back to flow so every word remains reachable, even on short desktop windows.
-  const enabled = desktop && cards.length > 1 && size.width > 0 && stageHeight <= size.viewportHeight - 80;
+  const enabled = false //Remove animation desktop && cards.length > 1 && size.width > 0 && stageHeight <= size.viewportHeight - 80;
   const trackWidth = size.cardWidth * cards.length + 48 * Math.max(0, cards.length - 1);
   const journey = benefitJourney(size.width, trackWidth, size.cardWidth, stageHeight);
   const {scrollYProgress} = useScroll({target: ref, offset: ["start 100px", "end end"]});

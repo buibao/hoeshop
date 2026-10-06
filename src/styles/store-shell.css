@@ -57,7 +57,7 @@
   .hoe-store-footer .brand { font-size: 64px; }
   .hoe-store-footer .footer-bottom { align-items: flex-start; flex-direction: column; gap: 16px; }
 }
-@media (prefers-reduced-motion: reduce) {
+/* @media (prefers-reduced-motion: reduce) {
   .hoe-store-product-navigation * { transition: none; }
   .hoe-store-product-navigation .product-navigation-heading > button svg { transform: none; }
-}
+} */

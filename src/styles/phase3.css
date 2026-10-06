@@ -206,7 +206,7 @@
 .hoe-product-card:has(a:active) .product-image img {
   transform: scale(1.015);
 }
-@media (prefers-reduced-motion: reduce) {
+/* @media (prefers-reduced-motion: reduce) {
   .hoe-editorial-detail * {
     animation: none !important;
     transition: none !important;
@@ -222,4 +222,4 @@
   .hoe-product-card .text-link:hover svg {
     transform: none;
   }
-}
+} */
