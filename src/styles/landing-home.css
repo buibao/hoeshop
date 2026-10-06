@@ -46,7 +46,7 @@
 .olf-service-card h3 { font-size: 38px; line-height: 1.2; margin-top: 24px; }
 .olf-service-card p { color: var(--muted); white-space: pre-line; font-size: 15px; }
 .olf-service-card .text-link { margin-top: auto; font-size: 13px; padding-top: 8px; }
-.olf-service-card:has(a:focus-visible), .olf-service-card:hover { transform: translateY(-4px); }
+.olf-service-card:has(a:focus-visible), .olf-service-card:hover { transform: translateY(-8px); }
 .olf-heading-row { display: flex; justify-content: space-between; align-items: flex-end; gap: 32px; margin-bottom: 48px; }
 .olf-heading-row > .olf-link { flex-shrink: 0; margin-bottom: 8px; }
 .olf-product-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 48px 28px; }
@@ -73,7 +73,8 @@
 .olf-benefits-intro h3 { font-size: 40px; }
 .olf-benefits-intro p { margin-top: 16px; color: var(--muted); font-size: 15px; }
 .olf-benefit-grid, .olf-process-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 40px; }
-.olf-benefit-card { padding: 32px; border-radius: 48px; background: var(--brand-blush); min-width: 0; overflow-wrap: anywhere; }
+.olf-benefit-card { padding: 32px; border-radius: 48px; background: var(--brand-blush); min-width: 0; overflow-wrap: anywhere; transition: transform 0.24s; }
+.olf-benefit-card:hover {transform: translateY(-8px);}
 .olf-benefit-art { width: 52px; height: 52px; stroke-width: 1; margin-bottom: 24px; }
 .olf-benefit-card:nth-child(3n + 2) { background: color-mix(in srgb, var(--brand-jasmine) 40%, var(--background)); }
 .olf-benefit-card:nth-child(3n) { background: var(--brand-berry); color: var(--background); }
