@@ -1,0 +1,47 @@
+{
+  "url": "https://hoeshop-6bg2ngwxz-buibaos-projects.vercel.app",
+  "source": "CLI checkout on feedbacks",
+  "viewports": [
+    {
+      "width": 390,
+      "featuredCount": 4,
+      "cta": "pass",
+      "overflow": false
+    },
+    {
+      "width": 1440,
+      "featuredCount": 4,
+      "cta": "pass",
+      "overflow": false
+    }
+  ],
+  "privateApi": {
+    "/api/admin/home/hero": {
+      "status": 401,
+      "cache": "no-store"
+    },
+    "/api/admin/home/featured": {
+      "status": 401,
+      "cache": "no-store"
+    },
+    "/api/admin/product-options": {
+      "status": 401,
+      "cache": "no-store"
+    },
+    "/api/admin/settings/site/contact": {
+      "status": 401,
+      "cache": "no-store"
+    }
+  },
+  "writes": 0,
+  "googleLogin": true,
+  "authenticatedAdmin": {
+    "hero": 200,
+    "featured": 200,
+    "picker": 200,
+    "heroCount": 0,
+    "featuredCount": 0,
+    "eligibleCatalog": 4
+  },
+  "pageErrors": []
+}

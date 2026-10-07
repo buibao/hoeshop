@@ -14,6 +14,7 @@ import { ProductEditor } from "./ProductEditor";
 import { AdminField } from "./AdminField";
 import { adminProductSchema, articleSchema } from "@/server/admin/schemas";
 import { StatusBadge } from "@/components/ui/StatusBadge";
+import { homeSchema, homeDefaults } from "@/domain/content";
 type Row = Record<string, unknown>;
 const labels: Record<string, string> = {
   id: "ID cố định",
@@ -287,6 +288,8 @@ export function OrderSummary({ row }: { row: Row }) {
   );
 }
 function initial(resource: string, row: Row | null): Row {
+  if (resource === "settings" && row?.key === "home")
+    return homeSchema.parse({ ...homeDefaults, ...(row.data as Row) });
   if (resource === "products") return productEditorData(row);
   if (resource === "posts" || resource === "policies")
     return Object.fromEntries(
@@ -356,7 +359,8 @@ function Fields({
       {Object.entries(data)
         .filter(
           ([key]) =>
-            key !== "published" && key !== "fixture" && key !== "publishedAt",
+            key !== "published" && key !== "fixture" && key !== "publishedAt" &&
+            !(resource === "settings" && ["heroProductIds", "featuredProductIds", "featuredLimit"].includes(key)),
         )
         .map(([key, value]) => {
           const full = path ? `${path}.${key}` : key,
@@ -518,7 +522,8 @@ function Fields({
                 errors={errors}
                 change={change}
                 options={options}
-                readOnly={key === "id" && !creating}
+                readOnly={(key === "id" && !creating) || (resource === "settings" && full === "primaryCta.href")}
+                hint={resource === "settings" && full === "primaryCta.href" ? "Nút chính cuộn đến Những đóa hoa của Hòe." : undefined}
                 type={
                   options
                     ? "select"

@@ -9,6 +9,7 @@ export default defineConfig([
     ".next/**",
     ".next-e2e/**",
     ".next-preview/**",
+    ".next-feedback/**",
     "node_modules/**",
     "playwright-report/**",
     "test-results/**",

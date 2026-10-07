@@ -11,6 +11,7 @@ export function SmoothScroll() {
       duration: 1.1,
       syncTouch: false,
       autoRaf: false,
+      // Lenis includes CSS scroll-padding and scroll-margin in its anchor offset.
       anchors: true,
       allowNestedScroll: true,
       stopInertiaOnNavigate: true,

@@ -3,6 +3,7 @@ import {test, expect} from './fixtures';
 test('Home cards lead through configuration and checkout with existing controls',async({page})=>{
   await page.goto('/');
   const card=page.locator('.olf-product-card').filter({hasText:'Dịu dàng'});
+  await card.getByRole('link',{name:'Xem mẫu hoa',exact:true}).focus();
   await card.getByRole('link',{name:'Xem mẫu hoa',exact:true}).click();
   await expect(page).toHaveURL(/san-pham\/mau-test-diu-dang$/);
   await page.getByLabel('Cảm xúc muốn gửi',{exact:true}).fill('Nghiệm thu Home');
@@ -22,8 +23,8 @@ test('Home is usable without JavaScript and at 200% equivalent layout width',asy
   await page.goto('/');
   await expect(page.getByRole('heading',{level:1})).toContainText('chill ghé nhà.');
   const cta=page.getByRole('link',{name:'Chọn một chút hoa',exact:true}).first();
-  await expect(cta).toBeVisible();await cta.click();await expect(page).toHaveURL(/san-pham$/);
-  await expect(page.getByRole('heading',{level:1})).toBeVisible();
+  await expect(cta).toBeVisible();await cta.click();await expect(page).toHaveURL(/#nhung-doa-hoa$/);
+  await expect(page.getByRole('heading',{name:'Những đóa hoa của Hòe',exact:true})).toBeInViewport();
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
   await context.close();
 });

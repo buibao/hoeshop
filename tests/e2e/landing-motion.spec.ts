@@ -31,20 +31,18 @@ test('shared hero journey reverses and keeps its final gallery clear of services
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
 });
 
-test('benefit track crosses a sticky intro, reverses, and releases for reduced motion/mobile',async({page})=>{
+// The feedbacks baseline explicitly disables Benefits motion and removes .olf-benefits.
+// Preserve that decision while checking Home changes; Hero motion above stays enabled.
+test('benefits retain the baseline static flow through scroll, reduced motion and mobile',async({page})=>{
   await page.setViewportSize({width:1440,height:960});await page.goto('/');
-  const benefits=page.locator('.olf-benefits'),track=page.locator('[data-benefit-track]');
-  await expect(benefits).toHaveAttribute('data-benefits-motion','true');
-  const box=await benefits.evaluate(n=>({top:n.getBoundingClientRect().top+scrollY,height:n.getBoundingClientRect().height}));
-  const end=box.top+box.height-960,start=box.top-100;
-  const samples=[];
-  for(const progress of [.25,.5,.75,.25]){
-    await page.evaluate(y=>scrollTo({top:y,behavior:'instant'}),start+(end-start)*progress);
-    await page.waitForTimeout(80);
-    samples.push({x:await track.evaluate(n=>new DOMMatrixReadOnly(getComputedStyle(n).transform).m41),top:(await page.locator('.olf-benefits-intro').boundingBox())!.y});
+  const benefits=page.locator('[data-benefits-motion]'),track=page.locator('[data-benefit-track]');
+  await expect(benefits).toHaveAttribute('data-benefits-motion','false');
+  await expect(page.locator('[data-benefit-card]')).toHaveCount(3);
+  for(const y of [0,700,1200,400]){
+    await page.evaluate(y=>scrollTo({top:y,behavior:'instant'}),y);
+    await expect(track).toHaveCSS('transform','none');
+    for(const card of await page.locator('[data-benefit-card]').all()) await expect(card).toHaveCSS('transform','none');
   }
-  expect(samples[0].x).toBeGreaterThan(samples[1].x);expect(samples[1].x).toBeGreaterThan(samples[2].x);
-  expect(samples[3].x).toBeCloseTo(samples[0].x,1);expect(samples[2].top).toBeCloseTo(samples[0].top,1);
   await page.emulateMedia({reducedMotion:'reduce'});
   await expect(benefits).toHaveAttribute('data-benefits-motion','false');
   await expect(track).toHaveCSS('transform','none');
@@ -58,25 +56,25 @@ test('benefit track crosses a sticky intro, reverses, and releases for reduced m
 test('desktop no-JS keeps every benefit in flow with no scroll stage',async({browser,baseURL})=>{
   const context=await browser.newContext({baseURL,javaScriptEnabled:false,viewport:{width:1440,height:960}});
   try{const page=await context.newPage();await page.goto('/');
-    await expect(page.locator('.olf-benefits')).toHaveAttribute('data-benefits-motion','false');
+    await expect(page.locator('[data-benefits-motion]')).toHaveAttribute('data-benefits-motion','false');
     await expect(page.locator('.olf-benefits-stage')).toHaveCSS('position','relative');
-    expect((await page.locator('.olf-benefits').boundingBox())!.height).toBeLessThan(960);
+    expect((await page.locator('[data-benefits-motion]').boundingBox())!.height).toBeLessThan(960);
     await expect(page.locator('[data-benefit-card]')).toHaveCount(3);
-    const cta=page.locator('.olf-hero-description .olf-button');await cta.click();await expect(page).toHaveURL(/\/san-pham$/);
+    const cta=page.locator('.olf-hero-description .olf-button');await cta.click();await expect(page).toHaveURL(/\/#nhung-doa-hoa$/);
   }finally{await context.close();}
 });
 
 test('short desktop windows settle in static flow without a measurement loop',async({page})=>{
   const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
   await page.setViewportSize({width:1440,height:960});await page.goto('/');
-  await expect(page.locator('.olf-benefits')).toHaveAttribute('data-benefits-motion','true');
+  await expect(page.locator('[data-benefits-motion]')).toHaveAttribute('data-benefits-motion','false');
   for(const height of [580,600,620]){
     await page.setViewportSize({width:1440,height});
-    await expect(page.locator('.olf-benefits')).toHaveAttribute('data-benefits-motion','false');
-    const changes=await page.locator('.olf-benefits').evaluate(node=>new Promise<number>(resolve=>{
+    await expect(page.locator('[data-benefits-motion]')).toHaveAttribute('data-benefits-motion','false');
+    const changes=await page.locator('[data-benefits-motion]').evaluate(node=>new Promise<number>(resolve=>{
       let count=0;const observer=new MutationObserver(()=>count++);observer.observe(node,{attributes:true,attributeFilter:['data-benefits-motion']});
       setTimeout(()=>{observer.disconnect();resolve(count)},350);
     }));expect(changes).toBe(0);
   }
-  await page.setViewportSize({width:1440,height:960});await expect(page.locator('.olf-benefits')).toHaveAttribute('data-benefits-motion','true');expect(errors).toEqual([]);
+  await page.setViewportSize({width:1440,height:960});await expect(page.locator('[data-benefits-motion]')).toHaveAttribute('data-benefits-motion','false');expect(errors).toEqual([]);
 });

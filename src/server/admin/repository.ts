@@ -1,10 +1,15 @@
-import { desc, eq, sql } from "drizzle-orm";
+import { and, asc, desc, eq, inArray, sql } from "drizzle-orm";
 import { revalidateTag } from "next/cache";
 import * as z from "zod";
 import { getDb, assertDbEnvironment } from "@/server/db";
 import * as s from "@/server/db/schema";
 import { DomainError } from "@/domain/schemas";
-import { pricingRevision } from "@/server/db/mappers";
+import { pricingRevision, productRecord } from "@/server/db/mappers";
+import { homeProductEligible, selectionField, selectionSchema, type SelectionKind } from "@/domain/home-products";
+import { contactEditSchema, mergeContactSocial, type ContactEdit } from "@/domain/contact";
+import { homeSchema, siteSchema } from "@/domain/content";
+import { isTestContent } from "@/server/file-content";
+import { homeImageAvailable } from "@/server/home-products";
 import {
   adminProductSchema,
   articleSchema,
@@ -231,6 +236,19 @@ export async function adminSave(
     };
   }
   const result = await getDb().transaction(async (tx) => {
+    if (resource === "settings" && id === "home") {
+      const [current] = await tx.select().from(s.siteSettings).where(eq(s.siteSettings.key, id)).for("update");
+      if (!current || current.editVersion !== version) throw stale();
+      // Selection fields belong exclusively to the guarded selection menus.
+      const entered = values.data as Record<string, unknown>;
+      const stored = current.data as Record<string, unknown>;
+      values.data = { ...stored, ...entered,
+        heroProductIds: stored.heroProductIds || [],
+        featuredProductIds: stored.featuredProductIds || [],
+        featuredLimit: stored.featuredLimit,
+        primaryCta: { ...(entered.primaryCta as object), href: "/#nhung-doa-hoa" },
+      };
+    }
     const references = await mediaReferences(tx, values);
     if (["products", "posts", "policies"].includes(resource))
       values.cover_media_id = references.get(String(values.image)) || null;
@@ -299,6 +317,81 @@ export async function adminSave(
   )
     revalidateTag(resource, { expire: 0 });
   return result;
+}
+
+type ProductRow = typeof s.products.$inferSelect;
+function productOption(row: ProductRow) {
+  const available = homeImageAvailable(row.image);
+  const product = productRecord({ ...row, image: available ? row.image : null });
+  const eligible = homeProductEligible(product, isTestContent()) && available;
+  return { id: product.id, name: product.name, image: product.image,
+    imageAlt: product.imageAlt, price: product.price,
+    publicationStatus: row.publicationStatus, eligible };
+}
+export async function adminProductOptions(query: string, page: number) {
+  await assertDbEnvironment();
+  const rows = await getDb().select().from(s.products).where(and(
+    !isTestContent() ? eq(s.products.fixture, 0) : undefined,
+    query ? sql`strpos(lower(${s.products.name}), lower(${query})) > 0` : undefined,
+  )).orderBy(asc(s.products.sortOrder), asc(s.products.id)).limit(25).offset(page * 24);
+  return { products: rows.slice(0, 24).map(productOption), hasMore: rows.length > 24, page };
+}
+export async function adminHomeSelection(kind: SelectionKind) {
+  await assertDbEnvironment();
+  const [row] = await getDb().select().from(s.siteSettings).where(eq(s.siteSettings.key, "home"));
+  if (!row) throw invalid("Chưa có cấu hình Home.");
+  const home = homeSchema.passthrough().parse(row.data);
+  const productIds = home[selectionField[kind]];
+  const rows = productIds.length ? await getDb().select().from(s.products).where(inArray(s.products.id, productIds)) : [];
+  return { editVersion: row.editVersion, productIds, products: rows.map(productOption) };
+}
+
+// Lock and merge the current JSON, then compare its version inside the same transaction.
+async function patchSettings(key: string, version: number, actor: string,
+  action: string, merge: (tx: Parameters<Parameters<ReturnType<typeof getDb>["transaction"]>[0]>[0], data: Record<string, unknown>) => Promise<{ data: Record<string, unknown>; fields: string[] }>) {
+  await assertDbEnvironment();
+  const result = await getDb().transaction(async (tx) => {
+    const [current] = await tx.select().from(s.siteSettings).where(eq(s.siteSettings.key, key)).for("update");
+    if (!current || current.editVersion !== version) throw stale();
+    const next = await merge(tx, current.data as Record<string, unknown>);
+    const [saved] = await tx.update(s.siteSettings).set({ data: next.data,
+      editVersion: version + 1, updatedAt: new Date() }).where(and(eq(s.siteSettings.key, key), eq(s.siteSettings.editVersion, version))).returning();
+    if (!saved) throw stale();
+    await tx.insert(s.adminAuditLogs).values({ actorId: actor, action, resourceId: key,
+      metadata: { previousVersion: version, changedFields: next.fields } });
+    return { editVersion: saved.editVersion };
+  });
+  revalidateTag("settings", { expire: 0 });
+  return result;
+}
+export async function adminSaveHomeSelection(kind: SelectionKind, input: unknown, actor: string) {
+  const { editVersion, productIds } = selectionSchema(kind).parse(input);
+  return patchSettings("home", editVersion, actor, `update:home-${kind}`, async (tx, data) => {
+    const rows = productIds.length ? await tx.select().from(s.products).where(inArray(s.products.id, productIds)).orderBy(asc(s.products.id)).for("share") : [];
+    if (rows.length !== productIds.length || rows.some((row) => !productOption(row).eligible))
+      throw invalid("Chỉ chọn sản phẩm đang công khai, có ảnh hợp lệ và được phép xuất hiện ở Store. Hãy chọn lại các mục không còn hợp lệ.");
+    await mediaReferences(tx, { images: rows.map((row) => row.image) });
+    const field = selectionField[kind];
+    // Zero distinguishes an explicitly cleared selection from legacy catalog fallback.
+    return { data: { ...data, [field]: productIds, ...(kind === "featured" ? { featuredLimit: productIds.length } : {}) },
+      fields: kind === "featured" ? [field, "featuredLimit"] : [field] };
+  });
+}
+export async function adminContactSettings() {
+  await assertDbEnvironment();
+  const [row] = await getDb().select().from(s.siteSettings).where(eq(s.siteSettings.key, "site"));
+  if (!row) throw invalid("Chưa có cấu hình liên hệ.");
+  const site = siteSchema.parse(row.data);
+  return { editVersion: row.editVersion, contact: site.contact, social: site.social };
+}
+export async function adminSaveContactSettings(input: ContactEdit, actor: string) {
+  const checked = contactEditSchema.parse(input);
+  return patchSettings("site", checked.editVersion, actor, "update:site-contact", async (_tx, data) => {
+    const site = siteSchema.passthrough().parse(data);
+    const social = mergeContactSocial(site.social, checked.social);
+    siteSchema.shape.social.parse(social);
+    return { data: { ...data, contact: { ...(data.contact as object), ...checked.contact }, social }, fields: ["contact", "social"] };
+  });
 }
 export async function dashboard() {
   await assertDbEnvironment();

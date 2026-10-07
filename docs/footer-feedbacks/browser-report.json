@@ -1,0 +1,103 @@
+{
+  "viewports": [
+    {
+      "width": 1440,
+      "columns": 4,
+      "groups": 4,
+      "overflow": false,
+      "contrast": {
+        "text": 13.37,
+        "secondary": 5.51,
+        "brand": 6.48
+      },
+      "alignedWithHome": true
+    },
+    {
+      "width": 1280,
+      "columns": 4,
+      "groups": 4,
+      "overflow": false,
+      "contrast": {
+        "text": 13.37,
+        "secondary": 5.51,
+        "brand": 6.48
+      },
+      "alignedWithHome": true
+    },
+    {
+      "width": 1024,
+      "columns": 4,
+      "groups": 4,
+      "overflow": false,
+      "contrast": {
+        "text": 13.37,
+        "secondary": 5.51,
+        "brand": 6.48
+      },
+      "alignedWithHome": true
+    },
+    {
+      "width": 768,
+      "columns": 2,
+      "groups": 4,
+      "overflow": false,
+      "contrast": {
+        "text": 13.37,
+        "secondary": 5.51,
+        "brand": 6.48
+      },
+      "alignedWithHome": true
+    },
+    {
+      "width": 390,
+      "columns": 1,
+      "groups": 4,
+      "overflow": false,
+      "contrast": {
+        "text": 13.37,
+        "secondary": 5.51,
+        "brand": 6.48
+      },
+      "alignedWithHome": true
+    },
+    {
+      "width": 360,
+      "columns": 1,
+      "groups": 4,
+      "overflow": false,
+      "contrast": {
+        "text": 13.37,
+        "secondary": 5.51,
+        "brand": 6.48
+      },
+      "alignedWithHome": true
+    }
+  ],
+  "routes": [
+    {
+      "path": "/san-pham",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "path": "/san-pham/feedback-browser-00",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "path": "/lien-he",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "path": "/blog",
+      "status": 200,
+      "overflow": false
+    }
+  ],
+  "consoleErrors": [],
+  "noJavaScript": true,
+  "keyboard": true,
+  "reducedMotion": true,
+  "policyStress": true
+}

@@ -3,6 +3,8 @@ import { adminPageActor } from "@/server/admin/auth";
 import { resourceSchema } from "@/server/admin/schemas";
 import { adminList } from "@/server/admin/repository";
 import { AdminEditor } from "@/features/admin/AdminEditor";
+import { SiteContactEditor } from "@/features/admin/SiteContactEditor";
+import { adminContactSettings } from "@/server/admin/repository";
 export default async function EditPage({
   params,
 }: {
@@ -13,6 +15,8 @@ export default async function EditPage({
     parsed = resourceSchema.safeParse(name);
   if (!parsed.success || name === "media") notFound();
   const resource = parsed.data;
+  if (resource === "settings" && id === "site")
+    return <SiteContactEditor initial={await adminContactSettings()} />;
   if (id === "moi" && ["products", "posts", "policies"].includes(resource))
     return <AdminEditor resource={resource} row={null} />;
   const [row] = await adminList(resource, id);

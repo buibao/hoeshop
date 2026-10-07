@@ -1,0 +1,100 @@
+{
+  "url": "https://hoeshop-dwbcs40dw-buibaos-projects.vercel.app",
+  "source": "CLI checkout on feedbacks",
+  "viewports": [
+    {
+      "width": 360,
+      "featuredCount": 4,
+      "cta": "pass",
+      "overflow": false,
+      "footer": {
+        "groups": 4,
+        "columns": 1
+      }
+    },
+    {
+      "width": 390,
+      "featuredCount": 4,
+      "cta": "pass",
+      "overflow": false,
+      "footer": {
+        "groups": 4,
+        "columns": 1
+      }
+    },
+    {
+      "width": 768,
+      "featuredCount": 4,
+      "cta": "pass",
+      "overflow": false,
+      "footer": {
+        "groups": 4,
+        "columns": 2
+      }
+    },
+    {
+      "width": 1024,
+      "featuredCount": 4,
+      "cta": "pass",
+      "overflow": false,
+      "footer": {
+        "groups": 4,
+        "columns": 4
+      }
+    },
+    {
+      "width": 1280,
+      "featuredCount": 4,
+      "cta": "pass",
+      "overflow": false,
+      "footer": {
+        "groups": 4,
+        "columns": 4
+      }
+    },
+    {
+      "width": 1440,
+      "featuredCount": 4,
+      "cta": "pass",
+      "overflow": false,
+      "footer": {
+        "groups": 4,
+        "columns": 4
+      }
+    }
+  ],
+  "privateApi": {
+    "/api/admin/home/hero": {
+      "status": 401,
+      "cache": "no-store"
+    },
+    "/api/admin/home/featured": {
+      "status": 401,
+      "cache": "no-store"
+    },
+    "/api/admin/product-options": {
+      "status": 401,
+      "cache": "no-store"
+    },
+    "/api/admin/settings/site/contact": {
+      "status": 401,
+      "cache": "no-store"
+    }
+  },
+  "writes": 0,
+  "googleLogin": true,
+  "authenticatedAdmin": {
+    "hero": 200,
+    "featured": 200,
+    "picker": 200,
+    "heroCount": 3,
+    "featuredCount": 0,
+    "eligibleCatalog": 4
+  },
+  "partialSelection": {
+    "count": 1,
+    "saveEnabled": true,
+    "writes": 0
+  },
+  "pageErrors": []
+}

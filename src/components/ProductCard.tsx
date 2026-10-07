@@ -15,7 +15,7 @@ export function ProductCard({ product, variant = "default" }: { product: Product
             src={placeholder ? "/images/floral-mark.svg" : product.image || "/images/floral-mark.svg"}
             alt={placeholder ? `Hoa minh họa tạm cho ${product.name}` : product.imageAlt || product.name}
             fill
-            sizes={variant === "home" ? "(max-width: 767px) 44vw, (max-width: 1023px) 45vw, 30vw" : "(max-width: 700px) 45vw, 30vw"}
+            sizes={variant === "home" ? "(max-width: 767px) 75vw, (max-width: 1279px) 30vw, 18vw" : "(max-width: 700px) 45vw, 30vw"}
           />
         </div>
       </Link>

@@ -1,0 +1,10 @@
+{
+  "oneSocialEmpty": "pass",
+  "allContactAndSocialEmpty": {
+    "360": 1,
+    "768": 2,
+    "1440": 2
+  },
+  "overflow": false,
+  "dataSource": "local TEST database only"
+}

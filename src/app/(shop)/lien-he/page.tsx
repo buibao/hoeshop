@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { getSite } from "@/server/content";
 import { InquiryForm } from "@/features/checkout/InquiryForm";
+import { phoneHref } from "@/domain/contact";
 export const metadata: Metadata = {
   title: "Liên hệ & tư vấn",
   description:
@@ -30,8 +31,8 @@ export default async function ContactPage() {
             kể để Hòe cùng bạn tìm cách gửi.
           </p>
           <div className="footer-links" style={{ marginTop: 30 }}>
-            {site.contact.phone ? (
-              <a href={`tel:${site.contact.phone}`}>{site.contact.phone}</a>
+            {site.contact.phone && phoneHref(site.contact.phone) ? (
+              <a href={phoneHref(site.contact.phone)!}>{site.contact.phone}</a>
             ) : null}
             {site.contact.email ? (
               <a href={`mailto:${site.contact.email}`}>{site.contact.email}</a>

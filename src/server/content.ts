@@ -42,11 +42,13 @@ export async function getSite() {
   );
 }
 export async function getHome() {
-  return homeSchema.parse(
+  const home = homeSchema.parse(
     fixtureContent()
       ? { ...homeDefaults, ...files.getHome() }
       : await cachedSetting("home"),
   );
+  // Read compatibility until the audited settings migration is applied.
+  return { ...home, primaryCta: { ...home.primaryCta, href: "/#nhung-doa-hoa" } };
 }
 export async function getAssets() {
   return assetsSchema.parse(

@@ -12,6 +12,7 @@ node_modules/
 .next/
 .next-e2e/
 .next-preview/
+.next-feedback/
 out/
 coverage/
 playwright-report/

@@ -23,10 +23,13 @@ const links = [
   { path: "/orders", label: "Đơn hoa", icon: ClipboardList },
   { path: "/inquiries", label: "Tư vấn", icon: MessageCircle },
   { path: "/products", label: "Sản phẩm", icon: Flower2 },
+  { path: "/home-hero", label: "Sản phẩm Hero", icon: Images },
+  { path: "/home-featured", label: "Sản phẩm nổi bật", icon: Flower2 },
   { path: "/posts", label: "Chuyện hoa", icon: NotebookText },
   { path: "/policies", label: "Chính sách", icon: ShieldCheck },
   { path: "/services", label: "Dịch vụ", icon: Sprout },
   { path: "/settings", label: "Website", icon: Settings },
+  { path: "/settings/site", label: "Liên hệ & mạng xã hội", icon: MessageCircle },
   { path: "/comments", label: "Bình luận", icon: MessagesSquare },
   { path: "/media", label: "Thư viện ảnh", icon: Images },
 ];
@@ -40,7 +43,8 @@ function NavLinks({ path, close }: { path: string; close?: () => void }) {
           onClick={close}
           aria-current={
             path === `/admin${suffix}` ||
-            (suffix && path.startsWith(`/admin${suffix}/`))
+            (suffix && path.startsWith(`/admin${suffix}/`) &&
+              (suffix !== "/settings" || path !== "/admin/settings/site"))
               ? "page"
               : undefined
           }

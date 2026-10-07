@@ -33,14 +33,15 @@ describe('landing content composition',()=>{
     expect(html.includes('class="olf-benefits"')).toBe(count>0);
     expect(html).not.toContain('24 ans');
   });
-  it('respects featured ordering/limit and does not insert missing IDs',async()=>{
+  it('respects featured ordering, ignores the legacy limit for selections, and does not insert missing IDs',async()=>{
     const catalog=await content.getProducts();
     const home=await content.getHome();
     vi.mocked(content.getHome).mockResolvedValue({...home,featuredProductIds:[catalog[1].id,'not-published',catalog[0].id],featuredLimit:1});
     const html=renderToStaticMarkup(await EditorialHome());
-    const featured=html.split('class="olf-product-grid editorial-products"')[1].split('</section>')[0];
+    const featured=html.split('class="olf-featured-carousel editorial-products"')[1].split('</section>')[0];
     expect(featured).toContain(`/san-pham/${catalog[1].slug}`);
-    expect(featured).not.toContain(`/san-pham/${catalog[0].slug}`);
+    expect(featured).toContain(`/san-pham/${catalog[0].slug}`);
+    expect(featured.indexOf(`/san-pham/${catalog[1].slug}`)).toBeLessThan(featured.indexOf(`/san-pham/${catalog[0].slug}`));
     expect(featured).not.toContain('not-published');
   });
   it('empty catalog/blog and missing photos remain useful; empty FAQ is omitted',async()=>{
@@ -48,7 +49,7 @@ describe('landing content composition',()=>{
     vi.mocked(content.getSite).mockResolvedValue({...files.getSite(),faq:[]});
     vi.mocked(content.isTestContent).mockReturnValue(false);
     const html=renderToStaticMarkup(await EditorialHome());
-    expect(html).toContain('Những mùa hoa đang được chuẩn bị');expect(html).toContain('Chuyện hoa đang được viết');
+    expect(html).toContain('Những mùa hoa đang được chuẩn bị');expect(html).not.toContain('id="journal-title"');
     expect(html).toContain('/images/floral-mark.svg');expect(html).not.toContain('/images/preview/');expect(html).not.toContain('class="olf-faq"');
   });
   it('configured hero/story win over fixtures and supports long Vietnamese title',async()=>{

@@ -8,15 +8,17 @@ import { Empty } from "@/components/Empty";
 import { LandingReveal } from "./LandingMotion";
 import { LandingHeroMotion, LandingTitleLine, LandingHeroPhoto, LandingHeroOrnament, LandingStoryPhoto } from "./LandingHeroMotion";
 import { LandingBenefitsMotion } from "./LandingBenefitsMotion";
+import { FeaturedProductCarousel } from "./FeaturedProductCarousel";
+import { resolveHomeProducts } from "@/domain/home-products";
+import { ScrollAnchor } from "@/components/ui/ScrollAnchor";
+import { homeImageAvailable } from "@/server/home-products";
 
 export async function EditorialHome() {
   const [home, catalog, articles, assets, site] = await Promise.all([
     getHome(), getProducts(), getArticles(), getAssets(), getSite(),
   ]);
-  const products = (home.featuredProductIds.length
-    ? home.featuredProductIds.flatMap(id => catalog.find(p => p.id === id) || [])
-    : catalog).slice(0, home.featuredLimit);
   const test = isTestContent();
+  const { featured: products, hero: selectedHero } = resolveHomeProducts(home, catalog.filter((p) => homeImageAvailable(p.image)), test);
   const story = articles.find(a => a.slug === home.storySlug);
   const fallback = "/images/floral-mark.svg";
   const hero = assets.hero || { src: catalog.find(p => p.image)?.image || (test ? "/images/preview/bouquet.jpg" : fallback), alt: "Một chút hoa của Hòe" };
@@ -25,6 +27,9 @@ export async function EditorialHome() {
   const photoTwo = assets.story?.src || supporting[0]?.image || (test ? "/images/preview/roses.jpg" : fallback);
   const photoThree = supporting[1]?.image || hero.src;
   const storyPhoto = assets.story || { src: hero.src, alt: "Hoa minh họa câu chuyện Hòe" };
+  const heroPhotos = selectedHero
+    ? selectedHero.map((p) => p ? { src: p.image!, alt: p.imageAlt || p.name } : { src: fallback, alt: "Hòe — một chút hoa, một chút dịu dàng" })
+    : [hero, { src: photoTwo, alt: "Một chút hoa của Hòe" }, { src: photoThree, alt: "Một chút hoa của Hòe" }];
   const lines = home.title.split("\n");
   return (
     <div className="olf-home" data-home-design="oh-les-fleurs">
@@ -42,19 +47,19 @@ export async function EditorialHome() {
           </div>
           <div className="olf-hero-photos">
             <LandingHeroPhoto index={0}>
-              <div className="olf-photo-frame"><Image src={hero.src} alt={hero.alt} fill sizes="(max-width: 767px) 36vw, 27vw" loading="eager" fetchPriority="high" /></div>
+              <div className="olf-photo-frame"><Image src={heroPhotos[0].src} alt={heroPhotos[0].alt} fill sizes="(max-width: 767px) 36vw, 27vw" loading="eager" fetchPriority="high" /></div>
             </LandingHeroPhoto>
             <LandingHeroPhoto index={1}>
-              <div className="olf-photo-frame"><Image src={photoTwo} alt="" fill sizes="(max-width: 767px) 26vw, 27vw" loading="eager" /></div>
+              <div className="olf-photo-frame"><Image src={heroPhotos[1].src} alt={heroPhotos[1].alt} fill sizes="(max-width: 767px) 26vw, 27vw" loading="eager" /></div>
             </LandingHeroPhoto>
             <LandingHeroPhoto index={2}>
-              <div className="olf-photo-frame"><Image src={photoThree} alt="" fill sizes="(max-width: 767px) 26vw, 27vw" loading="eager" /></div>
+              <div className="olf-photo-frame"><Image src={heroPhotos[2].src} alt={heroPhotos[2].alt} fill sizes="(max-width: 767px) 26vw, 27vw" loading="eager" /></div>
             </LandingHeroPhoto>
           </div>
         <div className="olf-hero-description">
           <p>{home.intro}</p>
           <div className="olf-actions">
-            <Link className="olf-button" href={home.primaryCta.href}>{home.primaryCta.label}<ArrowUpRight aria-hidden="true" size={20} /></Link>
+            <ScrollAnchor className="olf-button" href={home.primaryCta.href}>{home.primaryCta.label}<ArrowUpRight aria-hidden="true" size={20} /></ScrollAnchor>
             {/* <Link className="olf-link" href={home.secondaryCta.href}>{home.secondaryCta.label}</Link> */}
           </div>
           <p className="olf-hero-note">{home.footnote}</p>
@@ -88,12 +93,11 @@ export async function EditorialHome() {
         </div>
       </section>
 
-      <section className="olf-section olf-shell" aria-labelledby="featured-title">
+      <section id="nhung-doa-hoa" className="olf-section olf-shell olf-featured" aria-labelledby="featured-title">
         <div className="olf-heading-row"><div><span className="olf-eyebrow">{home.featuredEyebrow}</span><h2 id="featured-title">{home.featuredTitle}</h2></div>
           <Link className="olf-link" href={home.featuredCta.href}>{home.featuredCta.label}<ArrowUpRight aria-hidden="true" size={19} /></Link>
         </div>
-        {products.length ? <div className="olf-product-grid editorial-products">{products.map((p, index) =>
-          <LandingReveal key={p.id} delay={Math.min(index, 2) * 0.08}><ProductCard product={p} variant="home" /></LandingReveal>)}</div>
+        {products.length ? <FeaturedProductCarousel slides={products.map((p) => ({ id: p.id, card: <ProductCard product={p} variant="home" /> }))} />
           : <Empty title="Những mùa hoa đang được chuẩn bị" body="Hòe sẽ giới thiệu mẫu hoa khi thông tin và hình ảnh đã sẵn sàng." href="/dich-vu/hoa-tam" action="Khám phá Hoa Tâm" />}
       </section>
 
@@ -139,7 +143,7 @@ export async function EditorialHome() {
 
       <section className="olf-section olf-cta" aria-labelledby="cta-title"><div className="olf-shell">
         <LandingReveal><Flower2 className="olf-cta-flower" aria-hidden="true" /><span className="olf-eyebrow">{home.ctaEyebrow}</span><h2 id="cta-title">{home.ctaTitle}</h2><p>{home.ctaBody}</p>
-          <div className="olf-actions"><Link className="olf-button" href={home.primaryCta.href}>{home.primaryCta.label}<ArrowUpRight aria-hidden="true" size={20} /></Link><Link className="olf-link" href={home.secondaryCta.href}>{home.secondaryCta.label}</Link></div>
+          <div className="olf-actions"><ScrollAnchor className="olf-button" href={home.primaryCta.href}>{home.primaryCta.label}<ArrowUpRight aria-hidden="true" size={20} /></ScrollAnchor><Link className="olf-link" href={home.secondaryCta.href}>{home.secondaryCta.label}</Link></div>
         </LandingReveal>
       </div></section>
     </div>

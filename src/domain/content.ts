@@ -1,5 +1,5 @@
 import * as z from "zod";
-const imageSource = z
+export const imageSource = z
   .string()
   .refine(
     (v) =>
@@ -18,6 +18,7 @@ export const siteSchema = z
       phone: copy.nullable(),
       email: z.union([z.email(), z.literal("")]).nullable(),
       address: copy.nullable(),
+      addressUrl: z.union([z.url().refine((v) => v.startsWith("https://"), "Dùng URL HTTPS hợp lệ."), z.literal("")]).nullable().default(null),
       hours: copy.nullable(),
     }),
     social: z
@@ -25,6 +26,7 @@ export const siteSchema = z
         z.object({
           label: copy,
           url: z.url().refine((v) => v.startsWith("https://")),
+          platform: z.enum(["Facebook", "TikTok", "Instagram"]).optional(),
         }),
       )
       .max(20),
@@ -49,7 +51,7 @@ export const assetsSchema = z
   .strict();
 const cta = z.object({ label: copy, href: link });
 export const homeDefaults = {
-  primaryCta: { label: "Chọn một chút hoa", href: "/san-pham" },
+  primaryCta: { label: "Chọn một chút hoa", href: "/#nhung-doa-hoa" },
   secondaryCta: { label: "Khám phá dịch vụ", href: "/#dich-vu" },
   footnote: "Hoa kể chuyện. Hòe gửi thương.",
   imageNote: "Những điều nhỏ bé,\nlàm ngày thêm xinh.",
@@ -98,6 +100,7 @@ export const homeSchema = z
     benefits: z.array(z.object({ title: copy, body: copy })).max(10),
     featuredLimit: z.number().int().min(0).max(12),
     featuredProductIds: z.array(z.string()).max(12).default([]),
+    heroProductIds: z.array(z.string()).max(3).default([]),
     storySlug: z.string(),
     primaryCta: cta,
     secondaryCta: cta,

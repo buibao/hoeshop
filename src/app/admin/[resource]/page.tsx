@@ -100,7 +100,7 @@ export default async function ListPage({
                             r.name ||
                               r.title ||
                               r.displayName ||
-                              r.key ||
+                              (resource === "settings" ? { site: "Liên hệ & mạng xã hội", home: "Nội dung trang chủ", assets: "Ảnh thương hiệu & câu chuyện" }[String(r.key)] : undefined) || r.key ||
                               r.requestId ||
                               r.id,
                           )}

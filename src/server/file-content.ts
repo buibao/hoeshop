@@ -3,6 +3,7 @@ import path from "node:path";
 import { createHash } from "node:crypto";
 import matter from "gray-matter";
 import * as z from "zod";
+import { homeSchema as fullHomeSchema, homeDefaults } from "@/domain/content";
 import {
   productSchema,
   type Product,
@@ -31,28 +32,22 @@ const siteSchema = z.object({
     phone: z.string().nullable(),
     email: z.string().nullable(),
     address: z.string().nullable(),
+    addressUrl: z.string().nullable().default(null),
     hours: z.string().nullable(),
   }),
   social: z.array(
     z.object({
       label: z.string(),
       url: z.url().refine((v) => v.startsWith("https://")),
+      platform: z.enum(["Facebook", "TikTok", "Instagram"]).optional(),
     }),
   ),
   faq: z.array(z.object({ question: z.string(), answer: z.string() })),
 });
 export const getSite = () =>
   siteSchema.parse(json(path.join(root(), "site.json")));
-const homeSchema = z.object({
-  eyebrow: z.string(),
-  title: z.string(),
-  intro: z.string(),
-  benefits: z.array(z.object({ title: z.string(), body: z.string() })),
-  featuredLimit: z.number().int().min(0).max(12),
-  storySlug: z.string(),
-});
 export const getHome = () =>
-  homeSchema.parse(json(path.join(root(), "home.json")));
+  fullHomeSchema.parse({ ...homeDefaults, ...json(path.join(root(), "home.json")) });
 const assetSchema = z.object({
   src: z.string().startsWith("/images/"),
   alt: z.string().min(1),
