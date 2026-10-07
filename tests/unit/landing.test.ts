@@ -8,7 +8,7 @@ import {EditorialHome} from '@/features/storefront/EditorialHome';
 
 vi.mock('@/server/content',()=>({getHome:vi.fn(),getProducts:vi.fn(),getArticles:vi.fn(),getAssets:vi.fn(),getSite:vi.fn(),getServices:vi.fn(),isTestContent:vi.fn()}));
 // Render client leaves as visible wrappers to inspect server-selected content independently of animation.
-vi.mock('@/features/storefront/LandingMotion',()=>({LandingPhoto:({children,...props}: {children:React.ReactNode})=>createElement('div',props,children),LandingReveal:({children}: {children:React.ReactNode})=>createElement('div',null,children)}));
+vi.mock('@/features/storefront/LandingMotion',()=>({LandingPhoto:({children,...props}: {children:React.ReactNode})=>createElement('div',props,children),LandingScrollFade:({children}: {children:React.ReactNode})=>createElement('div',null,children)}));
 vi.mock('@/features/storefront/LandingHeroMotion',()=>({LandingHeroMotion:({children}: {children:React.ReactNode})=>createElement('section',{className:'olf-hero'},children),LandingTitleLine:({children}: {children:React.ReactNode})=>createElement('span',{className:'olf-title-line'},children),LandingHeroOrnament:({children}: {children:React.ReactNode})=>createElement('span',{'aria-hidden':true},children),LandingHeroPhoto:({children}: {children:React.ReactNode})=>createElement('div',null,children),LandingStoryPhoto:({children}: {children:React.ReactNode})=>createElement('div',null,children)}));
 vi.mock('@/features/storefront/LandingBenefitsMotion',()=>({LandingBenefitsMotion:({intro,cards}: {intro:React.ReactNode;cards:React.ReactNode[]})=>createElement('div',{className:'olf-benefits'},intro,...cards.map((card,index)=>createElement('article',{key:index},card)))}));
 vi.mock('@/components/ServiceCards',()=>({ServiceCards:()=>createElement('div',null,'Ba dịch vụ')}));
@@ -25,6 +25,29 @@ beforeEach(()=>{
 });
 
 describe('landing content composition',()=>{
+  it.each([
+    'Hòe gửi hoa,  chill ghé nhà.',
+    'Hòe gửi hoa,\nchill ghé nhà.',
+    'Hòe gửi hoa,\r\n\r\nchill ghé nhà.\r\n',
+  ])('preserves both hero ornaments and emphasis for title %j',async(title)=>{
+    const home=await content.getHome();
+    vi.mocked(content.getHome).mockResolvedValue({...home,title});
+    const html=renderToStaticMarkup(await EditorialHome());
+    const heading=html.split('<h1')[1].split('</h1>')[0];
+    expect(heading.match(/class="olf-title-line"/g)).toHaveLength(2);
+    expect(heading.match(/\bolf-title-flower\b/g)).toHaveLength(1);
+    expect(heading.match(/\bolf-title-heart\b/g)).toHaveLength(1);
+    expect(heading).toContain('<em>chill ghé nhà.</em>');
+  });
+  it('keeps both ornaments for custom titles without a clause break',async()=>{
+    const home=await content.getHome();
+    vi.mocked(content.getHome).mockResolvedValue({...home,title:'Một chút dịu dàng'});
+    const html=renderToStaticMarkup(await EditorialHome());
+    const heading=html.split('<h1')[1].split('</h1>')[0];
+    expect(heading).toContain('Một chút dịu dàng');
+    expect(heading.match(/\bolf-title-flower\b/g)).toHaveLength(1);
+    expect(heading.match(/\bolf-title-heart\b/g)).toHaveLength(1);
+  });
   it.each([0,1,10])('keeps exactly %i configured benefits without reference claims',async(count)=>{
     const home=await content.getHome();
     vi.mocked(content.getHome).mockResolvedValue({...home,benefits:Array.from({length:count},(_,i)=>({title:`Benefit ${i}`,body:'Configured content'}))});

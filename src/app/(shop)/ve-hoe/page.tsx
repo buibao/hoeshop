@@ -25,23 +25,23 @@ export default async function AboutPage() {
       <section className="service-grid" style={{ marginBottom: 65 }}>
         {[
           [
-            "H",
+            "H - Heartfelt",
             "Chân thành",
             "Hoa là ngôn ngữ của cảm xúc. Hòe đặt sự chân thành vào từng nhành hoa, để những điều thương yêu được gửi trọn vẹn.",
           ],
           [
-            "O",
+            "O - Originality",
             "Nguyên bản",
             "Mỗi mong muốn là một câu chuyện riêng. Hòe cùng bạn tìm một thiết kế mang dấu ấn của người gửi và người nhận.",
           ],
           [
-            "E",
+            "E - Elegance",
             "Thanh lịch",
             "Vẻ đẹp từ những điều vừa đủ. Hòe chăm chút màu sắc, hình dáng và cảm giác mà những đóa hoa mang đến.",
           ],
         ].map(([letter, title, body]) => (
           <article key={letter} className="service-card">
-            <span className="eyebrow">{letter} — GIÁ TRỊ CỦA HÒE</span>
+            <span className="eyebrow">{letter}</span>
             <h3 style={{ fontSize: 30 }}>{title}</h3>
             <p>{body}</p>
           </article>

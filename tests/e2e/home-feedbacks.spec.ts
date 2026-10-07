@@ -48,6 +48,7 @@ test("dragging a card does not navigate, a deliberate card click still works", a
   const carousel = page.locator(".olf-featured-carousel");
   await expect(carousel).toHaveAttribute("data-carousel-ready", "true");
   const image = carousel.locator('[data-selected="true"] .product-image');
+  await expect(image).toBeInViewport({ ratio: 0.5 });
   const box = await image.boundingBox();
   await page.mouse.move(box!.x + box!.width * .75, box!.y + box!.height / 2);
   await page.mouse.down();
@@ -55,7 +56,9 @@ test("dragging a card does not navigate, a deliberate card click still works", a
   await page.mouse.up();
   await expect(page).toHaveURL(/\/#nhung-doa-hoa$/);
   const link = carousel.locator('[data-selected="true"] .product-link a');
-  await link.focus(); await page.keyboard.press("Enter");
+  await link.scrollIntoViewIfNeeded();
+  await expect(carousel.locator("xpath=..")).toHaveCSS("opacity", "1");
+  await link.focus(); await expect(link).toBeFocused(); await page.keyboard.press("Enter");
   await expect(page).toHaveURL(/\/san-pham\//);
 });
 
@@ -67,6 +70,8 @@ test("touch swipe changes products while vertical touch still scrolls the page",
     const carousel = page.locator(".olf-featured-carousel");
     await expect(carousel).toHaveAttribute("data-carousel-ready", "true");
     const session = await context.newCDPSession(page);
+    // A native deep-link scroll can still be settling when Embla becomes ready.
+    await expect(carousel.locator('[data-selected="true"] .product-image')).toBeInViewport({ ratio: 0.5 });
     const box = (await carousel.locator('[data-selected="true"] .product-image').boundingBox())!;
     const x = box.x + box.width * .8, y = box.y + 100;
     await session.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x, y }] });

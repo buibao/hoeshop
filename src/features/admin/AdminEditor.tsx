@@ -523,13 +523,13 @@ function Fields({
                 change={change}
                 options={options}
                 readOnly={(key === "id" && !creating) || (resource === "settings" && full === "primaryCta.href")}
-                hint={resource === "settings" && full === "primaryCta.href" ? "Nút chính cuộn đến Những đóa hoa của Hòe." : undefined}
+                hint={resource === "settings" && full === "primaryCta.href" ? "Nút chính cuộn đến Những đóa hoa của Hòe." : resource === "settings" && full === "title" ? "Xuống dòng để tách các dòng tiêu đề trên trang chủ." : undefined}
                 type={
                   options
                     ? "select"
                     : typeof value === "number"
                       ? "number"
-                      : [
+                      : (resource === "settings" && full === "title") || [
                             "bodyMarkdown",
                             "description",
                             "body",
@@ -539,7 +539,7 @@ function Fields({
                         ? "textarea"
                         : "text"
                 }
-                rows={key === "bodyMarkdown" ? 16 : 4}
+                rows={key === "bodyMarkdown" ? 16 : resource === "settings" && full === "title" ? 2 : 4}
               />
             );
           return (

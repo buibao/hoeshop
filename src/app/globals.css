@@ -19,7 +19,7 @@ button:disabled { cursor: wait; opacity: .65; }
 ::selection { background: var(--brand-blush); }
 .container { max-width: var(--max-width); margin: 0 auto; padding-inline: 36px; }
 .section { padding-block: 90px; }
-.eyebrow { display: block; font-size: 10px; letter-spacing: .2em; font-weight: 600; color: var(--accent); text-transform: uppercase; margin-bottom: 20px; }
+.eyebrow { display: block; font-size: 12px; letter-spacing: .2em; font-weight: 600; color: var(--accent); text-transform: uppercase; margin-bottom: 20px; }
 .muted { color: var(--muted); }
 .small { font-size: 12px; }
 .brand { font-family: var(--font-heading), Georgia, serif; font-size: 46px; color: var(--accent); line-height: 1; letter-spacing: -.06em; }

@@ -5,8 +5,9 @@ import { getHome, getProducts, getArticles, getAssets, getSite, isTestContent } 
 import { ProductCard } from "@/components/ProductCard";
 import { ServiceCards } from "@/components/ServiceCards";
 import { Empty } from "@/components/Empty";
-import { LandingReveal } from "./LandingMotion";
+import { LandingScrollFade } from "./LandingMotion";
 import { LandingHeroMotion, LandingTitleLine, LandingHeroPhoto, LandingHeroOrnament, LandingStoryPhoto } from "./LandingHeroMotion";
+import { HomeBackToTop } from "./HomeBackToTop";
 import { LandingBenefitsMotion } from "./LandingBenefitsMotion";
 import { FeaturedProductCarousel } from "./FeaturedProductCarousel";
 import { resolveHomeProducts } from "@/domain/home-products";
@@ -30,17 +31,25 @@ export async function EditorialHome() {
   const heroPhotos = selectedHero
     ? selectedHero.map((p) => p ? { src: p.image!, alt: p.imageAlt || p.name } : { src: fallback, alt: "Hòe — một chút hoa, một chút dịu dàng" })
     : [hero, { src: photoTwo, alt: "Một chút hoa của Hòe" }, { src: photoThree, alt: "Một chút hoa của Hòe" }];
-  const lines = home.title.split("\n");
+  let lines = home.title.split(/\r\n?|\n/).map(line => line.trim()).filter(Boolean);
+  // Legacy single-line copy can wrap visually without creating a second title layer.
+  // Explicit Admin line breaks win; otherwise use the first comma as the clause break.
+  if (lines.length === 1) {
+    const comma = lines[0].indexOf(",");
+    const ending = lines[0].slice(comma + 1).trim();
+    if (comma > 0 && ending) lines = [lines[0].slice(0, comma + 1), ending];
+  }
   return (
     <div className="olf-home" data-home-design="oh-les-fleurs">
       <LandingHeroMotion>
         <div className="olf-shell olf-hero-stage">
           <div className="olf-hero-heading">
             <span className="olf-eyebrow">{home.eyebrow}</span>
-            <h1 id="home-title">
+            <h1 id="home-title" tabIndex={-1}>
               {lines.map((line, index) => <LandingTitleLine key={index} index={index}>
                 {index === 0 ? line : <em>{line}</em>}
-                {index === 0 ? <LandingHeroOrnament kind="flower"><Flower2 className="olf-title-flower" /></LandingHeroOrnament> : index === lines.length - 1 ? <LandingHeroOrnament kind="heart"><Heart className="olf-title-heart" /></LandingHeroOrnament> : null}
+                {index === 0 ? <LandingHeroOrnament kind="flower"><Flower2 className="olf-title-flower" /></LandingHeroOrnament> : null}
+                {index === lines.length - 1 ? <LandingHeroOrnament kind="heart"><Heart className="olf-title-heart" /></LandingHeroOrnament> : null}
                 {index < lines.length - 1 ? " " : null}
               </LandingTitleLine>)}
             </h1>
@@ -85,31 +94,31 @@ export async function EditorialHome() {
 
       <section id="dich-vu" className="olf-section olf-services" aria-labelledby="services-title">
         <div className="olf-shell">
-          <LandingReveal className="olf-section-heading">
+          <LandingScrollFade className="olf-section-heading">
             <span className="olf-eyebrow">{home.servicesEyebrow}</span>
             <h2 id="services-title" className="copy-lines">{home.servicesTitle}</h2><p>{home.servicesIntro}</p>
-          </LandingReveal>
-          <LandingReveal><ServiceCards variant="home" /></LandingReveal>
+          </LandingScrollFade>
+          <ServiceCards variant="home" />
         </div>
       </section>
 
       <section id="nhung-doa-hoa" className="olf-section olf-shell olf-featured" aria-labelledby="featured-title">
-        <div className="olf-heading-row"><div><span className="olf-eyebrow">{home.featuredEyebrow}</span><h2 id="featured-title">{home.featuredTitle}</h2></div>
+        <LandingScrollFade><div className="olf-heading-row"><div><span className="olf-eyebrow">{home.featuredEyebrow}</span><h2 id="featured-title">{home.featuredTitle}</h2></div>
           <Link className="olf-link" href={home.featuredCta.href}>{home.featuredCta.label}<ArrowUpRight aria-hidden="true" size={19} /></Link>
-        </div>
-        {products.length ? <FeaturedProductCarousel slides={products.map((p) => ({ id: p.id, card: <ProductCard product={p} variant="home" /> }))} />
-          : <Empty title="Những mùa hoa đang được chuẩn bị" body="Hòe sẽ giới thiệu mẫu hoa khi thông tin và hình ảnh đã sẵn sàng." href="/dich-vu/hoa-tam" action="Khám phá Hoa Tâm" />}
+        </div></LandingScrollFade>
+        <LandingScrollFade>{products.length ? <FeaturedProductCarousel slides={products.map((p) => ({ id: p.id, card: <ProductCard product={p} variant="home" /> }))} />
+          : <Empty title="Những mùa hoa đang được chuẩn bị" body="Hòe sẽ giới thiệu mẫu hoa khi thông tin và hình ảnh đã sẵn sàng." href="/dich-vu/hoa-tam" action="Khám phá Hoa Tâm" />}</LandingScrollFade>
       </section>
 
       <section className="olf-section olf-story" aria-labelledby="story-title">
         <div className="olf-shell">
           <div className="olf-story-grid">
-            <LandingStoryPhoto><Image src={storyPhoto.src} alt={storyPhoto.alt} fill sizes="(max-width: 767px) 90vw, 42vw" /></LandingStoryPhoto>
-            <LandingReveal className="olf-story-copy"><span className="olf-eyebrow">{home.storyEyebrow}</span>
+            <LandingScrollFade><LandingStoryPhoto><Image src={storyPhoto.src} alt={storyPhoto.alt} fill sizes="(max-width: 767px) 90vw, 42vw" /></LandingStoryPhoto></LandingScrollFade>
+            <LandingScrollFade className="olf-story-copy"><span className="olf-eyebrow">{home.storyEyebrow}</span>
               <h2 id="story-title" className="copy-lines">{home.storyTitle}</h2><p>{home.storyBody}</p>
               <Link className="olf-link" href={story ? `/blog/${story.slug}` : "/ve-hoe"}>{home.storyCtaLabel}<ArrowUpRight aria-hidden="true" size={19} /></Link>
               <Flower2 className="olf-story-flower" aria-hidden="true" />
-            </LandingReveal>
+            </LandingScrollFade>
           </div>
           {/* {home.benefits.length > 0 && <LandingBenefitsMotion intro={<>
           <span className="olf-eyebrow">{home.benefitEyebrow}</span>
@@ -127,25 +136,26 @@ export async function EditorialHome() {
         <div className="olf-heading-row"><div><span className="olf-eyebrow">NHỮNG ĐIỀU NHỎ BÉ</span><h2 id="journal-title">Chuyện hoa</h2></div>
           {articles.length > 0 && <Link className="olf-link" href="/blog">Đọc thêm chuyện hoa<ArrowUpRight aria-hidden="true" size={19} /></Link>}
         </div>
-        {articles.length ? <div className="olf-journal">{articles.slice(0, 3).map(a => <LandingReveal key={a.id}>
+        {articles.length ? <div className="olf-journal">{articles.slice(0, 3).map(a => <LandingScrollFade key={a.id}>
           <Link href={`/blog/${a.slug}`} className="olf-journal-card"><span className="olf-journal-art" aria-hidden="true">{a.image ? <Image src={a.image} alt="" fill sizes="(max-width: 767px) 90vw, 30vw" /> : <Flower2 strokeWidth={0.8} />}</span>
             <div><span className="olf-eyebrow">{a.category || "Chuyện của Hòe"}</span><h3>{a.title}</h3><p>{a.excerpt}</p><span className="olf-link">Đọc câu chuyện<ArrowUpRight aria-hidden="true" size={18} /></span></div>
-          </Link></LandingReveal>)}</div> : <Empty title="Chuyện hoa đang được viết" body="Hòe sẽ gửi bạn những câu chuyện và cảm hứng khi bài viết đã sẵn sàng." />}
+          </Link></LandingScrollFade>)}</div> : <Empty title="Chuyện hoa đang được viết" body="Hòe sẽ gửi bạn những câu chuyện và cảm hứng khi bài viết đã sẵn sàng." />}
       </section> */}
 
       <section className="olf-section olf-process" aria-labelledby="process-title">
         <div className="olf-shell">
-          <LandingReveal className="olf-section-heading"><span className="olf-eyebrow">TỪ MONG MUỐN ĐẾN MỘT CHÚT HOA</span><h2 id="process-title">{home.processTitle}</h2></LandingReveal>
-          <div className="olf-process-grid">{home.process.map((step, index) => <LandingReveal key={step.title} delay={Math.min(index, 2) * 0.08}><span className="olf-step-number">0{index + 1}</span><h3>{step.title}</h3><p>{step.body}</p></LandingReveal>)}</div>
+          <LandingScrollFade className="olf-section-heading"><span className="olf-eyebrow">TỪ MONG MUỐN ĐẾN MỘT CHÚT HOA</span><h2 id="process-title">{home.processTitle}</h2></LandingScrollFade>
+          <div className="olf-process-grid">{home.process.map((step, index) => <LandingScrollFade key={step.title}><span className="olf-step-number">0{index + 1}</span><h3>{step.title}</h3><p>{step.body}</p></LandingScrollFade>)}</div>
           {site.faq.length > 0 && <div className="olf-faq"><h2>{home.faqTitle}</h2>{site.faq.map(q => <details key={q.question}><summary>{q.question}</summary><p>{q.answer}</p></details>)}</div>}
         </div>
       </section>
 
       <section className="olf-section olf-cta" aria-labelledby="cta-title"><div className="olf-shell">
-        <LandingReveal><Flower2 className="olf-cta-flower" aria-hidden="true" /><span className="olf-eyebrow">{home.ctaEyebrow}</span><h2 id="cta-title">{home.ctaTitle}</h2><p>{home.ctaBody}</p>
+        <LandingScrollFade><Flower2 className="olf-cta-flower" aria-hidden="true" /><span className="olf-eyebrow">{home.ctaEyebrow}</span><h2 id="cta-title">{home.ctaTitle}</h2><p>{home.ctaBody}</p>
           <div className="olf-actions"><ScrollAnchor className="olf-button" href={home.primaryCta.href}>{home.primaryCta.label}<ArrowUpRight aria-hidden="true" size={20} /></ScrollAnchor><Link className="olf-link" href={home.secondaryCta.href}>{home.secondaryCta.label}</Link></div>
-        </LandingReveal>
+        </LandingScrollFade>
       </div></section>
+      <HomeBackToTop />
     </div>
   );
 }

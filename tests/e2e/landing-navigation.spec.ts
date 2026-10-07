@@ -109,8 +109,8 @@ test("scroll reveals settle visibly and reduced motion keeps content immediate",
   await expect(page.locator(".olf-hero-description .olf-button")).toBeVisible();
   const products = page.locator(".editorial-products");
   await products.scrollIntoViewIfNeeded();
-  for (const reveal of await products
-    .locator("[data-landing-reveal]")
+  for (const reveal of await page
+    .locator(".olf-featured > [data-scroll-fade]:last-child > [data-scroll-fade-content]")
     .all()) {
     await expect
       .poll(() =>
@@ -122,8 +122,8 @@ test("scroll reveals settle visibly and reduced motion keeps content immediate",
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.reload();
   await products.scrollIntoViewIfNeeded();
-  for (const reveal of await products
-    .locator("[data-landing-reveal]")
+  for (const reveal of await page
+    .locator(".olf-featured > [data-scroll-fade]:last-child > [data-scroll-fade-content]")
     .all()) {
     expect(
       await reveal.evaluate((node) => Number(getComputedStyle(node).opacity)),

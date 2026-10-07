@@ -4,6 +4,12 @@ import { useEffect } from "react";
 import Lenis from "lenis";
 import { cancelFrame, frame, type FrameData } from "motion/react";
 
+let controller: Lenis | null = null;
+
+export function getSmoothScrollController() {
+  return controller;
+}
+
 export function SmoothScroll() {
   useEffect(() => {
     const lenis = new Lenis({
@@ -18,6 +24,7 @@ export function SmoothScroll() {
       respectReducedMotion: true,
       prevent: (node) => node.matches(".modal, .offcanvas"),
     });
+    controller = lenis;
 
     // Share Motion's clock with the existing scroll-driven animations.
     const update = ({ timestamp }: FrameData) => lenis.raf(timestamp);
@@ -47,6 +54,7 @@ export function SmoothScroll() {
       window.removeEventListener("popstate", onPopState);
       observer.disconnect();
       cancelFrame(update);
+      if (controller === lenis) controller = null;
       lenis.destroy();
     };
   }, []);

@@ -5,7 +5,7 @@ import { footerSocialLinks, socialPlatform } from "@/domain/contact";
 import { Footer } from "@/components/Footer";
 
 const content = vi.hoisted(() => ({ site: {} as ReturnType<typeof getSite>, policies: [] as { id: string; slug: string; title: string }[], articles: [] as object[] }));
-vi.mock("@/server/content", () => ({ getSite: async () => content.site, getArticles: async (type?: string) => type === "policies" ? content.policies : content.articles }));
+vi.mock("@/server/content", () => ({ getSite: async () => content.site, getArticles: async (type?: string) => type === "policies" ? content.policies : content.articles, getAssets: async () => ({ logo: null }) }));
 beforeEach(() => {
   content.site = getSite();
   content.policies = [];

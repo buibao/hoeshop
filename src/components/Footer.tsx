@@ -1,10 +1,11 @@
 import Link from "next/link";
-import { getArticles, getSite } from "@/server/content";
+import Image from "next/image";
+import { getArticles, getAssets, getSite } from "@/server/content";
 import { footerSocialLinks, httpsHref, phoneHref } from "@/domain/contact";
 import { SocialBrandIcon } from "./SocialBrandIcon";
 
 export async function Footer() {
-  const [site, policies, articles] = await Promise.all([getSite(), getArticles("policies"), getArticles()]);
+  const [site, policies, articles, { logo }] = await Promise.all([getSite(), getArticles("policies"), getArticles(), getAssets()]);
   const contact = site.contact;
   const phone = contact.phone?.trim();
   const email = contact.email?.trim();
@@ -19,7 +20,10 @@ export async function Footer() {
       <div className="olf-shell">
         <div className="footer-grid" data-footer-groups={2 + Number(hasContact) + Number(socials.length > 0)}>
           <div className="footer-brand">
-            <Link href="/" className="brand" aria-label="Hòe — Trang chủ">hòe</Link>
+            <Link href="/" className="brand" aria-label="Hòe — Trang chủ">
+              {logo ? <Image src={logo.src} alt={logo.alt} width={logo.width} height={logo.height}
+                style={{ maxWidth: 130, maxHeight: 65, objectFit: "contain" }} /> : "hòe"}
+            </Link>
             <p>{site.tagline}</p>
           </div>
           <nav aria-labelledby="footer-explore-title">

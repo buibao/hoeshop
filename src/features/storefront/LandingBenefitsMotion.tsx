@@ -3,12 +3,13 @@ import {useEffect, useRef, useState} from "react";
 import {useScroll, useTransform, type MotionValue} from "motion/react";
 import * as m from "motion/react-m";
 import {useDesktopMotion} from "./LandingHeroMotion";
+import {LandingScrollFade} from "./LandingMotion";
 import {benefitJourney} from "./landing-geometry";
 
 function BenefitCard({children, index, progress, enabled}: {children: React.ReactNode; index: number; progress: MotionValue<number>; enabled: boolean}) {
   const rotate = useTransform(progress, [0, 0.5, 1], index % 2 ? [-8, 4, 10] : [10, -4, -10]);
   const y = useTransform(progress, [0, 0.5, 1], index % 2 ? [24, -16, 24] : [-16, 24, -16]);
-  return <m.article className="olf-benefit-card" data-benefit-card initial={false} style={enabled ? {rotate, y} : {}}>{children}</m.article>;
+  return <LandingScrollFade><m.article className="olf-benefit-card" data-benefit-card initial={false} style={enabled ? {rotate, y} : {}}>{children}</m.article></LandingScrollFade>;
 }
 
 /** No wheel interception. Without JS/reduced motion/small screens, cards stay in normal flow. */
@@ -44,7 +45,7 @@ export function LandingBenefitsMotion({intro, cards}: {intro: React.ReactNode; c
   // className="olf-benefits"
   return <div ref={ref} className="" data-benefits-motion={enabled} style={enabled ? {height: journey.height, "--benefit-card-width": `${size.cardWidth}px`, "--benefit-stage-height": `${stageHeight}px`} as React.CSSProperties : {}}>
     <div ref={stage} className="olf-benefits-stage">
-      <div className="olf-benefits-intro">{intro}</div>
+      <LandingScrollFade className="olf-benefits-intro">{intro}</LandingScrollFade>
       <div className="olf-benefits-viewport">
         <m.div ref={track} className="olf-benefit-grid" data-benefit-track initial={false} style={enabled ? {x} : {}}>
           {cards.map((card, index) => <BenefitCard key={index} index={index} progress={scrollYProgress} enabled={enabled}>{card}</BenefitCard>)}
