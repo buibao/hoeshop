@@ -12,7 +12,7 @@ const navigation = [
   ["/", "Trang chủ"],
   ["/san-pham", "Sản phẩm"],
   ["/ve-hoe", "Về Hòe"],
-  ["/blog", "Chuyện Hòe (Blog)"],
+  ["/blog", "Chuyện Hoa (Blog)"],
   ["/lien-he", "Liên hệ"],
 ];
 export function Header({
