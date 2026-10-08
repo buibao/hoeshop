@@ -18,6 +18,7 @@ import {
   parseDisplayDate,
 } from "@/domain/date-time";
 import { vietnamToday } from "@/domain/schemas";
+import { useStoreOverlay } from "@/components/StoreScope";
 type Props = {
   name: string;
   label: string;
@@ -57,6 +58,7 @@ export function DateTimeField({
       ),
     );
   const [position, setPosition] = useState({ left: 20, top: 80 });
+  const portalClassName = useStoreOverlay(show);
   const serverError = errors?.[name],
     feedback = error || serverError;
   const iso = type === "date" ? parseDisplayDate(value) : null;
@@ -229,7 +231,7 @@ export function DateTimeField({
         }}
         restoreFocus={false}
         onExited={() => returnFocus.current?.focus()}
-        className="hoe-widget hoe-picker"
+        className={`hoe-widget hoe-picker ${portalClassName}`}
         dialogClassName="hoe-picker-dialog"
         backdropClassName="hoe-picker-backdrop"
         aria-labelledby={id + "-title"}

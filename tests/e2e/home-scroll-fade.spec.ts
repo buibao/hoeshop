@@ -77,10 +77,17 @@ for (const width of [390, 768, 1024, 1440]) {
     await expect(page.locator(".olf-featured > [data-scroll-fade]").first().locator("[data-scroll-fade-content]"))
       .toHaveCSS("opacity", "1");
     const position = page.locator(".olf-carousel-position");
-    await page.getByRole("button", { name: "Sản phẩm tiếp theo" }).click();
-    await expect(position).toHaveText("2 / 3");
-    await page.getByRole("button", { name: "Sản phẩm trước" }).click();
-    await expect(position).toHaveText("1 / 3");
+    const carousel = page.locator(".olf-featured-carousel");
+    const count = await carousel.locator(".olf-carousel-slide").count();
+    const next = page.getByRole("button", { name: "Sản phẩm tiếp theo" });
+    if (await carousel.getAttribute("data-carousel-overflow") === "true") {
+      await next.click();
+      await expect(position).toHaveText(`2 / ${count}`);
+      await page.getByRole("button", { name: "Sản phẩm trước" }).click();
+      await expect(position).toHaveText(`1 / ${count}`);
+    } else {
+      await expect(next).toBeDisabled();
+    }
     await page.screenshot({ path: testInfo.outputPath(`home-${width}-featured.png`) });
 
     await jump(page, await page.evaluate(() => document.documentElement.scrollHeight));

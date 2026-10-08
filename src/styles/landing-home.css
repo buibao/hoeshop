@@ -3,7 +3,7 @@
 .olf-shell { max-width: 1400px; padding-inline: 48px; margin-inline: auto; }
 .olf-section { padding-block: var(--olf-section-space); }
 .olf-home h2 { font-size: clamp(36px, 4.2vw, 60px); line-height: 1.14; letter-spacing: -.045em; text-wrap: balance; }
-.olf-eyebrow { display: block; font-size: 12px; font-weight: 500; letter-spacing: .09em; color: var(--accent); margin-bottom: 24px; }
+.olf-eyebrow { display: block; font-size: 12px; font-weight: var(--text-weight-medium, 500); letter-spacing: .09em; color: var(--accent); margin-bottom: 24px; }
 .olf-hero { padding-block: 70px 80px; position: relative; overflow: clip; }
 .olf-hero-stage { position: relative; padding-top: 50px; padding-bottom: 24px; }
 .olf-hero-heading { width: 66%; margin-inline: auto; text-align: center; position: relative; z-index: 5; }
@@ -26,11 +26,11 @@
 .olf-hero-description { text-align: center; position: relative; z-index: 4; padding-top: 28px; }
 .olf-hero-description > p:first-child { max-width: 550px; margin-inline: auto; font-size: 15px; line-height: 1.85; color: var(--muted); text-wrap: pretty; }
 .olf-actions { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 24px; margin-top: 28px; }
-.olf-button { display: inline-flex; align-items: center; justify-content: center; gap: 24px; padding: 14px 24px; border: 1px solid var(--accent); border-radius: 100px; min-height: 52px; background: var(--accent); color: var(--background); font-size: 14px; font-weight: 500; transition: background var(--olf-motion), transform var(--olf-motion); }
+.olf-button { display: inline-flex; align-items: center; justify-content: center; gap: 24px; padding: 14px 24px; border: 1px solid var(--accent); border-radius: 100px; min-height: 52px; background: var(--accent); color: var(--background); font-size: 14px; font-weight: var(--text-weight-medium, 500); transition: background var(--olf-motion), transform var(--olf-motion); }
 .olf-button:hover { background: var(--accent-hover); transform: translateY(-2px); }
 .olf-button:active { transform: translateY(0) scale(.98); }
 .olf-button svg { flex-shrink: 0; }
-.olf-link { display: inline-flex; align-items: center; gap: 12px; font-size: 14px; font-weight: 500; color: var(--accent); text-decoration: underline; text-underline-offset: 6px; text-decoration-thickness: 1px; transition: color var(--olf-motion); }
+.olf-link { display: inline-flex; align-items: center; gap: 12px; font-size: 14px; font-weight: var(--text-weight-medium, 500); color: var(--accent); text-decoration: underline; text-underline-offset: 6px; text-decoration-thickness: 1px; transition: color var(--olf-motion); }
 .olf-link:hover { color: var(--accent-hover); }
 .olf-link svg { transition: transform var(--olf-motion); flex-shrink: 0; }
 .olf-link:hover svg { transform: translate(2px, -2px); }
@@ -42,7 +42,7 @@
 .olf-service-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
 .olf-service-card { position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: 20px; padding: 36px 32px; background: var(--background); min-width: 0; border-radius: 48px; transition: transform 240ms; }
 .olf-service-card .number { font-size: 12px; color: var(--muted); }
-.olf-service-card .service-flower { position: absolute; width: 52px; height: 52px; top: 28px; right: 28px; stroke-width: 1; color: var(--accent); }
+.olf-service-card .service-flower { position: absolute; width: 52px; height: 52px; top: 28px; right: 28px; stroke-width: 1.6; color: var(--accent); }
 .olf-service-card h3 { font-size: 38px; line-height: 1.2; margin-top: 24px; }
 .olf-service-card p { color: var(--muted); white-space: pre-line; font-size: 15px; }
 .olf-service-card .text-link { margin-top: auto; font-size: 13px; padding-top: 8px; }
@@ -106,7 +106,7 @@
 .olf-faq { max-width: 800px; margin: 80px auto 0; }
 .olf-faq h2 { margin-bottom: 32px; text-align: center; }
 .olf-faq details { border-bottom: 1px solid var(--border); padding-block: 20px; }
-.olf-faq summary { cursor: pointer; font-size: 16px; font-weight: 500; min-height: 24px; }
+.olf-faq summary { cursor: pointer; font-size: 16px; font-weight: var(--text-weight-medium, 500); min-height: 24px; }
 .olf-faq p { color: var(--muted); margin-top: 16px; font-size: 14px; }
 .olf-cta { text-align: center; background: var(--brand-blush); }
 .olf-cta-flower { width: 72px; height: 72px; margin: 0 auto 28px; color: var(--accent); stroke-width: 1; }
@@ -157,7 +157,7 @@
   .olf-service-grid { grid-template-columns: 1fr; gap: 16px; }
   .olf-service-card { padding: 28px; gap: 14px; }
   .olf-service-card h3 { margin-top: 0; font-size: 32px; }
-  .olf-service-card .service-flower { width: 48px; height: 48px; top: 28px; right: 28px; }
+  .olf-service-card .service-flower { width: 40px; height: 40px; top: 28px; right: 28px; }
   .olf-service-card p { font-size: 14px; }
   .olf-heading-row { align-items: flex-start; gap: 20px; margin-bottom: 32px; }
   .olf-product-grid { gap: 32px 16px; }
@@ -185,6 +185,7 @@
 .olf-featured-carousel[data-carousel-ready="true"] .olf-carousel-viewport { overflow: hidden; }
 .olf-carousel-track { display: flex; align-items: stretch; gap: var(--slide-gap); }
 .olf-carousel-slide { flex: 0 0 var(--slide-size); min-width: 0; }
+.olf-featured-carousel[data-carousel-overflow="true"] .olf-carousel-slide:last-child { margin-inline-end: var(--slide-gap); }
 .olf-carousel-card { height: 100%; padding: 4px; }
 .olf-featured-carousel[data-carousel-ready="true"] .product-image { transform: scale(.94); transition: transform 300ms ease; }
 .olf-featured-carousel[data-carousel-ready="true"] [data-selected="true"] .product-image { transform: scale(1); }
@@ -233,3 +234,6 @@
   .olf-home [data-scroll-fade-content] { opacity: 1 !important; }
   .olf-back-to-top { transition: none; transform: none; }
 }
+
+.olf-carousel-play { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 8px 12px; border: 1px solid var(--border); border-radius: 24px; color: var(--accent); background: transparent; }
+@media (max-width: 767px) { .olf-carousel-controls { gap: 12px; flex-wrap: wrap; } }

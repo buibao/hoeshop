@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "../styles/tokens.css";
 @theme inline { --color-background: var(--background); --color-foreground: var(--ink); --font-sans: var(--font-body); }
+:root { --font-heading: var(--font-root-heading); --font-body: var(--font-root-body); --font-brand: var(--font-root-heading); --font-brand-caption: var(--font-root-body); }
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; scroll-padding-top: 100px; }
 html.lenis { scroll-behavior: auto !important; }
@@ -19,11 +20,11 @@ button:disabled { cursor: wait; opacity: .65; }
 ::selection { background: var(--brand-blush); }
 .container { max-width: var(--max-width); margin: 0 auto; padding-inline: 36px; }
 .section { padding-block: 90px; }
-.eyebrow { display: block; font-size: 12px; letter-spacing: .2em; font-weight: 600; color: var(--accent); text-transform: uppercase; margin-bottom: 20px; }
+.eyebrow { display: block; font-size: 12px; letter-spacing: .2em; font-weight: var(--text-weight-semibold, 600); color: var(--accent); text-transform: uppercase; margin-bottom: 20px; }
 .muted { color: var(--muted); }
 .small { font-size: 12px; }
-.brand { font-family: var(--font-heading), Georgia, serif; font-size: 46px; color: var(--accent); line-height: 1; letter-spacing: -.06em; }
-.brand small { font-family: var(--font-body),sans-serif; display: block; font-size: 8px; letter-spacing: .28em; text-transform: uppercase; margin-top: 7px; color: var(--muted); }
+.brand { font-family: var(--font-brand), Georgia, serif; font-size: 46px; color: var(--accent); line-height: 1; letter-spacing: -.06em; }
+.brand small { font-family: var(--font-brand-caption),sans-serif; display: block; font-size: 8px; letter-spacing: .28em; text-transform: uppercase; margin-top: 7px; color: var(--muted); }
 .header { background: var(--background); border-bottom: 1px solid var(--border); position: relative; z-index: 20; }
 .header-inner { min-height: 96px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
 .nav { display: flex; align-items: center; gap: 32px; font-size: 12px; }
@@ -37,7 +38,7 @@ button:disabled { cursor: wait; opacity: .65; }
 .banner.test { background: #fae2ec; color: #742040; }
 .skip-link { position: fixed; left: 10px; top: -100px; z-index: 100; background: var(--ink); color: white; padding: 10px; }
 .skip-link:focus { top: 10px; }
-.button { display: inline-flex; justify-content: center; align-items: center; gap: 12px; min-height: 48px; padding: 12px 23px; border: 1px solid var(--accent); border-radius: var(--radius); background: var(--accent); color: white; font-size: 12px; font-weight: 500; transition: background .2s, transform .2s; text-align: center; }
+.button { display: inline-flex; justify-content: center; align-items: center; gap: 12px; min-height: 48px; padding: 12px 23px; border: 1px solid var(--accent); border-radius: var(--radius); background: var(--accent); color: white; font-size: 12px; font-weight: var(--text-weight-medium, 500); transition: background .2s, transform .2s; text-align: center; }
 .button:hover { background: var(--accent-hover); transform: translateY(-1px); }
 .button.secondary { background: transparent; color: var(--accent); }
 .button.secondary:hover { background: var(--brand-blush); }
@@ -111,7 +112,7 @@ button:disabled { cursor: wait; opacity: .65; }
 .form-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 18px; }
 .field { display: flex; flex-direction: column; gap: 6px; min-width: 0; margin-bottom: 8px;}
 .field.full { grid-column: 1 / -1; }
-.field label { font-size: 11px; font-weight: 500; color: var(--ink); }
+.field label { font-size: 11px; font-weight: var(--text-weight-medium, 500); color: var(--ink); }
 textarea { width: 100%; border: 1px solid var(--border); border-radius: 8px; min-height: 44px; padding: 10px 12px; background: var(--background); color: var(--ink); font-size: 12px; }
 input,select { width: 100%; border: 1px solid var(--border); border-radius: 8px; height: 44px; padding: 10px 12px; background: var(--background); color: var(--ink); font-size: 12px; }
 textarea { min-height: 100px; resize: vertical; }

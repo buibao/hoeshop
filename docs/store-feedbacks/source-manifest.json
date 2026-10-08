@@ -1,0 +1,131 @@
+{
+  "branch": "feedbacks",
+  "baseline": "ead5570e76b93ed21baeaa06199e3dc6b174cba9",
+  "deployment": "dpl_6ehbP4DeRGhMdvhfZKrrAuyVG3BM",
+  "files": [
+    {
+      "file": "scripts/verify-store-fonts.py",
+      "sha256": "b27290d482eb2d40bf12eab06dc95d8cd0a973c37fe13fdc95bbf744296497d6"
+    },
+    {
+      "file": "src/app/(shop)/layout.tsx",
+      "sha256": "2260b17d10917f1fe360dfde0e6b161ac5a820afeeb9e616a2f9ca67560d4d45"
+    },
+    {
+      "file": "src/app/globals.css",
+      "sha256": "6880a6af57720cb2b4c119fb7322b97032648d93ff6c061863c8d15d8b58b814"
+    },
+    {
+      "file": "src/app/layout.tsx",
+      "sha256": "9352ce666bb1b3a3a4cca935c32b88909e0d68c808ff7681a430134bbf535b22"
+    },
+    {
+      "file": "src/components/Header.tsx",
+      "sha256": "17195b2abef030dabd02725b3c9781dc54bf26d480ef3b0dfea747898dcff296"
+    },
+    {
+      "file": "src/components/ProductNavigation.tsx",
+      "sha256": "4f2cb017742f4fe2a3a47cb9e363faae9aff406a4ec3906b621ed6a290cdf17f"
+    },
+    {
+      "file": "src/components/ServiceCards.tsx",
+      "sha256": "593cd3adbdbe1763b930693e3add97e96d023cb86080955bfb6df1c0801be622"
+    },
+    {
+      "file": "src/components/ServiceTypeIcon.tsx",
+      "sha256": "74e01f005e01fd1cc2123bea6b8fc5a1f83a4688c7acddd78ee06b0410a05e44"
+    },
+    {
+      "file": "src/components/StoreScope.tsx",
+      "sha256": "8897ad23a90fae670949b15e8201f76459a70112ac6834fa1d8081171d9493a8"
+    },
+    {
+      "file": "src/components/ui/DateTimeField.tsx",
+      "sha256": "93a899573d8bbf629f1ce3cdaa7d752e7169dcf3bf21630752dfb39165eb81b2"
+    },
+    {
+      "file": "src/features/storefront/FeaturedProductCarousel.tsx",
+      "sha256": "63adb0a730fc601bc95bb0aa9722c6b8651f1f9891b27737f865c60e0a896fd6"
+    },
+    {
+      "file": "src/features/storefront/carousel-autoplay.ts",
+      "sha256": "7cd5e52e1ca566dc2a16a155ab182693d99368ec9f0997c7ec7fd73c088536b2"
+    },
+    {
+      "file": "src/fonts/Cormorant-OFL.txt",
+      "sha256": "60700d351cac4650c51f3f9db318d2a420f8b45052dba2715eb5fec41f0f6956"
+    },
+    {
+      "file": "src/fonts/GUST-FONT-LICENSE.txt",
+      "sha256": "2bd69affc3da00715116f713f57eab9707e96daf3562ad0215987b15b9c16f73"
+    },
+    {
+      "file": "src/fonts/MANIFEST-TeX-Gyre-Termes.txt",
+      "sha256": "f68e1704d13ab91fb1ef3c9f14e1db94c066c53aa2ac686879213e3619214bc7"
+    },
+    {
+      "file": "src/fonts/METADATA.pb",
+      "sha256": "faa16a5e79613ca7cadd599ada1f4cf6891f3cb6731631fbed2a0b18a342e556"
+    },
+    {
+      "file": "src/fonts/README-TeX-Gyre-Termes.txt",
+      "sha256": "2ca38f2af08da678b2cdb4ac99f8b3ff72fb7bdcc785ace290cd8ef1b2b947ab"
+    },
+    {
+      "file": "src/fonts/README.md",
+      "sha256": "07b834e389cf09c64b2f8e1e636b74465506a9d0b531b31a368caae148b4681d"
+    },
+    {
+      "file": "src/fonts/cormorant-garamond-500-italic.woff2",
+      "sha256": "e337b2c90701e0f4437002d2e2e09f236e2561d55db617fd0011205bce88992f"
+    },
+    {
+      "file": "src/fonts/cormorant-garamond-500-normal.woff2",
+      "sha256": "4627ee1f34847845005c15326fa47bbc3f8119c691b5a94aff2c0c8a1552f70a"
+    },
+    {
+      "file": "src/fonts/cormorant-garamond-600-normal.woff2",
+      "sha256": "e40ebdf503ed83d8567f241b4a4f825adce6c493eca6454159ceb2566c77c93c"
+    },
+    {
+      "file": "src/fonts/store-fonts.ts",
+      "sha256": "0e038745b9254a7670750525d638baa4727b38d10bca2a133ccd36d39120f0ea"
+    },
+    {
+      "file": "src/fonts/texgyretermes-bold.woff2",
+      "sha256": "e34b89a0cca65e6f6a90653d290870976311419045bd3b42cfcc32693b762d90"
+    },
+    {
+      "file": "src/fonts/texgyretermes-bolditalic.woff2",
+      "sha256": "cffae2ecd2529db7b5167259b3c9204997d261a9427fc7b157cdcf2287c2c057"
+    },
+    {
+      "file": "src/fonts/texgyretermes-italic.woff2",
+      "sha256": "ce14aa10e2baff07004d30717c824f524082120099409ea19b5125cc0ebbdca8"
+    },
+    {
+      "file": "src/fonts/texgyretermes-regular.woff2",
+      "sha256": "ebf67435ceb7f9d184ee305bbbf18fa7b5be3d6a2314ca9a707d37b31ba2565f"
+    },
+    {
+      "file": "src/styles/landing-home.css",
+      "sha256": "9f3bf56ee95551b4d08035c516a4afbdd82dcbb0e6e7d99506472044960a1a48"
+    },
+    {
+      "file": "src/styles/phase3.css",
+      "sha256": "b5420ce9519fcb74aa7bfdd821909cc9e1030fadf3284560f6fb1c73f2950e39"
+    },
+    {
+      "file": "src/styles/store-shell.css",
+      "sha256": "04c032ed0d061ced8bf04e17622ede3ac034df401b0601aede7da762a3406151"
+    },
+    {
+      "file": "src/styles/store-typography.css",
+      "sha256": "3f4d72e24c293047ef2023c47d324acd9725f8f7933e64f80c3f0a7689d70f25"
+    },
+    {
+      "file": "src/styles/widgets.css",
+      "sha256": "809ee06e4d7600452e472b7986b9faea151c807680e1e768438155bae82744e7"
+    }
+  ]
+}

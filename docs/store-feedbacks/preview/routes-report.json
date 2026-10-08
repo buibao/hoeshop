@@ -1,0 +1,95 @@
+{
+  "base": "https://hoeshop-qknh6rebw-buibaos-projects.vercel.app",
+  "reports": [
+    {
+      "width": 390,
+      "route": "/san-pham",
+      "status": 200
+    },
+    {
+      "width": 390,
+      "route": "/dich-vu/hoa-tam",
+      "status": 200
+    },
+    {
+      "width": 390,
+      "route": "/dich-vu/hoa-thoi",
+      "status": 200
+    },
+    {
+      "width": 390,
+      "route": "/dich-vu/hoa-y",
+      "status": 200
+    },
+    {
+      "width": 390,
+      "route": "/blog",
+      "status": 200
+    },
+    {
+      "width": 390,
+      "route": "/blog/chuyen-cua-hoe",
+      "status": 200
+    },
+    {
+      "width": 390,
+      "route": "/lien-he",
+      "status": 200
+    },
+    {
+      "width": 390,
+      "route": "/ve-hoe",
+      "status": 200
+    },
+    {
+      "width": 390,
+      "route": "/dang-nhap",
+      "family": "\"Be Vietnam Pro\", \"Be Vietnam Pro Fallback\", Arial, sans-serif"
+    },
+    {
+      "width": 1440,
+      "route": "/san-pham",
+      "status": 200
+    },
+    {
+      "width": 1440,
+      "route": "/dich-vu/hoa-tam",
+      "status": 200
+    },
+    {
+      "width": 1440,
+      "route": "/dich-vu/hoa-thoi",
+      "status": 200
+    },
+    {
+      "width": 1440,
+      "route": "/dich-vu/hoa-y",
+      "status": 200
+    },
+    {
+      "width": 1440,
+      "route": "/blog",
+      "status": 200
+    },
+    {
+      "width": 1440,
+      "route": "/blog/chuyen-cua-hoe",
+      "status": 200
+    },
+    {
+      "width": 1440,
+      "route": "/lien-he",
+      "status": 200
+    },
+    {
+      "width": 1440,
+      "route": "/ve-hoe",
+      "status": 200
+    },
+    {
+      "width": 1440,
+      "route": "/dang-nhap",
+      "family": "\"Be Vietnam Pro\", \"Be Vietnam Pro Fallback\", Arial, sans-serif"
+    }
+  ]
+}

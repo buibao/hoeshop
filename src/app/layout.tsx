@@ -12,13 +12,13 @@ import "@/styles/store-shell.css";
 const heading = Lora({
   subsets: ["latin", "vietnamese"],
   display: "swap",
-  variable: "--font-heading",
+  variable: "--font-root-heading",
 });
 const body = Be_Vietnam_Pro({
   subsets: ["latin", "vietnamese"],
   weight: ["400", "500", "600"],
   display: "swap",
-  variable: "--font-body",
+  variable: "--font-root-body",
 });
 export const metadata: Metadata = {
   title: { default: "Hòe — Hòe gửi hoa, chill ghé nhà.", template: "%s | Hòe" },

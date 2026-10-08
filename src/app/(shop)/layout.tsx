@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { StoreScope } from "@/components/StoreScope";
+import { termes, cormorant } from "@/fonts/store-fonts";
+import "@/styles/store-typography.css";
 import {
   getSite,
   getAssets,
@@ -36,7 +39,7 @@ export default async function ShopLayout({
 }) {
   const test = isTestContent();
   return (
-    <>
+    <StoreScope className={`hoe-store-scope ${termes.variable} ${cormorant.variable}`}>
       <a href="#main-content" className="skip-link">
         Đến nội dung chính
       </a>
@@ -58,6 +61,6 @@ export default async function ShopLayout({
       <Header logo={(await getAssets()).logo} />
       <main id="main-content">{children}</main>
       <Footer />
-    </>
+    </StoreScope>
   );
 }

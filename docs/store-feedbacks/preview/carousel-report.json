@@ -1,0 +1,27 @@
+{
+  "base": "https://hoeshop-qknh6rebw-buibaos-projects.vercel.app",
+  "reports": [
+    {
+      "width": 1440,
+      "count": 6,
+      "afterNext": "1 / 6",
+      "hover": true,
+      "focus": true,
+      "manual": true,
+      "manualPause": true,
+      "resumeDelay": true,
+      "errors": []
+    },
+    {
+      "width": 390,
+      "count": 6,
+      "afterNext": "1 / 6",
+      "hover": true,
+      "focus": true,
+      "manual": true,
+      "manualPause": true,
+      "resumeDelay": true,
+      "errors": []
+    }
+  ]
+}

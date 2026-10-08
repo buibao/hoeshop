@@ -15,7 +15,7 @@ test("Home CTA, direct hash, refresh and history retain the anchor below the hea
   await page.goto("/#nhung-doa-hoa"); await expect(heading).toBeInViewport(); await unobscured();
 });
 
-test("finite carousel keeps first and last active products centered across responsive sizes", async ({ page }) => {
+test("carousel centers overflow snaps and disables controls when products fit", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   for (const width of [360, 390, 768, 1024, 1280, 1440]) {
     await page.setViewportSize({ width, height: 900 });
@@ -27,6 +27,12 @@ test("finite carousel keeps first and last active products centered across respo
     const count = await carousel.locator(".olf-carousel-slide").count();
     const position = carousel.locator(".olf-carousel-position");
     await expect(position).toHaveText(`1 / ${count}`);
+    if (await carousel.getAttribute("data-carousel-overflow") === "false") {
+      await expect(carousel.getByRole("button", { name: "Sản phẩm trước", exact: true })).toBeDisabled();
+      await expect(carousel.getByRole("button", { name: "Sản phẩm tiếp theo", exact: true })).toBeDisabled();
+      for (const slide of await carousel.locator(".olf-carousel-slide").all()) await expect(slide).toBeInViewport({ ratio: .95 });
+      continue;
+    }
     const center = async () => {
       const selected = await carousel.locator('[data-selected="true"]').boundingBox();
       const viewport = await carousel.locator(".olf-carousel-viewport").boundingBox();
@@ -35,7 +41,7 @@ test("finite carousel keeps first and last active products centered across respo
     await center();
     await carousel.getByRole("button", { name: "Sản phẩm tiếp theo", exact: true }).focus();
     await page.keyboard.press("Enter"); await expect(position).toHaveText(`2 / ${count}`); await center();
-    while (await carousel.getByRole("button", { name: "Sản phẩm tiếp theo", exact: true }).isEnabled()) {
+    for (let index = 2; index < count; index++) {
       await carousel.getByRole("button", { name: "Sản phẩm tiếp theo", exact: true }).click();
     }
     await expect(position).toHaveText(`${count} / ${count}`); await center();

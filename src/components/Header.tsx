@@ -7,6 +7,7 @@ import { Menu, ShoppingBag, X } from "lucide-react";
 import Offcanvas from "react-bootstrap/Offcanvas";
 import { useCart } from "@/features/cart/store";
 import { ProductNavigation } from "@/components/ProductNavigation";
+import { useStoreOverlay } from "./StoreScope";
 const navigation = [
   ["/", "Trang chủ"],
   ["/san-pham", "Sản phẩm"],
@@ -21,6 +22,7 @@ export function Header({
 }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const portalClassName = useStoreOverlay(open);
   const { items } = useCart();
   const count = items.reduce((n, item) => n + item.quantity, 0);
   return (
@@ -83,7 +85,7 @@ export function Header({
         onHide={() => setOpen(false)}
         placement="end"
         restoreFocusOptions={{ preventScroll: true }}
-        className="hoe-menu hoe-store-menu"
+        className={`hoe-menu hoe-store-menu ${portalClassName}`}
         id="mobile-navigation"
         aria-labelledby="mobile-menu-title"
       >

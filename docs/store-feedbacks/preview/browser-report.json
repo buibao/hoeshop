@@ -1,0 +1,418 @@
+{
+  "base": "https://hoeshop-qknh6rebw-buibaos-projects.vercel.app",
+  "reports": [
+    {
+      "width": 390,
+      "fonts": {
+        "heading": "cormorant, \"cormorant Fallback\", Georgia, serif, Georgia, serif",
+        "body": "termes, \"termes Fallback\", \"Times New Roman\", serif, \"Times New Roman\", serif",
+        "brand": "Lora, \"Lora Fallback\", Georgia, serif",
+        "headingWeight": "500",
+        "heroItalic": "500",
+        "bodyWeight": "400",
+        "footer": "cormorant, \"cormorant Fallback\", Georgia, serif, Georgia, serif",
+        "faces": [
+          {
+            "family": "termes",
+            "weight": "400",
+            "style": "normal"
+          },
+          {
+            "family": "termes Fallback",
+            "weight": "normal",
+            "style": "normal"
+          },
+          {
+            "family": "cormorant",
+            "weight": "500",
+            "style": "normal"
+          },
+          {
+            "family": "cormorant",
+            "weight": "600",
+            "style": "normal"
+          },
+          {
+            "family": "cormorant",
+            "weight": "500",
+            "style": "italic"
+          },
+          {
+            "family": "cormorant Fallback",
+            "weight": "normal",
+            "style": "normal"
+          }
+        ]
+      },
+      "probes": [
+        [
+          {
+            "familyName": "TeX Gyre Termes",
+            "postScriptName": "TeXGyreTermes-Regular",
+            "isCustomFont": true,
+            "glyphCount": 533
+          }
+        ],
+        [
+          {
+            "familyName": "TeX Gyre Termes",
+            "postScriptName": "TeXGyreTermes-Regular",
+            "isCustomFont": true,
+            "glyphCount": 533
+          }
+        ],
+        [
+          {
+            "familyName": "TeX Gyre Termes",
+            "postScriptName": "TeXGyreTermes-Bold",
+            "isCustomFont": true,
+            "glyphCount": 532
+          }
+        ],
+        [
+          {
+            "familyName": "TeX Gyre Termes",
+            "postScriptName": "TeXGyreTermes-Bold",
+            "isCustomFont": true,
+            "glyphCount": 532
+          }
+        ],
+        [
+          {
+            "familyName": "TeX Gyre Termes",
+            "postScriptName": "TeXGyreTermes-Italic",
+            "isCustomFont": true,
+            "glyphCount": 533
+          }
+        ],
+        [
+          {
+            "familyName": "TeX Gyre Termes",
+            "postScriptName": "TeXGyreTermes-Italic",
+            "isCustomFont": true,
+            "glyphCount": 533
+          }
+        ],
+        [
+          {
+            "familyName": "TeX Gyre Termes",
+            "postScriptName": "TeXGyreTermes-BoldItalic",
+            "isCustomFont": true,
+            "glyphCount": 532
+          }
+        ],
+        [
+          {
+            "familyName": "TeX Gyre Termes",
+            "postScriptName": "TeXGyreTermes-BoldItalic",
+            "isCustomFont": true,
+            "glyphCount": 532
+          }
+        ],
+        [
+          {
+            "familyName": "Cormorant Garamond Light",
+            "postScriptName": "CormorantGaramond-Light",
+            "isCustomFont": true,
+            "glyphCount": 533
+          }
+        ],
+        [
+          {
+            "familyName": "Cormorant Garamond Light",
+            "postScriptName": "CormorantGaramond-Light",
+            "isCustomFont": true,
+            "glyphCount": 533
+          }
+        ],
+        [
+          {
+            "familyName": "Cormorant Garamond Light",
+            "postScriptName": "CormorantGaramond-Light",
+            "isCustomFont": true,
+            "glyphCount": 533
+          }
+        ],
+        [
+          {
+            "familyName": "Cormorant Garamond Light",
+            "postScriptName": "CormorantGaramond-Light",
+            "isCustomFont": true,
+            "glyphCount": 533
+          }
+        ],
+        [
+          {
+            "familyName": "Cormorant Garamond Light",
+            "postScriptName": "CormorantGaramond-LightItalic",
+            "isCustomFont": true,
+            "glyphCount": 534
+          }
+        ],
+        [
+          {
+            "familyName": "Cormorant Garamond Light",
+            "postScriptName": "CormorantGaramond-LightItalic",
+            "isCustomFont": true,
+            "glyphCount": 534
+          }
+        ]
+      ],
+      "errors": []
+    },
+    {
+      "width": 768,
+      "fonts": {
+        "heading": "cormorant, \"cormorant Fallback\", Georgia, serif, Georgia, serif",
+        "body": "termes, \"termes Fallback\", \"Times New Roman\", serif, \"Times New Roman\", serif",
+        "brand": "Lora, \"Lora Fallback\", Georgia, serif",
+        "headingWeight": "500",
+        "heroItalic": "500",
+        "bodyWeight": "400",
+        "footer": "cormorant, \"cormorant Fallback\", Georgia, serif, Georgia, serif",
+        "faces": [
+          {
+            "family": "termes",
+            "weight": "400",
+            "style": "normal"
+          },
+          {
+            "family": "termes Fallback",
+            "weight": "normal",
+            "style": "normal"
+          },
+          {
+            "family": "cormorant",
+            "weight": "500",
+            "style": "normal"
+          },
+          {
+            "family": "cormorant",
+            "weight": "600",
+            "style": "normal"
+          },
+          {
+            "family": "cormorant",
+            "weight": "500",
+            "style": "italic"
+          },
+          {
+            "family": "cormorant Fallback",
+            "weight": "normal",
+            "style": "normal"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "width": 1024,
+      "fonts": {
+        "heading": "cormorant, \"cormorant Fallback\", Georgia, serif, Georgia, serif",
+        "body": "termes, \"termes Fallback\", \"Times New Roman\", serif, \"Times New Roman\", serif",
+        "brand": "Lora, \"Lora Fallback\", Georgia, serif",
+        "headingWeight": "500",
+        "heroItalic": "500",
+        "bodyWeight": "400",
+        "footer": "cormorant, \"cormorant Fallback\", Georgia, serif, Georgia, serif",
+        "faces": [
+          {
+            "family": "termes",
+            "weight": "400",
+            "style": "normal"
+          },
+          {
+            "family": "termes Fallback",
+            "weight": "normal",
+            "style": "normal"
+          },
+          {
+            "family": "cormorant",
+            "weight": "500",
+            "style": "normal"
+          },
+          {
+            "family": "cormorant",
+            "weight": "600",
+            "style": "normal"
+          },
+          {
+            "family": "cormorant",
+            "weight": "500",
+            "style": "italic"
+          },
+          {
+            "family": "cormorant Fallback",
+            "weight": "normal",
+            "style": "normal"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "width": 1440,
+      "fonts": {
+        "heading": "cormorant, \"cormorant Fallback\", Georgia, serif, Georgia, serif",
+        "body": "termes, \"termes Fallback\", \"Times New Roman\", serif, \"Times New Roman\", serif",
+        "brand": "Lora, \"Lora Fallback\", Georgia, serif",
+        "headingWeight": "500",
+        "heroItalic": "500",
+        "bodyWeight": "400",
+        "footer": "cormorant, \"cormorant Fallback\", Georgia, serif, Georgia, serif",
+        "faces": [
+          {
+            "family": "termes",
+            "weight": "400",
+            "style": "normal"
+          },
+          {
+            "family": "termes Fallback",
+            "weight": "normal",
+            "style": "normal"
+          },
+          {
+            "family": "cormorant",
+            "weight": "500",
+            "style": "normal"
+          },
+          {
+            "family": "cormorant",
+            "weight": "600",
+            "style": "normal"
+          },
+          {
+            "family": "cormorant",
+            "weight": "500",
+            "style": "italic"
+          },
+          {
+            "family": "cormorant Fallback",
+            "weight": "normal",
+            "style": "normal"
+          }
+        ]
+      },
+      "probes": [
+        [
+          {
+            "familyName": "TeX Gyre Termes",
+            "postScriptName": "TeXGyreTermes-Regular",
+            "isCustomFont": true,
+            "glyphCount": 544
+          }
+        ],
+        [
+          {
+            "familyName": "TeX Gyre Termes",
+            "postScriptName": "TeXGyreTermes-Regular",
+            "isCustomFont": true,
+            "glyphCount": 544
+          }
+        ],
+        [
+          {
+            "familyName": "TeX Gyre Termes",
+            "postScriptName": "TeXGyreTermes-Bold",
+            "isCustomFont": true,
+            "glyphCount": 543
+          }
+        ],
+        [
+          {
+            "familyName": "TeX Gyre Termes",
+            "postScriptName": "TeXGyreTermes-Bold",
+            "isCustomFont": true,
+            "glyphCount": 543
+          }
+        ],
+        [
+          {
+            "familyName": "TeX Gyre Termes",
+            "postScriptName": "TeXGyreTermes-Italic",
+            "isCustomFont": true,
+            "glyphCount": 544
+          }
+        ],
+        [
+          {
+            "familyName": "TeX Gyre Termes",
+            "postScriptName": "TeXGyreTermes-Italic",
+            "isCustomFont": true,
+            "glyphCount": 544
+          }
+        ],
+        [
+          {
+            "familyName": "TeX Gyre Termes",
+            "postScriptName": "TeXGyreTermes-BoldItalic",
+            "isCustomFont": true,
+            "glyphCount": 544
+          }
+        ],
+        [
+          {
+            "familyName": "TeX Gyre Termes",
+            "postScriptName": "TeXGyreTermes-BoldItalic",
+            "isCustomFont": true,
+            "glyphCount": 544
+          }
+        ],
+        [
+          {
+            "familyName": "Cormorant Garamond Light",
+            "postScriptName": "CormorantGaramond-Light",
+            "isCustomFont": true,
+            "glyphCount": 543
+          }
+        ],
+        [
+          {
+            "familyName": "Cormorant Garamond Light",
+            "postScriptName": "CormorantGaramond-Light",
+            "isCustomFont": true,
+            "glyphCount": 543
+          }
+        ],
+        [
+          {
+            "familyName": "Cormorant Garamond Light",
+            "postScriptName": "CormorantGaramond-Light",
+            "isCustomFont": true,
+            "glyphCount": 543
+          }
+        ],
+        [
+          {
+            "familyName": "Cormorant Garamond Light",
+            "postScriptName": "CormorantGaramond-Light",
+            "isCustomFont": true,
+            "glyphCount": 543
+          }
+        ],
+        [
+          {
+            "familyName": "Cormorant Garamond Light",
+            "postScriptName": "CormorantGaramond-LightItalic",
+            "isCustomFont": true,
+            "glyphCount": 543
+          }
+        ],
+        [
+          {
+            "familyName": "Cormorant Garamond Light",
+            "postScriptName": "CormorantGaramond-LightItalic",
+            "isCustomFont": true,
+            "glyphCount": 543
+          }
+        ]
+      ],
+      "errors": []
+    }
+  ],
+  "noJS": {
+    "client": 350,
+    "total": 1780,
+    "overflow": "auto"
+  }
+}

@@ -123,7 +123,7 @@
   position: relative;
 }
 .hoe-month-caption {
-  font-weight: 600;
+  font-weight: var(--text-weight-semibold, 600);
   font-size: 15px;
   min-height: 44px;
   display: flex;
@@ -160,7 +160,7 @@
 .hoe-weekday {
   font-size: 12px;
   color: var(--muted);
-  font-weight: 500;
+  font-weight: var(--text-weight-medium, 500);
   height: 32px;
   text-transform: capitalize;
 }
@@ -218,7 +218,7 @@
 }
 .time-column-label {
   font-size: 13px;
-  font-weight: 500;
+  font-weight: var(--text-weight-medium, 500);
   color: var(--muted);
   padding: 0 8px 8px;
 }
@@ -248,7 +248,7 @@
 .time-list button[aria-selected="true"] {
   color: white;
   background: var(--accent);
-  font-weight: 600;
+  font-weight: var(--text-weight-semibold, 600);
 }
 .widget-preview-grid {
   display: grid;

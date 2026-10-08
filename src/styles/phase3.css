@@ -21,7 +21,7 @@
   border: 1px solid var(--border);
   border-radius: 20px;
   font-size: 12px;
-  font-weight: 500;
+  font-weight: var(--text-weight-medium, 500);
   white-space: nowrap;
   background: #f6f4f1;
   color: #5d5550;

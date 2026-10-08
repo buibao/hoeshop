@@ -1,0 +1,29 @@
+/* Applied to the shop shell and explicitly labelled Store portals only. */
+.hoe-store-scope {
+  --font-heading: var(--font-store-heading);
+  --font-body: var(--font-store-body);
+  --text-weight-medium: 400;
+  --text-weight-semibold: 700;
+  font-family: var(--font-body), "Times New Roman", serif;
+  font-size: 17px;
+  line-height: 1.7;
+  font-synthesis: none;
+}
+.hoe-store-scope :is(h1, h2, h3, h4, h5, h6, .serif, legend, .offcanvas-title, .modal-title) {
+  font-family: var(--font-heading), Georgia, serif;
+  font-weight: 500;
+  line-height: 1.2;
+}
+.hoe-store-scope :is(h3, h4, h5, h6, .product-card h3, .olf-product-card h3, .hoe-store-submenu strong) { font-weight: 600; }
+.hoe-store-scope :is(h1, h2, h3, h4, h5, h6, .serif) :is(em, i) { font-weight: 500; }
+.hoe-store-scope :is(h1, h2, h3, h4) :is(strong, b) { font-weight: 600; }
+.hoe-store-scope .olf-home h2 { letter-spacing: -.02em; }
+.hoe-store-scope .olf-hero h1 { letter-spacing: -.025em; }
+.hoe-store-scope .hoe-store-footer h3 { font-family: var(--font-heading), Georgia, serif; font-size: 22px; font-weight: 600; }
+.hoe-store-scope :is(.hero-note, .benefit-number, .service-card .number, .cart-summary .total, .faq summary, .marquee, .hoe-process span) { font-family: var(--font-body), serif; }
+.hoe-store-scope :is(.nav, .cart-link, .button, .text-link, .olf-button, .olf-link, .field label, .product-price, .detail-price) { font-size: 16px; }
+.hoe-store-scope :is(.olf-hero-description > p:first-child, .olf-section-heading > [data-scroll-fade-content] > p, .olf-service-card p, .olf-story-copy p, .olf-benefit-grid p, .olf-process-grid p, .olf-journal-card p, .olf-faq p, .olf-cta p, .service-card p, .detail-copy > p, .page-heading p, .story-copy p, .cta-section p) { font-size: 17px; line-height: 1.7; }
+.hoe-store-scope :is(.small, .field-hint, .form-note, .breadcrumb, .eyebrow, .olf-eyebrow, .product-submenu-eyebrow, .hoe-store-submenu small, .olf-image-note, .olf-hero-note, .category, .banner, .footer-bottom) { font-size: 13px; }
+.hoe-store-scope :is(input, select, textarea) { font-size: 16px; }
+.hoe-store-scope .service-card .service-flower { width: 48px; height: 48px; stroke-width: 1.6; color: var(--accent); }
+@media (max-width: 767px) { .hoe-store-scope .service-card .service-flower { width: 40px; height: 40px; } }

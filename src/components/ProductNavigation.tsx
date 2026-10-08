@@ -3,6 +3,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { ArrowUpRight, ChevronDown } from "lucide-react";
+import { ServiceTypeIcon } from "./ServiceTypeIcon";
 import { AnimatePresence, useIsPresent, useReducedMotion } from "motion/react";
 import * as m from "motion/react-m";
 
@@ -152,7 +153,8 @@ export function ProductNavigation({
                     }
                     onClick={navigate}
                   >
-                    <span>
+                    <ServiceTypeIcon serviceId={service.slug} className="service-type-icon" size={22} />
+                    <span className="product-submenu-copy">
                       <strong>{service.title}</strong>
                       <small>{service.note}</small>
                     </span>
