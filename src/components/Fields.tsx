@@ -141,9 +141,24 @@ export function Honeypot() {
   );
 }
 export function focusError(form: HTMLFormElement, path: string) {
-  const field =
+  let field =
     form.elements.namedItem(path) ||
     form.elements.namedItem(path.split(".").at(-1)!);
+  if (path.includes("recurrence")) {
+    if (/recurrence\.(deliveryDates|startPeriod)/.test(path)) {
+      const calendar = form.querySelector<HTMLElement>("[data-delivery-calendar]");
+      calendar?.focus();
+      return;
+    }
+    const name = path.replace(/^configuration\./, "").replace(/\.\d+$/, "");
+    field = form.elements.namedItem(name) || field;
+    if (field instanceof RadioNodeList) field = Array.from(field).find((node) => node instanceof HTMLInputElement && !node.disabled) as HTMLInputElement || null;
+    if (!(field instanceof HTMLElement) || field instanceof HTMLInputElement && field.type === "hidden") {
+      const root = form.querySelector<HTMLElement>("[data-recurrence-root]");
+      (root?.querySelector<HTMLElement>('input:not([type="hidden"]):not(:disabled)') || root)?.focus();
+      return;
+    }
+  }
   if (field instanceof HTMLElement) {
     let parent = field.parentElement;
     while (parent && parent !== form) {

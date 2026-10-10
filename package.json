@@ -7,6 +7,7 @@
   "scripts": {
     "dev": "next dev",
     "dev:test": "cross-env CONTENT_MODE=test DATA_ADAPTER=mock next dev",
+    "dev:hoa-thoi": "node scripts/local-hoa-thoi.mjs --webpack",
     "dev:e2e": "cross-env CONTENT_MODE=test DATA_ADAPTER=mock NEXT_DIST_DIR=.next-e2e next dev --port 3100",
     "prebuild": "tsx scripts/validate-content.ts",
     "build": "next build",
@@ -20,6 +21,8 @@
     "db:migrate": "tsx scripts/db/migrate.ts",
     "db:seed": "tsx scripts/db/seed.ts",
     "db:seed:dry": "tsx scripts/db/seed.ts --dry-run",
+    "db:hoa-thoi:dry": "tsx scripts/db/hoa-thoi.ts",
+    "db:hoa-thoi:apply": "tsx scripts/db/hoa-thoi.ts --apply",
     "db:readiness": "tsx scripts/db/readiness.ts",
     "test:integration": "vitest run --config vitest.integration.config.ts",
     "test:uat": "playwright test --config playwright.uat.config.ts"

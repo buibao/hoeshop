@@ -1,21 +1,14 @@
 import * as z from "zod";
 import vietnamese from "zod/v4/locales/vi.js";
+import { storedRecurrenceSchema, submissionRecurrenceSchema, vietnamToday } from "./recurrence";
+import { isCalendarRecurrence } from "./delivery-schedule";
+export { vietnamToday } from "./recurrence";
 z.config(vietnamese());
 
 export const serviceTypeSchema = z.enum(["hoa-thoi", "hoa-tam", "hoa-y"]);
 export type ServiceType = z.infer<typeof serviceTypeSchema>;
 const text = (max = 500) => z.string().trim().max(max).default("");
 const optionalEmail = z.union([z.literal(""), z.email().max(254)]).default("");
-export function vietnamToday(now = new Date()) {
-  const parts = new Intl.DateTimeFormat("en-CA", {
-    timeZone: "Asia/Ho_Chi_Minh",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).formatToParts(now);
-  const part = (type: string) => parts.find((p) => p.type === type)?.value;
-  return `${part("year")}-${part("month")}-${part("day")}`;
-}
 export const dateStructureSchema = text(10).refine((v) => {
   if (!v) return true;
   if (!/^\d{4}-\d{2}-\d{2}$/.test(v)) return false;
@@ -51,6 +44,7 @@ const thoi = z
     serviceType: z.literal("hoa-thoi"),
     ...common,
     recurringNeeds: text(1500),
+    recurrence: storedRecurrenceSchema.optional(),
   })
   .strict();
 const tam = z
@@ -87,7 +81,16 @@ export const configurationSchema = z.discriminatedUnion("serviceType", [
   thoi,
   tam,
   y,
-]);
+]).superRefine((v, ctx) => {
+  if (v.serviceType !== "hoa-thoi") return;
+  const checked = submissionRecurrenceSchema.safeParse(v.recurrence);
+  if (!checked.success) {
+    if (!isCalendarRecurrence(v.recurrence)) {
+      ctx.addIssue({ code: "custom", path: ["recurrence"], message: "Vui lòng chọn lại gói và các ngày nhận theo calendar." });
+    } else for (const issue of checked.error.issues) ctx.addIssue({ ...issue, path: ["recurrence", ...issue.path] });
+  }
+  if (v.desiredDate) ctx.addIssue({ code: "custom", path: ["desiredDate"], message: "Chọn ngày nhận trong calendar của gói hoa." });
+});
 export const structuralConfigurationSchema = z.discriminatedUnion(
   "serviceType",
   [
@@ -218,12 +221,14 @@ export const inquirySchema = z
     phone: phoneSchema,
     email: optionalEmail,
     serviceType: z.enum(["hoa-thoi", "hoa-tam", "hoa-y", "tu-van"]),
-    body: z.string().trim().min(1, "Vui lòng mô tả nhu cầu.").max(3000),
+    body: z.string().trim().max(3000),
     configuration: configurationSchema.optional(),
     honeypot: z.literal("").default(""),
   })
   .strict()
   .superRefine((v, ctx) => {
+    if (!v.body && !(v.kind === "service" && v.serviceType === "hoa-thoi" && v.configuration?.serviceType === "hoa-thoi" && v.configuration.recurrence))
+      ctx.addIssue({ code: "custom", path: ["body"], message: "Vui lòng mô tả nhu cầu." });
     if (
       v.kind === "service" &&
       (!v.configuration || v.configuration.serviceType !== v.serviceType)
@@ -268,6 +273,9 @@ export interface PublicComment {
 export interface Receipt {
   requestId: string;
   status: "received";
+  configuration?: Configuration;
+  recurrenceSnapshot?: import("./recurrence").RecurrenceSnapshot;
+  recurringItems?: Array<{ name: string; quantity: number; configuration: Configuration & { recurrenceSnapshot?: import("./recurrence").RecurrenceSnapshot } }>;
 }
 export interface CommentPage {
   comments: PublicComment[];

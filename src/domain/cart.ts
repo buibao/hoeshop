@@ -6,6 +6,15 @@ import {
   type Product,
 } from "./schemas";
 export function canonical(value: unknown): string {
+  // Only schedule arrays are unordered. Cart lines and content order remain significant.
+  if (value && typeof value === "object" && "version" in value && "period" in value) {
+    const schedule = value as Record<string, unknown>;
+    value = { ...schedule,
+      ...(Array.isArray(schedule.deliveryDates) ? { deliveryDates: [...schedule.deliveryDates].sort() } : {}),
+      ...(Array.isArray(schedule.weekdays) ? { weekdays: [...schedule.weekdays].sort((a, b) => Number(a) - Number(b)) } : {}),
+      ...(Array.isArray(schedule.weeks) ? { weeks: [...schedule.weeks].sort((a, b) => a.weekIndex - b.weekIndex).map((w) => ({ ...w, weekdays: [...w.weekdays].sort((a: number, b: number) => a - b) })) } : {}),
+    };
+  }
   if (Array.isArray(value)) return "[" + value.map(canonical).join(",") + "]";
   if (value && typeof value === "object")
     return (

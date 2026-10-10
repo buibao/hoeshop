@@ -14,7 +14,10 @@ import { ProductEditor } from "./ProductEditor";
 import { AdminField } from "./AdminField";
 import { adminProductSchema, articleSchema } from "@/server/admin/schemas";
 import { StatusBadge } from "@/components/ui/StatusBadge";
-import { homeSchema, homeDefaults } from "@/domain/content";
+import { homeSchema, homeDefaults, serviceSchema } from "@/domain/content";
+import { HoaThoiRecommendationsEditor } from "./HoaThoiRecommendationsEditor";
+import { RecurrenceSummary } from "@/features/checkout/RecurrenceSummary";
+import type { Recommendation, RecurrenceSnapshot } from "@/domain/recurrence";
 type Row = Record<string, unknown>;
 const labels: Record<string, string> = {
   id: "ID cố định",
@@ -188,6 +191,11 @@ export function ReadOnly({
     );
   if (value && typeof value === "object") {
     const row = value as Row;
+    if (row.serviceType === "hoa-thoi") return <div>
+      <RecurrenceSummary recurrence={row.recurrence} snapshot={row.recurrenceSnapshot as RecurrenceSnapshot | undefined} />
+      {!row.recurrence ? <p>Chưa ghi nhận lịch cấu trúc</p> : null}
+      <ReadOnly value={Object.fromEntries(Object.entries(row).filter(([key]) => !["serviceType", "recurrence", "recurrenceSnapshot"].includes(key)))} />
+    </div>;
     if (row.snapshot) return <ReadOnly value={row.snapshot} />;
     if (row.pricedCount !== undefined) {
       const total = totalLabel({
@@ -323,6 +331,7 @@ function initial(resource: string, row: Row | null): Row {
     const data = (row?.data as Row) || {};
     return {
       ...data,
+      recurringRecommendations: data.recurringRecommendations || [],
       hints: {
         emotion: "",
         color: "",
@@ -360,6 +369,7 @@ function Fields({
         .filter(
           ([key]) =>
             key !== "published" && key !== "fixture" && key !== "publishedAt" &&
+            key !== "recurringRecommendations" &&
             !(resource === "settings" && ["heroProductIds", "featuredProductIds", "featuredLimit"].includes(key)),
         )
         .map(([key, value]) => {
@@ -708,7 +718,7 @@ export function AdminEditor({
           ? adminProductSchema
           : ["posts", "policies"].includes(resource)
             ? articleSchema
-            : null;
+            : resource === "services" ? serviceSchema : null;
       const checked = schema?.safeParse(data);
       if (checked && !checked.success) {
         setMessage("Vui lòng kiểm tra các trường thông tin.");
@@ -826,6 +836,7 @@ export function AdminEditor({
           </div>
         )}
         <fieldset disabled={saving}>
+          {resource === "services" && data.id === "hoa-thoi" ? <HoaThoiRecommendationsEditor key={version} rows={(data.recurringRecommendations || []) as Recommendation[]} change={change} errors={errors} /> : null}
           {resource === "products" ? (
             <ProductEditor
               data={data}

@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "../styles/tokens.css";
+@import "../styles/hoa-thoi.css";
 @theme inline { --color-background: var(--background); --color-foreground: var(--ink); --font-sans: var(--font-body); }
 :root { --font-heading: var(--font-root-heading); --font-body: var(--font-root-body); --font-brand: var(--font-root-heading); --font-brand-caption: var(--font-root-body); }
 * { box-sizing: border-box; }

@@ -3,7 +3,7 @@
   "slug": "mau-test-hoa-thoi",
   "name": "Chút an nhiên • mẫu test",
   "serviceType": "hoa-thoi",
-  "description": "Mẫu tham khảo để kiểm thử nhu cầu Hoa Thời. Không có gói, lịch giao tự động hoặc giá định kỳ.",
+  "description": "Mẫu tham khảo cho nhịp hoa theo tuần hoặc tháng. Bạn chọn số bó, số combo và từng ngày muốn nhận; Hòe sẽ tư vấn hoa, giá và lịch giao phù hợp.",
   "image": "/images/preview/peonies.jpg",
   "imageAlt": "Ảnh hoa minh họa cho bản test",
   "published": true,

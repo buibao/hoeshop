@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Trash2 } from "lucide-react";
 import { useCart } from "./store";
 import type { CartItem, Product } from "@/domain/schemas";
@@ -21,6 +21,8 @@ import { Empty } from "@/components/Empty";
 import { focusError } from "@/components/Fields";
 import { displayDate } from "@/domain/date-time";
 import { QuantityField } from "@/components/ui/QuantityField";
+import { RecurrenceSummary } from "@/features/checkout/RecurrenceSummary";
+import { isCalendarRecurrence } from "@/domain/delivery-schedule";
 export function CartSummary({
   products,
   checkout = false,
@@ -55,9 +57,10 @@ export function CartSummary({
       {items.map((item) => {
         const p = products.find((p) => p.id === item.productId);
         return (
-          <p className="small" key={item.lineId}>
+          <div className="small" key={item.lineId}>
             {item.quantity} × {p?.name || "Mẫu không còn khả dụng"}
-          </p>
+            {item.configuration.serviceType === "hoa-thoi" ? <RecurrenceSummary recurrence={item.configuration.recurrence} /> : null}
+          </div>
         );
       })}
       <p className="form-note">
@@ -90,6 +93,12 @@ function CartRow({
   const [editing, setEditing] = useState(false);
   const [error, setError] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
+  useEffect(() => {
+    const frame = window.requestAnimationFrame(() => {
+      if (new URLSearchParams(window.location.search).get("edit") === "hoa-thoi" && item.configuration.serviceType === "hoa-thoi" && !isCalendarRecurrence(item.configuration.recurrence)) setEditing(true);
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [item.configuration]);
   function save(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const parsed = configurationSchema.safeParse(
@@ -99,11 +108,7 @@ function CartRow({
       ),
     );
     if (!parsed.success) {
-      setErrors(
-        Object.fromEntries(
-          parsed.error.issues.map((i) => [i.path.join("."), i.message]),
-        ),
-      );
+      setErrors(parsed.error.issues.reduce<Record<string, string>>((result, issue) => { result[issue.path.join(".")] ??= issue.message; return result; }, {}));
       focusError(e.currentTarget, parsed.error.issues[0].path.join("."));
       return;
     }
@@ -155,6 +160,7 @@ function CartRow({
                 : ""}
             </p>
           ) : null}
+          {item.configuration.serviceType === "hoa-thoi" && !editing ? <RecurrenceSummary recurrence={item.configuration.recurrence} recommendations={guidance?.recurringRecommendations} /> : null}
           {changed ? (
             <div className="error" role="alert">
               Thông tin mẫu đã thay đổi. Hãy xem cấu hình và lưu lại để chấp

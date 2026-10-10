@@ -36,11 +36,7 @@ export function ProductForm({
       configurationInput(data, product.serviceType),
     );
     if (!result.success) {
-      setErrors(
-        Object.fromEntries(
-          result.error.issues.map((i) => [i.path.join("."), i.message]),
-        ),
-      );
+      setErrors(result.error.issues.reduce<Record<string, string>>((fields, issue) => { fields[issue.path.join(".")] ??= issue.message; return fields; }, {}));
       setError("Vui lòng kiểm tra cấu hình mẫu hoa.");
       focusError(e.currentTarget, result.error.issues[0].path.join("."));
       return;

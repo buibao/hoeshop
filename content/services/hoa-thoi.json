@@ -4,6 +4,11 @@
   "shortName": "Thời",
   "number": "01",
   "subtitle": "Đều đặn ghé nhà,\ndịu dàng ghé lòng.",
-  "description": "Dành cho những ai muốn có hoa bên mình thường xuyên hơn. Bạn kể nhu cầu, phong cách và thời điểm mong muốn; Hòe sẽ tư vấn giá cùng lịch nhận phù hợp. Hiện chưa có gói định kỳ hoặc lịch giao được cam kết trên website.",
-  "image": null
+  "description": "Một chút hoa ghé nhà đều đặn. Bạn chọn nhịp phù hợp, Hòe cùng bạn chăm chút từng lần nhận. Hòe sẽ liên hệ để xác nhận hoa, giá và lịch nhận phù hợp.",
+  "image": null,
+  "recurringRecommendations": [
+    { "id": "monthly-once", "period": "month", "bouquetsPerPeriod": 1, "suggestedPrice": { "min": 500000, "max": 700000, "basis": "delivery" }, "enabled": true },
+    { "id": "monthly-twice", "period": "month", "bouquetsPerPeriod": 2, "suggestedPrice": { "min": 950000, "max": 1300000, "basis": "month" }, "enabled": true },
+    { "id": "weekly-once", "period": "week", "bouquetsPerPeriod": 1, "suggestedPrice": { "min": 1800000, "max": 2400000, "basis": "month" }, "enabled": true }
+  ]
 }

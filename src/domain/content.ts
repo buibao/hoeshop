@@ -1,4 +1,5 @@
 import * as z from "zod";
+import { recommendationsSchema } from "./recurrence";
 export const imageSource = z
   .string()
   .refine(
@@ -142,6 +143,10 @@ export const serviceSchema = z
     hints: z.record(z.string(), copy).default({}),
     colorPresets: z.array(copy).max(20).default([]),
     stylePresets: z.array(copy).max(20).default([]),
+    recurringRecommendations: recommendationsSchema.default([]),
   })
-  .strict();
+  .strict().superRefine((v, ctx) => {
+    if (v.id !== "hoa-thoi" && v.recurringRecommendations.length)
+      ctx.addIssue({ code: "custom", path: ["recurringRecommendations"], message: "Gợi ý nhịp nhận hoa chỉ dành cho Hoa Thời." });
+  });
 export type HomeContent = z.infer<typeof homeSchema>;

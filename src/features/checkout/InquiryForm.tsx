@@ -1,4 +1,5 @@
 "use client";
+import { useContext } from "react";
 import { Field, Honeypot } from "@/components/Fields";
 import {
   structuralInquirySchema,
@@ -11,20 +12,26 @@ import {
   type Guidance,
 } from "./configuration";
 import { useSubmission } from "./useSubmission";
+import { RecurrenceSummary } from "./RecurrenceSummary";
+import { HoaThoiPackageContext } from "./HoaThoiPackageState";
 export function InquiryForm({
   serviceType,
   guidance,
+  showRecommendations = serviceType === "hoa-thoi",
 }: {
   serviceType?: ServiceType;
   guidance?: Guidance;
+  showRecommendations?: boolean;
 }) {
+  const packageState = useContext(HoaThoiPackageContext);
   const submission = useSubmission<Receipt>("/api/inquiries");
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const form = e.currentTarget,
       data = new FormData(form);
     const value = (key: string) => String(data.get(key) || "");
-    await submission.submit(
+    packageState?.setLocked(true);
+    const receipt = await submission.submit(
       {
         kind: serviceType ? "service" : "general",
         name: value("name"),
@@ -40,26 +47,27 @@ export function InquiryForm({
       structuralInquirySchema,
       form,
     );
+    packageState?.setLocked(!!receipt);
   }
   if (submission.result)
     return (
       <div className="success" role="status">
         <strong>
-          Hòe đã nhận yêu cầu tư vấn {submission.result.requestId}.
+          {serviceType === "hoa-thoi" ? "Hòe đã nhận mong muốn của bạn." : "Hòe đã nhận yêu cầu tư vấn."} Mã tiếp nhận: {submission.result.requestId}.
         </strong>
-        Shop sẽ liên hệ trao đổi thêm về nhu cầu của bạn. Đây là yêu cầu tư vấn,
-        chưa phải đơn đặt hoa.
+        {serviceType === "hoa-thoi" ? "Hòe sẽ liên hệ để xác nhận hoa, giá và lịch nhận." : "Shop sẽ liên hệ trao đổi thêm về nhu cầu của bạn. Đây là yêu cầu tư vấn, chưa phải đơn đặt hoa."}
+        {submission.result.configuration?.serviceType === "hoa-thoi" ? <RecurrenceSummary recurrence={submission.result.configuration.recurrence} snapshot={submission.result.recurrenceSnapshot} /> : null}
         <div>
-          <button className="link-button" onClick={submission.reset}>
-            Gửi nhu cầu khác
+          <button className="link-button" onClick={() => { packageState?.reset(); submission.reset(); }}>
+            {serviceType === "hoa-thoi" ? "Gửi mong muốn khác" : "Gửi nhu cầu khác"}
           </button>
         </div>
       </div>
     );
   return (
-    <form onSubmit={handleSubmit} noValidate className="card">
+    <form onSubmit={handleSubmit} noValidate className={serviceType === "hoa-thoi" ? "ht-inquiry" : "card"}>
       <fieldset disabled={submission.phase === "submitting"}>
-        <legend>
+        <legend className={serviceType === "hoa-thoi" ? "visually-hidden" : undefined}>
           {serviceType
             ? "Kể Hòe nghe mong muốn của bạn"
             : "Bạn muốn Hòe gửi điều gì?"}
@@ -71,6 +79,7 @@ export function InquiryForm({
               noSample
               errors={submission.errors}
               guidance={guidance}
+              showRecommendations={showRecommendations}
             />
             <hr className="divider" />
           </>
@@ -116,8 +125,8 @@ export function InquiryForm({
           ) : null}
           <Field
             name="body"
-            label="Nội dung yêu cầu"
-            required
+            label={serviceType === "hoa-thoi" ? "Lời nhắn thêm" : "Nội dung yêu cầu"}
+            required={serviceType !== "hoa-thoi"}
             multiline
             full
             maxLength={3000}
@@ -126,8 +135,7 @@ export function InquiryForm({
         </div>
         <Honeypot />
         <p className="form-note">
-          Hòe sẽ liên hệ để tư vấn. Gửi form chưa tạo đơn hàng hoặc đăng ký gói
-          định kỳ.
+          {serviceType === "hoa-thoi" ? "Hòe sẽ liên hệ để chốt hoa, giá và lịch nhận." : "Hòe sẽ liên hệ để tư vấn. Gửi form chưa tạo đơn hàng hoặc đăng ký gói định kỳ."}
         </p>
         {submission.error ? (
           <div className="error" role="alert">
@@ -137,7 +145,7 @@ export function InquiryForm({
         <button className="button" type="submit">
           {submission.phase === "submitting"
             ? "Đang gửi…"
-            : "Gửi yêu cầu tư vấn"}
+            : serviceType === "hoa-thoi" ? "Gửi mong muốn đến Hòe" : "Gửi yêu cầu tư vấn"}
         </button>
       </fieldset>
     </form>

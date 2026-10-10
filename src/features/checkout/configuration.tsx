@@ -1,5 +1,7 @@
 "use client";
 import { Field } from "@/components/Fields";
+import { RecurrenceFields } from "./RecurrenceFields";
+import type { Recommendation } from "@/domain/recurrence";
 import {
   configurationSchema,
   type ServiceType,
@@ -45,8 +47,14 @@ export type Guidance = {
   hints: Record<string, string>;
   colorPresets: string[];
   stylePresets: string[];
+  recurringRecommendations?: Recommendation[];
 };
 export function configurationInput(data: FormData, serviceType: ServiceType) {
+  let recurrence: unknown;
+  if (serviceType === "hoa-thoi") {
+    try { recurrence = JSON.parse(String(data.get("recurrence") || "null")); }
+    catch { recurrence = null; }
+  }
   return {
     serviceType,
     ...Object.fromEntries(
@@ -55,6 +63,7 @@ export function configurationInput(data: FormData, serviceType: ServiceType) {
         String(data.get(key) || ""),
       ]),
     ),
+    ...(serviceType === "hoa-thoi" ? { desiredDate: "", recurrence } : {}),
   };
 }
 export function parseConfiguration(data: FormData, serviceType: ServiceType) {
@@ -66,12 +75,14 @@ export function ConfigurationFields({
   noSample = false,
   errors,
   guidance,
+  showRecommendations = false,
 }: {
   serviceType: ServiceType;
   initial?: Record<string, string> | Configuration;
   noSample?: boolean;
   errors?: Record<string, string>;
   guidance?: Guidance;
+  showRecommendations?: boolean;
 }) {
   const value = initial as unknown as Record<string, string>;
   const field = (
@@ -106,6 +117,7 @@ export function ConfigurationFields({
   );
   return (
     <div className="form-grid">
+      {serviceType === "hoa-thoi" ? <RecurrenceFields initial={(initial as Configuration & { recurrence?: unknown }).recurrence} recommendations={guidance?.recurringRecommendations} showRecommendations={showRecommendations} errors={errors} /> : null}
       {serviceType === "hoa-tam"
         ? field("emotion", "Cảm xúc muốn gửi", {
             required: true,
@@ -144,13 +156,11 @@ export function ConfigurationFields({
         maxLength: 120,
         presets: guidance?.colorPresets,
       })}
-      {field(
+      {serviceType !== "hoa-thoi" ? field(
         "desiredDate",
-        serviceType === "hoa-thoi"
-          ? "Ngày bắt đầu mong muốn"
-          : "Ngày nhận mong muốn",
+        "Ngày nhận mong muốn",
         { type: "date", hint: "Chọn trên lịch hoặc nhập dd/mm/yyyy." },
-      )}
+      ) : null}
       {field("desiredTime", "Giờ mong muốn", {
         type: "time",
         hint: "Shop sẽ liên hệ xác nhận lịch.",
@@ -190,10 +200,10 @@ export function ConfigurationFields({
             hint: "Thông tin để shop tư vấn; không thay thế giá mẫu.",
           })}
           {serviceType === "hoa-thoi"
-            ? field("recurringNeeds", "Nhu cầu nhận hoa định kỳ", {
+            ? field("recurringNeeds", "Thời gian duy trì / mong muốn thêm", {
                 multiline: true,
                 full: true,
-                hint: "Kể nhu cầu để Hòe tư vấn. Chưa có gói hay lịch giao cam kết.",
+                hint: "Ví dụ: ưu tiên giao buổi sáng. Hòe sẽ xác nhận hoa, giá và lịch nhận.",
               })
             : null}
           {serviceType === "hoa-y" ? (

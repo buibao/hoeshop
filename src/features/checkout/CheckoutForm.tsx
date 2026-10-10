@@ -10,6 +10,8 @@ import Link from "next/link";
 import { Field, Honeypot } from "@/components/Fields";
 import { CartSummary } from "@/features/cart/CartView";
 import { Empty } from "@/components/Empty";
+import { RecurrenceSummary } from "./RecurrenceSummary";
+import { isCalendarRecurrence } from "@/domain/delivery-schedule";
 export function CheckoutForm({ products }: { products: Product[] }) {
   const cart = useCart();
   const submission = useSubmission<Receipt>("/api/orders");
@@ -19,6 +21,10 @@ export function CheckoutForm({ products }: { products: Product[] }) {
         <strong>Hòe đã nhận yêu cầu {submission.result.requestId}.</strong>Shop
         sẽ liên hệ xác nhận giá và thời gian giao. Mã tiếp nhận chưa phải xác
         nhận đơn hoặc giao hàng.
+        {submission.result.recurringItems?.map((item, index) => <div key={index}>
+          <h3>{item.quantity} × {item.name}</h3>
+          {item.configuration.serviceType === "hoa-thoi" ? <RecurrenceSummary recurrence={item.configuration.recurrence} snapshot={item.configuration.recurrenceSnapshot} /> : null}
+        </div>)}
         {cart.items.length ? (
           <p>
             Giỏ vẫn còn những mẫu chưa gửi.{" "}
@@ -43,8 +49,10 @@ export function CheckoutForm({ products }: { products: Product[] }) {
         (p) => p.id === item.productId && p.revision === item.expectedRevision,
       ),
   );
+  const legacy = cart.items.some((item) => item.configuration.serviceType === "hoa-thoi" && !isCalendarRecurrence(item.configuration.recurrence));
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (legacy) return;
     const form = e.currentTarget;
     const data = new FormData(form);
     const value = (key: string) => String(data.get(key) || "");
@@ -73,6 +81,7 @@ export function CheckoutForm({ products }: { products: Product[] }) {
   return (
     <div className="cart-layout">
       <form onSubmit={handleSubmit} noValidate className="card">
+        {legacy ? <p className="error" role="alert">Vui lòng chọn lại gói và các ngày nhận theo calendar. <Link href="/gio-hang?edit=hoa-thoi">Mở giỏ để sửa lịch nhận</Link></p> : null}
         <fieldset disabled={submission.phase === "submitting"}>
           <legend>Thông tin người đặt</legend>
           <div className="form-grid">
@@ -143,7 +152,7 @@ export function CheckoutForm({ products }: { products: Product[] }) {
             Ngày/giờ mong muốn nằm trong từng mẫu ở giỏ. Shop sẽ xác nhận giá
             cuối, phí giao và lịch nhận. Website chưa thu tiền.
           </p>
-          <button className="button" type="submit">
+          <button className="button" type="submit" disabled={legacy}>
             {submission.phase === "submitting"
               ? "Đang gửi yêu cầu…"
               : "Gửi yêu cầu đặt hoa"}

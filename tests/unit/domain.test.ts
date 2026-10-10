@@ -123,7 +123,7 @@ describe("service validation", () => {
     ).toBe(false);
     expect(
       configurationSchema.safeParse({ serviceType: "hoa-thoi" }).success,
-    ).toBe(true);
+    ).toBe(false);
   });
   it("validates HTTPS reference URLs without fetching", () => {
     const base = { serviceType: "hoa-y", shape: "bo" };

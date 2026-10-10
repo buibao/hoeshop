@@ -3,11 +3,10 @@ import path from "node:path";
 import { createHash } from "node:crypto";
 import matter from "gray-matter";
 import * as z from "zod";
-import { homeSchema as fullHomeSchema, homeDefaults } from "@/domain/content";
+import { homeSchema as fullHomeSchema, homeDefaults, serviceSchema } from "@/domain/content";
 import {
   productSchema,
   type Product,
-  serviceTypeSchema,
 } from "@/domain/schemas";
 export function isTestContent() {
   if (
@@ -87,15 +86,6 @@ export function validateImage(source: string | null) {
   if (!target.startsWith(imageRoot + path.sep) || !fs.existsSync(target))
     throw new Error("Missing or invalid content image: " + source);
 }
-const serviceSchema = z.object({
-  id: serviceTypeSchema,
-  name: z.string(),
-  shortName: z.string(),
-  subtitle: z.string(),
-  description: z.string(),
-  number: z.string(),
-  image: z.string().startsWith("/images/").nullable(),
-});
 export const getServices = () =>
   ["hoa-thoi", "hoa-tam", "hoa-y"].map((id) =>
     serviceSchema.parse(json(path.join(root(), "services", id + ".json"))),

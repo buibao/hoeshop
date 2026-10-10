@@ -21,6 +21,9 @@ export const valueLabels: Record<string, string> = {
   hop: "Hộp",
   binh: "Bình",
   canh: "Cành",
+  week: "Tuần",
+  month: "Mỗi tháng",
+  delivery: "Mỗi lần",
 };
 export const shapeChoices = ["bo", "hop", "binh", "canh"] as const;
 export function valueLabel(value: string) {

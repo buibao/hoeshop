@@ -25,10 +25,13 @@ export class MockRepository implements Repositories {
   async existingOrder(context: WriteContext) { return this.existing("Orders", context) as Receipt | null; }
   async existingInquiry(context: WriteContext) { return this.existing("Inquiries", context) as Receipt | null; }
   async saveOrder(_order: Parameters<Repositories["saveOrder"]>[0], context: WriteContext) {
-    return this.save("Orders", context, { requestId: context.requestId, status: "received" }) as Receipt;
+    const recurringItems = _order.items.filter((i) => i.configuration.serviceType === "hoa-thoi").map((i) => ({ name: i.name, quantity: i.quantity, configuration: i.configuration }));
+    return this.save("Orders", context, { requestId: context.requestId, status: "received", ...(recurringItems.length ? { recurringItems } : {}) }) as Receipt;
   }
   async saveInquiry(_inquiry: Parameters<Repositories["saveInquiry"]>[0], context: WriteContext) {
-    return this.save("Inquiries", context, { requestId: context.requestId, status: "received" }) as Receipt;
+    const config = _inquiry.configuration;
+    return this.save("Inquiries", context, { requestId: context.requestId, status: "received",
+      ...(config?.serviceType === "hoa-thoi" ? { configuration: config, recurrenceSnapshot: (config as import("@/domain/recurrence-snapshot").ConfigurationSnapshot).recurrenceSnapshot } : {}) }) as Receipt;
   }
   async saveComment(comment: Parameters<Repositories["saveComment"]>[0], context: WriteContext) {
     return this.save("Comments", context, { commentId: context.requestId, postId: comment.postId, displayName: comment.displayName, body: comment.body, createdAt: new Date().toISOString() }) as PublicComment;

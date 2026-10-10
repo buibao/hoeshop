@@ -2,7 +2,7 @@ import { orderSchema, structuralOrderSchema } from "@/domain/schemas";
 import { PostgresRepository } from "@/server/repositories/postgres";
 import type { WriteContext } from "@/server/repositories/contracts";
 import { snapshotItems, summarize } from "@/domain/pricing";
-import { getProducts, shopLive, isTestContent } from "@/server/content";
+import { getProducts, getService, shopLive, isTestContent } from "@/server/content";
 import { getRepositories } from "@/server/repositories";
 import { hashSubmission, rateKey } from "@/server/integrations/signing";
 import { DomainError } from "@/domain/schemas";
@@ -35,7 +35,8 @@ export async function POST(request: Request) {
         "Hòe đang chuẩn bị mở nhận yêu cầu đặt hoa.",
       );
     orderSchema.parse(input);
-    const items = snapshotItems(input.items, await getProducts());
+    const [products, service] = await Promise.all([getProducts(), getService("hoa-thoi")]);
+    const items = snapshotItems(input.items, products, service?.recurringRecommendations || []);
     const record = {
       requestId: input.requestId,
       createdAt: new Date().toISOString(),

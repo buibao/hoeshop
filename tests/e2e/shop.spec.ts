@@ -7,6 +7,7 @@ async function addTam(page: Page, emotion = "Biết ơn") {
 }
 async function addThoi(page: Page) {
   await page.goto("/san-pham/mau-test-hoa-thoi");
+  await page.locator(".ht-calendar-day-button:not([disabled])").first().click();
   await page.getByRole("button", { name: "Thêm vào giỏ hoa" }).click();
   await expect(page.getByText("Đã thêm vào giỏ hoa.")).toBeVisible();
 }
@@ -235,16 +236,19 @@ test("Hoa Thời no-sample and general consultation stay separate from orders", 
   page,
 }) => {
   await page.goto("/dich-vu/hoa-thoi");
+  await page.locator(".ht-calendar-day-button:not([disabled])").first().click();
   expect(
     await page.locator('select[name="planId"],input[name="months"]').count(),
   ).toBe(0);
   await page.getByLabel("Họ tên", { exact: true }).fill("Khách tư vấn");
   await page.getByLabel("Số điện thoại", { exact: true }).fill("0901234567");
   await page
-    .getByLabel("Nội dung yêu cầu", { exact: true })
+    .getByLabel("Lời nhắn thêm", { exact: true })
     .fill("Tôi muốn được tư vấn nhận hoa");
-  await page.getByRole("button", { name: "Gửi yêu cầu tư vấn" }).click();
-  await expect(page.getByRole("status")).toContainText("yêu cầu tư vấn");
+  const inquiryResponse = page.waitForResponse((r) => r.url().endsWith("/api/inquiries") && r.request().method() === "POST");
+  await page.getByRole("button", { name: "Gửi mong muốn đến Hòe" }).click();
+  expect((await inquiryResponse).status()).toBe(201);
+  await expect(page.locator(".success")).toContainText("Hòe đã nhận mong muốn của bạn.");
   await page.goto("/lien-he");
   await page.getByLabel("Họ tên", { exact: true }).fill("Khách tư vấn");
   await page.getByLabel("Số điện thoại", { exact: true }).fill("0901234567");

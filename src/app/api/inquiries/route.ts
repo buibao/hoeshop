@@ -5,7 +5,8 @@ import {
 } from "@/domain/schemas";
 import { PostgresRepository } from "@/server/repositories/postgres";
 import type { WriteContext } from "@/server/repositories/contracts";
-import { isTestContent, shopLive } from "@/server/content";
+import { isTestContent, shopLive, getService } from "@/server/content";
+import { snapshotConfiguration } from "@/domain/recurrence-snapshot";
 import { getRepositories } from "@/server/repositories";
 import { hashSubmission, rateKey } from "@/server/integrations/signing";
 import { parseBody, jsonResponse, errorResponse } from "@/server/http";
@@ -35,10 +36,12 @@ export async function POST(request: Request) {
         "SHOP_NOT_OPEN",
         "Hòe đang chuẩn bị mở nhận yêu cầu tư vấn.",
       );
-    inquirySchema.parse(input);
+    const validated = inquirySchema.parse(input);
+    const configuration = validated.configuration ? snapshotConfiguration(validated.configuration,
+      validated.configuration.serviceType === "hoa-thoi" ? (await getService("hoa-thoi"))?.recurringRecommendations || [] : []) : undefined;
     return jsonResponse(
       await repo.saveInquiry(
-        { ...input, createdAt: new Date().toISOString(), status: "received" },
+        { ...validated, configuration, createdAt: new Date().toISOString(), status: "received" },
         context,
       ),
       201,

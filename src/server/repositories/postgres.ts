@@ -13,6 +13,8 @@ import {
   type Receipt,
 } from "@/domain/schemas";
 import { snapshotItems, summarize } from "@/domain/pricing";
+import { snapshotConfiguration } from "@/domain/recurrence-snapshot";
+import { serviceSchema } from "@/domain/content";
 import type { WriteContext } from "./contracts";
 type Tx = Parameters<Parameters<ReturnType<typeof getDb>["transaction"]>[0]>[0];
 type Operation = "orders" | "inquiries" | "comments";
@@ -171,7 +173,9 @@ export class PostgresRepository {
         )
         .orderBy(s.products.id)
         .for("share");
-      const items = snapshotItems(validated.items, rows.map(productRecord));
+      const [service] = await tx.select().from(s.services).where(eq(s.services.id, "hoa-thoi")).for("share");
+      const recommendations = service ? serviceSchema.parse(service.data).recurringRecommendations : [];
+      const items = snapshotItems(validated.items, rows.map(productRecord), recommendations);
       if (JSON.stringify(items).length > 45000)
         throw new DomainError(
           422,
@@ -205,7 +209,8 @@ export class PostgresRepository {
         );
       return {
         resourceId: order.id,
-        receipt: { requestId: ctx.requestId, status: "received" as const },
+        receipt: { requestId: ctx.requestId, status: "received" as const,
+          ...(items.some((i) => i.configuration.serviceType === "hoa-thoi") ? { recurringItems: items.filter((i) => i.configuration.serviceType === "hoa-thoi").map((i) => ({ name: i.name, quantity: i.quantity, configuration: i.configuration })) } : {}) },
       };
     });
   }
@@ -222,6 +227,9 @@ export class PostgresRepository {
           "Hòe đang chuẩn bị mở nhận yêu cầu tư vấn.",
         );
       const v = inquirySchema.parse(input);
+      const [service] = v.configuration?.serviceType === "hoa-thoi"
+        ? await tx.select().from(s.services).where(eq(s.services.id, "hoa-thoi")).for("share") : [];
+      const configuration = v.configuration ? snapshotConfiguration(v.configuration, service ? serviceSchema.parse(service.data).recurringRecommendations : []) : undefined;
       const [row] = await tx
         .insert(s.inquiries)
         .values({
@@ -230,12 +238,13 @@ export class PostgresRepository {
           serviceType: v.serviceType,
           contact: { name: v.name, phone: v.phone, email: v.email },
           body: v.body,
-          configuration: v.configuration || null,
+          configuration: configuration || null,
         })
         .returning({ id: s.inquiries.id });
       return {
         resourceId: row.id,
-        receipt: { requestId: ctx.requestId, status: "received" as const },
+        receipt: { requestId: ctx.requestId, status: "received" as const,
+          ...(configuration?.serviceType === "hoa-thoi" ? { configuration: v.configuration, recurrenceSnapshot: "recurrenceSnapshot" in configuration ? configuration.recurrenceSnapshot : undefined } : {}) },
       };
     });
   }

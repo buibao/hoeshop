@@ -28,6 +28,7 @@ type Props = {
   errors?: Record<string, string>;
   required?: boolean;
   disabled?: boolean;
+  onValueChange?: (value: string) => void;
 };
 export function DateTimeField({
   name,
@@ -38,6 +39,7 @@ export function DateTimeField({
   errors,
   required,
   disabled,
+  onValueChange,
 }: Props) {
   const id = useId(),
     input = useRef<HTMLInputElement>(null),
@@ -66,6 +68,7 @@ export function DateTimeField({
     const canonical =
       type === "date" ? (next ? parseDisplayDate(next) || next : "") : next;
     setValue(next);
+    onValueChange?.(canonical);
     setError("");
     if (hidden.current) {
       hidden.current.value = canonical;

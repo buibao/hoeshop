@@ -1,5 +1,7 @@
 import type { CartItem, Configuration, Price, Product } from "./schemas";
 import { DomainError } from "./schemas";
+import { snapshotConfiguration } from "./recurrence-snapshot";
+import type { Recommendation } from "./recurrence";
 export const money = (n: number) => new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND", maximumFractionDigits: 0 }).format(n);
 export function priceLabel(price: Price) {
   if (price.mode === "quote") return "Liên hệ báo giá";
@@ -29,11 +31,11 @@ export function totalLabel(total: ReturnType<typeof summarize>) {
   if (!total.pricedCount) return { label: "Cần shop báo giá", value: "Liên hệ báo giá" };
   return { label: total.quoteCount ? "Tạm tính phần đã có giá" : total.min === total.max ? "Tạm tính" : "Khoảng tạm tính", value: total.min === total.max ? money(total.min) : `${money(total.min)} – ${money(total.max)}` };
 }
-export function snapshotItems(items: CartItem[], catalog: Product[]) {
+export function snapshotItems(items: CartItem[], catalog: Product[], recommendations: Recommendation[] = []) {
   return items.map((item) => {
     const product = catalog.find((p) => p.id === item.productId && p.published);
     if (!product) throw new DomainError(422, "UNAVAILABLE_PRODUCT", "Một mẫu hoa không còn khả dụng. Hãy kiểm tra lại giỏ.");
     if (item.expectedRevision !== product.revision) throw new DomainError(409, "CATALOG_CHANGED", "Mẫu hoa hoặc giá đã thay đổi. Hãy xem lại giỏ trước khi gửi.", { productId: product.id });
-    return { productId: product.id, name: product.name, revision: product.revision, quantity: item.quantity, configuration: item.configuration, price: effectivePrice(product, item.configuration) };
+    return { productId: product.id, name: product.name, revision: product.revision, quantity: item.quantity, configuration: snapshotConfiguration(item.configuration, recommendations), price: effectivePrice(product, item.configuration) };
   });
 }

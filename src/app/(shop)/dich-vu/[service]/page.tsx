@@ -6,6 +6,7 @@ import { getService, getProducts, isTestContent } from "@/server/content";
 import { ProductCard } from "@/components/ProductCard";
 import { Empty } from "@/components/Empty";
 import { InquiryForm } from "@/features/checkout/InquiryForm";
+import { HoaThoiServiceFlow } from "@/features/checkout/HoaThoiServiceFlow";
 type Props = { params: Promise<{ service: string }> };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { service } = await params;
@@ -24,6 +25,28 @@ export default async function ServicePage({ params }: Props) {
   if (!s) notFound();
   const products = (await getProducts()).filter((p) => p.serviceType === s.id),
     test = isTestContent();
+  const samples = (
+    <section id="mau-hoa" className={s.id === "hoa-thoi" ? "ht-service-section" : undefined}>
+      <div className="section-heading">
+        <h2>Mẫu hoa tham khảo</h2>
+        <a href="#tu-van" className="text-link">
+          Chưa chọn mẫu? Kể Hòe nghe
+        </a>
+      </div>
+      {products.length ? (
+        <div className="product-grid">
+          {products.map((p) => (
+            <ProductCard key={p.id} product={p} />
+          ))}
+        </div>
+      ) : (
+        <Empty
+          title="Các mẫu hoa đang được chuẩn bị"
+          body="Bạn có thể tìm hiểu dịch vụ và mô tả mong muốn ở phần bên dưới."
+        />
+      )}
+    </section>
+  );
   return (
     <div className="container">
       <div className="breadcrumb">
@@ -61,34 +84,15 @@ export default async function ServicePage({ params }: Props) {
           />
         </div>
       </div>
-      <div className="section-heading">
-        <h2>Mẫu hoa tham khảo</h2>
-        <a href="#tu-van" className="text-link">
-          Chưa chọn mẫu? Kể Hòe nghe
-        </a>
-      </div>
-      {products.length ? (
-        <div className="product-grid">
-          {products.map((p) => (
-            <ProductCard key={p.id} product={p} />
-          ))}
-        </div>
-      ) : (
-        <Empty
-          title="Các mẫu hoa đang được chuẩn bị"
-          body="Bạn có thể tìm hiểu dịch vụ và mô tả mong muốn ở phần bên dưới."
-        />
-      )}
-      <section className="inquiry-section" id="tu-van">
+      {s.id === "hoa-thoi" ? <HoaThoiServiceFlow guidance={s}>{samples}</HoaThoiServiceFlow> : samples}
+      {s.id !== "hoa-thoi" ? <section className="inquiry-section" id="tu-van">
         <h2>Một ý tưởng bắt đầu từ bạn</h2>
         <p>
           Chưa chọn mẫu? Hãy gửi nhu cầu để shop tư vấn.{" "}
-          {s.id === "hoa-thoi"
-            ? "Hoa Thời hiện chưa có gói định kỳ hoặc lịch giao được cam kết trên website."
-            : "Nếu chọn một mẫu ở trên, bạn sẽ cấu hình mẫu và gửi qua giỏ hoa."}
+          Nếu chọn một mẫu ở trên, bạn sẽ cấu hình mẫu và gửi qua giỏ hoa.
         </p>
         <InquiryForm serviceType={s.id} guidance={s} />
-      </section>
+      </section> : null}
     </div>
   );
 }

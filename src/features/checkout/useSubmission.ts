@@ -32,9 +32,7 @@ export function useSubmission<T>(endpoint: string) {
       requestId: crypto.randomUUID(),
     });
     if (!parsed.success) {
-      const fields = Object.fromEntries(
-        parsed.error.issues.map((i) => [i.path.join("."), i.message]),
-      );
+      const fields = parsed.error.issues.reduce<Record<string, string>>((result, issue) => { result[issue.path.join(".")] ??= issue.message; return result; }, {});
       // Also map service configuration errors to the corresponding input names.
       for (const [path, message] of Object.entries(fields))
         if (path.startsWith("configuration.")) fields[path.slice(14)] = message;
@@ -78,12 +76,9 @@ export function useSubmission<T>(endpoint: string) {
           body.error?.message || "Chưa lưu được yêu cầu. Vui lòng thử lại.",
         );
         if (body.error?.fields) {
-          const fields = Object.fromEntries(
-            body.error.fields.map((f: { path: string; message: string }) => [
-              f.path,
-              f.message,
-            ]),
-          );
+          const fields = body.error.fields.reduce((result: Record<string, string>, issue: { path: string; message: string }) => { result[issue.path] ??= issue.message; return result; }, {} as Record<string, string>);
+          for (const [path, message] of Object.entries(fields))
+            if (path.startsWith("configuration.")) fields[path.slice(14)] = message;
           setErrors(fields);
           if (body.error.fields[0]) focusError(form, body.error.fields[0].path);
         }
