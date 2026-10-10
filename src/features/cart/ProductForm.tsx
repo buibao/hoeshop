@@ -82,6 +82,7 @@ export function ProductForm({
   }
   return (
     <form
+      className={product.serviceType === "hoa-thoi" ? "ht-product-form" : undefined}
       onSubmit={handleSubmit}
       onChange={(e) => preview(e.currentTarget)}
       noValidate

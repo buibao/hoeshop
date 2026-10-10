@@ -1,0 +1,43 @@
+{
+  "noJavaScript": [
+    {
+      "width": 390,
+      "route": "/dich-vu/hoa-thoi",
+      "overflow": false,
+      "bodyFont": "termes, \"termes Fallback\", \"Times New Roman\", serif, Georgia, serif",
+      "headingFont": "cormorant, \"cormorant Fallback\", Georgia, serif, Georgia, serif",
+      "opacity": "1",
+      "hiddenCaption": "1px"
+    },
+    {
+      "width": 390,
+      "route": "/san-pham/mau-test-hoa-thoi",
+      "overflow": false,
+      "bodyFont": "termes, \"termes Fallback\", \"Times New Roman\", serif, Georgia, serif",
+      "headingFont": "cormorant, \"cormorant Fallback\", Georgia, serif, Georgia, serif",
+      "opacity": "1",
+      "hiddenCaption": "1px"
+    },
+    {
+      "width": 1440,
+      "route": "/dich-vu/hoa-thoi",
+      "overflow": false,
+      "bodyFont": "termes, \"termes Fallback\", \"Times New Roman\", serif, Georgia, serif",
+      "headingFont": "cormorant, \"cormorant Fallback\", Georgia, serif, Georgia, serif",
+      "opacity": "1",
+      "hiddenCaption": "1px"
+    },
+    {
+      "width": 1440,
+      "route": "/san-pham/mau-test-hoa-thoi",
+      "overflow": false,
+      "bodyFont": "termes, \"termes Fallback\", \"Times New Roman\", serif, Georgia, serif",
+      "headingFont": "cormorant, \"cormorant Fallback\", Georgia, serif, Georgia, serif",
+      "opacity": "1",
+      "hiddenCaption": "1px"
+    }
+  ],
+  "runtimeErrors": [],
+  "anchorFocus": true,
+  "recommendationFocus": true
+}

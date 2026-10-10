@@ -1,0 +1,17 @@
+{
+  "once": {
+    "opacity": "1",
+    "transform": "none"
+  },
+  "revisit": {
+    "opacity": "1",
+    "transform": "none"
+  },
+  "partial": "Đã chọn 3/4 ngày\nSố ngày cần chọn: 4\nLịch tháng 10, năm 2026 và tháng kế tiếp.",
+  "reduced": {
+    "transition": "0s",
+    "opacity": "1"
+  },
+  "calendarPreserved": true,
+  "navigationFocusPreserved": true
+}

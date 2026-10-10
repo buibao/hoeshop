@@ -7,6 +7,9 @@ import { ProductCard } from "@/components/ProductCard";
 import { Empty } from "@/components/Empty";
 import { InquiryForm } from "@/features/checkout/InquiryForm";
 import { HoaThoiServiceFlow } from "@/features/checkout/HoaThoiServiceFlow";
+import { HoaThoiReveal } from "@/features/checkout/HoaThoiMotion";
+import { HoaThoiAnchor } from "@/features/checkout/HoaThoiAnchor";
+import { ScrollAnchor } from "@/components/ui/ScrollAnchor";
 type Props = { params: Promise<{ service: string }> };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { service } = await params;
@@ -26,17 +29,17 @@ export default async function ServicePage({ params }: Props) {
   const products = (await getProducts()).filter((p) => p.serviceType === s.id),
     test = isTestContent();
   const samples = (
-    <section id="mau-hoa" className={s.id === "hoa-thoi" ? "ht-service-section" : undefined}>
+    <section id="mau-hoa" tabIndex={s.id === "hoa-thoi" ? -1 : undefined} className={s.id === "hoa-thoi" ? "ht-service-section" : undefined}>
       <div className="section-heading">
         <h2>Mẫu hoa tham khảo</h2>
-        <a href="#tu-van" className="text-link">
+        {s.id === "hoa-thoi" ? <HoaThoiAnchor href="#tu-van" className="text-link">Chưa chọn mẫu? Kể Hòe nghe</HoaThoiAnchor> : <ScrollAnchor href="#tu-van" className="text-link">
           Chưa chọn mẫu? Kể Hòe nghe
-        </a>
+        </ScrollAnchor>}
       </div>
       {products.length ? (
         <div className="product-grid">
-          {products.map((p) => (
-            <ProductCard key={p.id} product={p} />
+          {products.map((p, index) => (
+            s.id === "hoa-thoi" ? <HoaThoiReveal key={p.id} delay={index * 0.05}><ProductCard product={p} /></HoaThoiReveal> : <ProductCard key={p.id} product={p} />
           ))}
         </div>
       ) : (
@@ -48,7 +51,7 @@ export default async function ServicePage({ params }: Props) {
     </section>
   );
   return (
-    <div className="container">
+    <div className={`container${s.id === "hoa-thoi" ? " ht-service-page" : ""}`}>
       <div className="breadcrumb">
         <Link href="/">Trang chủ</Link>
         <span>/</span>

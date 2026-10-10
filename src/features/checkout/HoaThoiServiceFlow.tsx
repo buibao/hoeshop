@@ -21,10 +21,10 @@ export function HoaThoiServiceFlow({ guidance, children }: { guidance: Guidance;
   return <HoaThoiPackageContext.Provider value={state}>
     <div className="ht-service-flow">
       <HoaThoiRecommendations recommendations={guidance.recurringRecommendations ?? []} referenceId={state.referenceId} period={state.period} bouquets={Number(active.bouquets)} choose={choose} id={id} disabled={state.locked} />
-      {children}
-      <section className="ht-package-section" id="tu-van" ref={formSection}>
+      <section className="ht-package-section" id="tu-van" ref={formSection} tabIndex={-1}>
         <InquiryForm serviceType="hoa-thoi" guidance={guidance} showRecommendations={false} />
       </section>
+      {children}
     </div>
   </HoaThoiPackageContext.Provider>;
 }

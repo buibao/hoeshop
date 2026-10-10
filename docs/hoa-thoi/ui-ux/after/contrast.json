@@ -1,0 +1,32 @@
+[
+  {
+    "selector": ".ht-form-heading p",
+    "foreground": "rgb(112, 101, 97)",
+    "background": "rgb(255, 252, 247)",
+    "contrast": 5.51
+  },
+  {
+    "selector": ".ht-helper",
+    "foreground": "rgb(112, 101, 97)",
+    "background": "rgb(255, 252, 247)",
+    "contrast": 5.51
+  },
+  {
+    "selector": ".ht-summary-label",
+    "foreground": "rgb(112, 101, 97)",
+    "background": "color(srgb 0.995882 0.948431 0.938431)",
+    "contrast": 5.14
+  },
+  {
+    "selector": ".ht-calendar-total",
+    "foreground": "rgb(51, 44, 42)",
+    "background": "rgb(255, 252, 247)",
+    "contrast": 13.37
+  },
+  {
+    "selector": ".ht-period-option strong",
+    "foreground": "rgb(51, 44, 42)",
+    "background": "color(srgb 0.995882 0.948431 0.938431)",
+    "contrast": 12.48
+  }
+]

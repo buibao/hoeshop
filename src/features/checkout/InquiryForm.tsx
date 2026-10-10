@@ -51,7 +51,7 @@ export function InquiryForm({
   }
   if (submission.result)
     return (
-      <div className="success" role="status">
+      <div className={`success${serviceType === "hoa-thoi" ? " ht-receipt" : ""}`} role="status">
         <strong>
           {serviceType === "hoa-thoi" ? "Hòe đã nhận mong muốn của bạn." : "Hòe đã nhận yêu cầu tư vấn."} Mã tiếp nhận: {submission.result.requestId}.
         </strong>
@@ -84,6 +84,7 @@ export function InquiryForm({
             <hr className="divider" />
           </>
         ) : null}
+        {serviceType === "hoa-thoi" ? <div className="ht-contact-heading"><span className="eyebrow">03 / KỂ HÒE NGHE</span><h3>Để Hòe liên hệ với bạn</h3><p className="ht-helper">Hòe sẽ cùng bạn xác nhận hoa, giá và lịch nhận.</p></div> : null}
         <div className="form-grid">
           <Field
             name="name"

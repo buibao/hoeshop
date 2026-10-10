@@ -1,7 +1,7 @@
 import { test, expect } from "./fixtures";
 import type { Page } from "@playwright/test";
 import { mkdir } from "node:fs/promises";
-const artifacts = "docs/hoa-thoi/screenshots";
+const artifacts = "docs/hoa-thoi/ui-ux/flow";
 const calendar = (page: Page) => page.locator("[data-delivery-calendar]");
 const dateButton = (page: Page, date: string) => calendar(page).getByRole("button", { name: new RegExp(` · ${date}`) });
 async function pick(page: Page, date: string) {
@@ -28,12 +28,12 @@ async function send(page: Page) {
   await page.getByRole("button", { name: "Gửi mong muốn đến Hòe" }).click();
   return response;
 }
-test.beforeEach(async ({ page }) => { await page.clock.setFixedTime(new Date("2026-10-10T10:00:00Z")); await page.goto("/dich-vu/hoa-thoi"); });
-test("service sections follow intro, recommendations, flowers, package form; partial schedule never posts", async ({ page }, info) => {
+test.beforeEach(async ({ page }) => { await page.clock.setFixedTime(new Date("2026-10-11T10:00:00Z")); await page.goto("/dich-vu/hoa-thoi"); await expect(page.locator(".ht-summary")).toHaveAttribute("data-sticky", /true|false/); });
+test("service sections follow hero, recommendations, package form, flowers; partial schedule never posts", async ({ page }, info) => {
   const errors: string[] = []; page.on("pageerror", (e) => errors.push(e.message));
   await expect(page.locator(".ht-recommendation")).toHaveCount(3);
   expect(await page.evaluate(() => {
-    const nodes = [".service-page-top", ".ht-recommendations", "#mau-hoa.ht-service-section", "#tu-van.ht-package-section"].map((s) => document.querySelector(s)!);
+    const nodes = [".service-page-top", ".ht-recommendations", "#tu-van.ht-package-section", "#mau-hoa.ht-service-section"].map((s) => document.querySelector(s)!);
     return nodes.slice(1).every((node, i) => !!(nodes[i].compareDocumentPosition(node) & Node.DOCUMENT_POSITION_FOLLOWING));
   })).toBe(true);
   await expect(page.locator(".ht-summary")).toHaveCount(1);

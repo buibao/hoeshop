@@ -44,6 +44,7 @@ export function scrollToPackageControls(node: HTMLElement | null) {
   if (!node) return;
   const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const scroll = getSmoothScrollController();
-  if (scroll) scroll.scrollTo(node, { offset: -110, immediate: reduced });
+  if (scroll) scroll.scrollTo(node, { offset: -110, duration: 0.3, immediate: reduced });
   else node.scrollIntoView({ behavior: reduced ? "instant" : "smooth", block: "start" });
+  node.querySelector<HTMLInputElement>('input[type="radio"]:checked')?.focus({ preventScroll: true });
 }

@@ -34,7 +34,8 @@ export function QuantityField({
         >
           <Minus size={16} />
         </button>
-        <input
+        <div><span>{value ?? draft}</span></div>
+        {/* <input
           id={id}
           name={name}
           className="quantity"
@@ -55,7 +56,7 @@ export function QuantityField({
             )
               update(defaultValue);
           }}
-        />
+        /> */}
         <button
           type="button"
           aria-label="Tăng số lượng"
