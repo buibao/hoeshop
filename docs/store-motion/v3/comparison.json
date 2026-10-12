@@ -1,0 +1,15 @@
+{
+  "protectedSourceUnchanged": true,
+  "viewports": [
+    {
+      "width": 1440,
+      "heroIdentical": true,
+      "carouselGeometryIdentical": true
+    },
+    {
+      "width": 390,
+      "heroIdentical": true,
+      "carouselGeometryIdentical": true
+    }
+  ]
+}

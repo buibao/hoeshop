@@ -1,0 +1,42 @@
+[
+  {
+    "width": 1440,
+    "height": 900,
+    "mode": "webpack development, warmed route, Chromium",
+    "route": "/dich-vu/hoa-thoi",
+    "LayoutCount": 12,
+    "RecalcStyleCount": 69,
+    "LayoutDuration": 0.011849,
+    "RecalcStyleDuration": 0.047113,
+    "ScriptDuration": 0.895056,
+    "TaskDuration": 1.245797,
+    "layoutShiftTotal": 0,
+    "longTasks": [
+      301,
+      249,
+      145,
+      127,
+      58
+    ]
+  },
+  {
+    "width": 390,
+    "height": 900,
+    "mode": "webpack development, warmed route, Chromium",
+    "route": "/dich-vu/hoa-thoi",
+    "LayoutCount": 15,
+    "RecalcStyleCount": 87,
+    "LayoutDuration": 0.012246,
+    "RecalcStyleDuration": 0.043735,
+    "ScriptDuration": 0.714924,
+    "TaskDuration": 1.017839,
+    "layoutShiftTotal": 0,
+    "longTasks": [
+      178,
+      162,
+      88,
+      189,
+      68
+    ]
+  }
+]

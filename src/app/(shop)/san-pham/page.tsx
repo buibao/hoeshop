@@ -1,3 +1,5 @@
+import { StoreTextRevealGroup } from "@/components/ui/StoreTextReveal";
+import { StoreHeading } from "@/components/StoreHeading";
 import type { Metadata } from "next";
 import { getProducts } from "@/server/content";
 import { ServiceCards } from "@/components/ServiceCards";
@@ -10,40 +12,44 @@ export const metadata: Metadata = {
 export default async function ProductsPage() {
   const products = await getProducts();
   return (
-    <div className="container">
-      <div className="page-heading">
-        <span className="eyebrow">CHỌN HOA TỪ ĐIỀU BẠN MUỐN GỬI</span>
-        <h1>
-          Những đóa hoa,
-          <br />
-          những câu chuyện.
-        </h1>
-        <p>
-          Một chút cảm hứng cho ngày hôm nay. Chọn mẫu hoa, kể mong muốn, Hòe sẽ
-          liên hệ xác nhận giá và lịch nhận.
-        </p>
+    <>
+      <StoreHeading>
+        <StoreTextRevealGroup initial className="page-heading">
+          <span className="eyebrow">CHỌN HOA TỪ ĐIỀU BẠN MUỐN GỬI</span>
+          <h1>
+            Những đóa hoa,
+            <br />
+            những câu chuyện.
+          </h1>
+          <p>
+            Một chút cảm hứng cho ngày hôm nay. Chọn mẫu hoa, kể mong muốn, Hòe
+            sẽ liên hệ xác nhận giá và lịch nhận.
+          </p>
+        </StoreTextRevealGroup>
+      </StoreHeading>
+      <div className="container">
+        <ServiceCards />
+        <section className="section">
+          <StoreTextRevealGroup className="section-heading">
+            <h2>Các mẫu hoa</h2>
+            <p>Thay đổi thiết kế ngoài mẫu sẽ cần shop báo giá.</p>
+          </StoreTextRevealGroup>
+          {products.length ? (
+            <div className="product-grid">
+              {products.map((p) => (
+                <ProductCard key={p.id} product={p} revealText />
+              ))}
+            </div>
+          ) : (
+            <Empty
+              title="Mẫu hoa đang được chuẩn bị"
+              body="Hòe sẽ giới thiệu những mẫu hoa khi hình ảnh và thông tin đã sẵn sàng."
+              href="/lien-he"
+              action="Đến trang liên hệ"
+            />
+          )}
+        </section>
       </div>
-      <ServiceCards />
-      <section className="section">
-        <div className="section-heading">
-          <h2>Các mẫu hoa</h2>
-          <p>Thay đổi thiết kế ngoài mẫu sẽ cần shop báo giá.</p>
-        </div>
-        {products.length ? (
-          <div className="product-grid">
-            {products.map((p) => (
-              <ProductCard key={p.id} product={p} />
-            ))}
-          </div>
-        ) : (
-          <Empty
-            title="Mẫu hoa đang được chuẩn bị"
-            body="Hòe sẽ giới thiệu những mẫu hoa khi hình ảnh và thông tin đã sẵn sàng."
-            href="/lien-he"
-            action="Đến trang liên hệ"
-          />
-        )}
-      </section>
-    </div>
+    </>
   );
 }

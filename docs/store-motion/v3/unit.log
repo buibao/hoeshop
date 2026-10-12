@@ -1,0 +1,12 @@
+
+> hoeshop@1.0.0 test
+> vitest run
+
+
+ RUN  v4.1.11 D:/hoeshop
+
+
+ Test Files  16 passed (16)
+      Tests  177 passed (177)
+   Start at  18:58:40
+   Duration  8.16s (transform 4.18s, setup 0ms, import 27.56s, tests 5.03s, environment 8ms)

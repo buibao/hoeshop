@@ -85,6 +85,7 @@ export function Header({
         onHide={() => setOpen(false)}
         placement="end"
         restoreFocusOptions={{ preventScroll: true }}
+        backdropClassName={`hoe-store-menu-backdrop ${portalClassName}`}
         className={`hoe-menu hoe-store-menu ${portalClassName}`}
         id="mobile-navigation"
         aria-labelledby="mobile-menu-title"

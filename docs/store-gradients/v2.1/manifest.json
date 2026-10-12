@@ -1,0 +1,160 @@
+{
+  "createdAt": "2026-10-11T11:33:30.130Z",
+  "branch": "feedbacks",
+  "head": "2a6843a5ba97f088ae25caf71d1d297b0d926ad9",
+  "specVersion": "Store Gradient v2.1",
+  "specSha256": "63d45f18b081a6a84ddc9f47f610bc353349e5747dd8bfd193b5ce1796c2685d",
+  "baseline": "Local working tree v2.0 build, captured before v2.1 source edits",
+  "environment": {
+    "url": "http://localhost:3101",
+    "launcher": "scripts/local-hoa-thoi.mjs",
+    "data": "CONTENT_MODE=test; DATA_ADAPTER=mock",
+    "dist": ".next-feedback",
+    "browser": "Chromium / Playwright",
+    "widths": [
+      360,
+      390,
+      768,
+      1024,
+      1440
+    ],
+    "visualWidths": [
+      390,
+      1440
+    ],
+    "motion": "reduce",
+    "browserClock": "2026-10-11T10:00:00Z"
+  },
+  "checks": {
+    "lint": {
+      "pass": true,
+      "warnings": 7
+    },
+    "typecheck": {
+      "pass": true
+    },
+    "build": {
+      "pass": true
+    },
+    "ui": {
+      "distinctCases": 36,
+      "pass": true,
+      "reports": [
+        "verification/playwright.json",
+        "verification/forms.json",
+        "verification/submenu-regression.json",
+        "verification/final-gradients.json"
+      ]
+    },
+    "responsive": {
+      "cases": 100,
+      "pass": true
+    },
+    "contrast": {
+      "cases": 47,
+      "pass": true
+    },
+    "routeFrames": {
+      "cases": 40,
+      "browserErrors": 0
+    },
+    "geometry": {
+      "anchors": 140,
+      "changes": 0
+    },
+    "lowViewport": {
+      "cases": 10,
+      "pass": true
+    }
+  },
+  "sources": [
+    {
+      "path": "src/app/(shop)/blog/[slug]/page.tsx",
+      "sha256": "f4e0fc427b391d7bb5f2a6ac2557e5a6c87957b47477c6e943ccaba19e86d4a5"
+    },
+    {
+      "path": "src/app/(shop)/blog/page.tsx",
+      "sha256": "1385d1f1e2b8c393f79cb6b076cc009637254e356814404d860c856dde675a85"
+    },
+    {
+      "path": "src/app/(shop)/chinh-sach/[slug]/page.tsx",
+      "sha256": "16a09238e6e327460ca4762f688719c3c4e923fc3e1a0e4d9d49c3735da94b42"
+    },
+    {
+      "path": "src/app/(shop)/dat-hoa/page.tsx",
+      "sha256": "a4673e05bf6a608cc9510c861fa013249cc65586dfd9da7a6cf805c6936bd91d"
+    },
+    {
+      "path": "src/app/(shop)/dich-vu/[service]/page.tsx",
+      "sha256": "9212863b5d563f6ca8fe386873bd4450d94b069a40d552d2e7aa885a36d88784"
+    },
+    {
+      "path": "src/app/(shop)/gio-hang/page.tsx",
+      "sha256": "94515ea016d4532b69b1222e7ca554460a02e37fb036eb763a9c4ad071d43578"
+    },
+    {
+      "path": "src/app/(shop)/layout.tsx",
+      "sha256": "f87ff686cbb9f8b5da4b2582933f18e55ddfe80aeea5f40d220ac9b1786345ee"
+    },
+    {
+      "path": "src/app/(shop)/lien-he/page.tsx",
+      "sha256": "6e4f774ce6ac1b248d146772957099a0f28bdb3bea46595fe485e82230792581"
+    },
+    {
+      "path": "src/app/(shop)/san-pham/[slug]/page.tsx",
+      "sha256": "85fa1f45910e2c0ffce3e27cab8eaf413c0f156046936d36ac96ee00d7451592"
+    },
+    {
+      "path": "src/app/(shop)/san-pham/page.tsx",
+      "sha256": "9d8a7dce08561ea843e0d95a7a2c3add7a5095a67c9111b3ffec6287b6f52df2"
+    },
+    {
+      "path": "src/app/(shop)/ve-hoe/page.tsx",
+      "sha256": "703f6ae00699eb2d0bbfdf16c75e6d4bad93f5f11ed6ef3479a0d484346e6caf"
+    },
+    {
+      "path": "src/app/not-found.tsx",
+      "sha256": "34173aa74299adf2e66bbeae25574f07f8730759f96df3c6ec488708a9396a11"
+    },
+    {
+      "path": "src/components/StoreFallbackScope.tsx",
+      "sha256": "4184e6581d25450e1f80b10b9ac4412a4ae66b9edfb25aed651e6a40755a79b8"
+    },
+    {
+      "path": "src/components/StoreHeading.tsx",
+      "sha256": "5d4143ce8bd67eb7dcd0efcdc73b79ec1e5be3e0b9cd08e99bdbaab81225bbdf"
+    },
+    {
+      "path": "src/styles/store-gradients.css",
+      "sha256": "277b133d9a01af79d598bc5a361d223d28a42870d71a8eb14e68b569712f3e1b"
+    },
+    {
+      "path": "playwright.gradients.config.ts",
+      "sha256": "64e7a459453ed1003740966dc3645af435cfb09339111c7aa127c00fbe49d43d"
+    },
+    {
+      "path": "tests/e2e/store-gradients.spec.ts",
+      "sha256": "6429b17e6e17a15238c9f1a1c5b3bffecfd5add1ddb5b94a17f5e46f6403c88e"
+    },
+    {
+      "path": "scripts/review-store-gradients.mjs",
+      "sha256": "b19120dc9da051157422df071519e9e478fd65f5ea807c0d394ebba507e5b200"
+    },
+    {
+      "path": "scripts/review-gradient-priority.mjs",
+      "sha256": "6ff039abe11566a44f7f161c7f695b9ea9366089b122862f65fe97566c62ac07"
+    },
+    {
+      "path": "scripts/verify-store-gradients.mjs",
+      "sha256": "d2a70d55b94b96b03b7920a850539b98d71492010bab57cb8815ec46b90fdd0f"
+    }
+  ],
+  "patchSha256": "d30645f8d824a32bf32109173fbca7564e3b43b7f3bfac42d06b72e639b54c02",
+  "limits": [
+    "Quantity input is commented out in HEAD; quantity=1 browser-only fixture enables cart/checkout review",
+    "Policy unpublished; source mapping verified, published runtime unavailable",
+    "No real operator credentials / actual gold logo / complete contact/social data in mock",
+    "Earlier v2.0 unit run had 162 pass/11 existing carousel failures; not repeated for this CSS revision",
+    "No push, PR, deploy or Preview/production database submissions"
+  ]
+}

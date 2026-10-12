@@ -1,4 +1,5 @@
 "use client";
+import { StoreTextReveal } from "@/components/ui/StoreTextReveal";
 import { useCallback,useEffect,useState } from "react";
 import { commentSchema,type CommentPage,type PublicComment } from "@/domain/schemas";
 import { Field,Honeypot } from "@/components/Fields";
@@ -38,7 +39,7 @@ export function Comments({postId}: {postId:string}) {
       setReadError("");
     }
   }
-  return <section className="comments" aria-label="Bình luận bài viết"><h2>Một lời gửi lại Hòe</h2><p>Bình luận được công khai ngay sau khi lưu. Tên hiển thị do người viết tự nhập, chưa được xác minh.</p>
+  return <section className="comments" aria-label="Bình luận bài viết"><StoreTextReveal as="h2" role="heading">Một lời gửi lại Hòe</StoreTextReveal><StoreTextReveal as="p" delayMs={90}>Bình luận được công khai ngay sau khi lưu. Tên hiển thị do người viết tự nhập, chưa được xác minh.</StoreTextReveal>
     <form onSubmit={handleSubmit} noValidate onChange={()=>{if(submission.phase==="success")submission.reset();}}>
       <fieldset disabled={submission.phase==="submitting" || loading}><div className="form-grid">
         <Field name="displayName" label="Tên hiển thị" required full maxLength={80} errors={submission.errors}/>

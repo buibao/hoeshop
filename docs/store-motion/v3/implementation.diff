@@ -1,0 +1,2171 @@
+--- a/scripts/profile-store-text.mjs
++++ b/scripts/profile-store-text.mjs
+@@ -0,0 +1,49 @@
++import { chromium } from "@playwright/test";
++import { mkdir, writeFile } from "node:fs/promises";
++
++const phase = process.argv.includes("--before") ? "before" : "after";
++const browser = await chromium.launch();
++const results = [];
++try {
++  for (const width of [1440, 390]) {
++    const page = await browser.newPage({ viewport: { width, height: 900 } });
++    await page.goto("http://localhost:3101/dich-vu/hoa-thoi");
++    await page.locator('.ht-form-heading h2[data-text-state]').waitFor();
++    await page.evaluate(() => document.fonts.ready);
++    await page.waitForTimeout(1200);
++    const cdp = await page.context().newCDPSession(page);
++    await cdp.send("Performance.enable");
++    await cdp.send("Emulation.setCPUThrottlingRate", { rate: 4 });
++    const before = await cdp.send("Performance.getMetrics");
++    await page.evaluate(() => {
++      window.textProfile = { frames: [], longTasks: [], entrances: [], running: true };
++      const animate = Element.prototype.animate;
++      Element.prototype.animate = function(frames, options) {
++        if (this.matches('[data-text-layer]') && Array.isArray(frames) && frames.length === 2) window.textProfile.entrances.push({ owner: this.parentElement.id, properties: Object.keys(frames[0]) });
++        return animate.call(this, frames, options);
++      };
++      new PerformanceObserver(list => window.textProfile.longTasks.push(...list.getEntries().map(entry => entry.duration))).observe({ type: "longtask" });
++      let previous = performance.now();
++      const frame = time => {
++        window.textProfile.frames.push(time - previous); previous = time;
++        if (window.textProfile.running) requestAnimationFrame(frame);
++      };
++      requestAnimationFrame(frame);
++    });
++    // Real wheel input exercises the existing Lenis clock, including reversal.
++    for (const delta of [420, 420, 420, 420, 420, 420, -420, -420, -420, -420]) {
++      await page.mouse.wheel(0, delta);
++      await page.waitForTimeout(220);
++    }
++    await page.waitForTimeout(1500);
++    const observed = await page.evaluate(() => { window.textProfile.running = false; return window.textProfile; });
++    const after = await cdp.send("Performance.getMetrics");
++    const frames = observed.frames.filter(value => value > 0).sort((a, b) => a - b);
++    const delta = Object.fromEntries(after.metrics.filter(metric => /^(TaskDuration|ScriptDuration|LayoutDuration|RecalcStyleDuration|LayoutCount|RecalcStyleCount)$/.test(metric.name)).map(metric => [metric.name, metric.value - (before.metrics.find(old => old.name === metric.name)?.value ?? 0)]));
++    results.push({ width, cpuSlowdown: 4, ...delta, frameP95Ms: frames[Math.floor(frames.length * .95)], framesOver34Ms: frames.filter(value => value > 34).length, longTasks: observed.longTasks, entrances: observed.entrances });
++    await page.close();
++  }
++} finally { await browser.close(); }
++await mkdir("docs/store-motion/v3/smoothness", { recursive: true });
++await writeFile(`docs/store-motion/v3/smoothness/${phase}.json`, JSON.stringify(results, null, 2));
++console.log(JSON.stringify(results));
+--- a/scripts/review-store-text.mjs
++++ b/scripts/review-store-text.mjs
+@@ -0,0 +1,90 @@
++import { chromium } from '@playwright/test';
++import { mkdir, readFile, writeFile } from 'node:fs/promises';
++import { createHash } from 'node:crypto';
++
++const phase = process.argv.includes('--before') ? 'before' : 'after';
++const baseURL = 'http://localhost:3101';
++const directory = `docs/store-motion/v3/${phase}`;
++await mkdir(`${directory}/raw`, { recursive: true });
++const protectedFiles = [
++  'src/features/storefront/LandingHeroMotion.tsx', 'src/features/storefront/landing-geometry.ts',
++  'src/features/storefront/LandingMotion.tsx', 'src/features/storefront/FeaturedProductCarousel.tsx',
++  'src/features/storefront/carousel-autoplay.ts', 'src/components/ui/MotionProvider.tsx',
++  'src/components/ui/SmoothScroll.tsx', 'src/app/layout.tsx', 'src/fonts/store-fonts.ts',
++];
++const hashes = Object.fromEntries(await Promise.all(protectedFiles.map(async file => [file, createHash('sha256').update(await readFile(file)).digest('hex')])));
++const report = { phase, baseURL, fixtures: 'local production build; CONTENT_MODE=test; DATA_ADAPTER=mock', hashes, scenes: [] };
++const browser = await chromium.launch();
++try {
++  for (const width of [1440, 390]) {
++    const height = 900;
++    const context = await browser.newContext({ baseURL, viewport: { width, height }, reducedMotion: 'no-preference', recordVideo: { dir: `${directory}/raw`, size: { width, height } } });
++    const page = await context.newPage();
++    const errors = [];
++    page.on('pageerror', e => errors.push(e.message));
++    const scene = { width, height, errors, hero: [], carousel: [], reveal: [] };
++    await page.goto('/');
++    await page.locator('[data-carousel-ready="true"]').waitFor();
++    const heroEnd = await page.locator('.olf-hero').evaluate(n => n.getBoundingClientRect().bottom + scrollY - innerHeight * .85);
++    for (const y of [0, heroEnd / 2, heroEnd, 0]) {
++      await page.evaluate(y => scrollTo({ top: y, behavior: 'instant' }), y);
++      await page.waitForTimeout(450);
++      scene.hero.push(await page.locator('[data-hero-line], [data-landing-photo]').evaluateAll(nodes => nodes.map(n => ({ transform: getComputedStyle(n).transform, opacity: getComputedStyle(n).opacity, width: n.getBoundingClientRect().width, height: n.getBoundingClientRect().height }))));
++    }
++    await page.locator('.olf-featured-carousel').scrollIntoViewIfNeeded();
++    await page.waitForTimeout(1200);
++    scene.carousel = await page.locator('.olf-carousel-slide').evaluateAll(nodes => nodes.map(n => ({ width: n.getBoundingClientRect().width, height: n.getBoundingClientRect().height })));
++    await page.locator('.olf-carousel-slide a').first().focus();
++    await page.waitForTimeout(600);
++    await page.screenshot({ path: `${directory}/${width}-protected.png` });
++    await page.goto('/dich-vu/hoa-thoi');
++    await page.waitForTimeout(1300);
++    for (const selector of ['.ht-recommendations', '.ht-form-heading', '.ht-calendar-heading', '.ht-contact-heading', '#mau-hoa', '.hoe-store-footer']) {
++      const unit = page.locator(selector).first();
++      if (phase === 'before') await unit.scrollIntoViewIfNeeded();
++      else {
++        const top = await unit.evaluate(n => (n.querySelector('[data-store-text]') || n).getBoundingClientRect().top + scrollY - innerHeight * .7);
++        await page.evaluate(top => { document.dispatchEvent(new WheelEvent('wheel')); scrollTo({ top, behavior: 'instant' }); }, top);
++      }
++      await page.waitForTimeout(250);
++      scene.reveal.push(await unit.evaluate(n => ({ selector: n.className || n.id, states: [...n.querySelectorAll('[data-store-text]')].map(t => ({ role: t.getAttribute('data-store-text'), state: t.getAttribute('data-text-state'), animations: [...t.querySelectorAll('[data-text-layer]')].flatMap(l => l.getAnimations().map(a => ({ timing: a.effect.getTiming(), frames: a.effect.getKeyframes() }))) })) })));
++      await page.waitForTimeout(1300);
++    }
++    if (phase === 'after') {
++      const heading = page.locator('.ht-form-heading');
++      const top = await heading.evaluate(n => n.getBoundingClientRect().top + scrollY - innerHeight * .7);
++      await page.evaluate(top => { document.dispatchEvent(new WheelEvent('wheel')); scrollTo({ top, behavior: 'instant' }); }, top);
++      await page.waitForTimeout(1300);
++      scene.jitter = [];
++      const headingTop = await heading.locator('h2').evaluate(n => n.getBoundingClientRect().top + scrollY);
++      for (const fraction of [.02, .09, .02, .5]) {
++        await page.evaluate(({ top, fraction }) => { document.dispatchEvent(new WheelEvent('wheel')); scrollTo({ top: top - innerHeight * fraction, behavior: 'instant' }); }, { top: headingTop, fraction });
++        await page.waitForTimeout(120);
++        scene.jitter.push(await heading.locator('h2').getAttribute('data-text-state'));
++      }
++      await page.evaluate(() => { document.dispatchEvent(new WheelEvent('wheel')); scrollTo({ top: 0, behavior: 'instant' }); });
++      await page.waitForTimeout(250);
++      scene.replayPrepared = await heading.locator('h2').getAttribute('data-text-state');
++      await page.evaluate(top => { document.dispatchEvent(new WheelEvent('wheel')); scrollTo({ top, behavior: 'instant' }); }, top);
++      await page.waitForTimeout(350);
++      scene.beforeFocus = await heading.locator('h2').getAttribute('data-text-state');
++      await page.getByRole('button', { name: 'Tăng số bó mỗi tuần', exact: true }).focus();
++      scene.afterFocus = await heading.locator('h2').getAttribute('data-text-state');
++      await page.waitForTimeout(250);
++      await page.getByRole('button', { name: 'Tăng số bó mỗi tuần', exact: true }).click();
++      await page.waitForTimeout(500);
++    }
++    await page.screenshot({ path: `${directory}/${width}-service.png` });
++    await context.close();
++    await page.video().saveAs(`${directory}/${width}-load-scroll-protected.webm`);
++    report.scenes.push(scene);
++    console.log(`${phase}: ${width} recorded (${errors.length} browser errors)`);
++  }
++} finally { await browser.close(); }
++await writeFile(`${directory}/report.json`, JSON.stringify(report, null, 2));
++if (phase === 'after') {
++  const before = JSON.parse(await readFile('docs/store-motion/v3/before/report.json', 'utf8'));
++  const comparison = { protectedSourceUnchanged: Object.entries(hashes).every(([file, hash]) => before.hashes[file] === hash), viewports: report.scenes.map((scene, i) => ({ width: scene.width, heroIdentical: JSON.stringify(scene.hero) === JSON.stringify(before.scenes[i].hero), carouselGeometryIdentical: JSON.stringify(scene.carousel) === JSON.stringify(before.scenes[i].carousel) })) };
++  await writeFile('docs/store-motion/v3/comparison.json', JSON.stringify(comparison, null, 2));
++  console.log(JSON.stringify(comparison));
++}
+--- a/src/app/(shop)/blog/[slug]/page.tsx
++++ b/src/app/(shop)/blog/[slug]/page.tsx
+@@ -1,8 +1,9 @@
++import { StoreTextRevealGroup, StoreTextReveal } from "@/components/ui/StoreTextReveal";
+ import { StoreHeading } from "@/components/StoreHeading";
+ import type { Metadata } from "next";
+ import Link from "next/link";
+ import { notFound } from "next/navigation";
+-import Markdown from "react-markdown";
++import { StoreProse } from "@/components/StoreProse";
+ import { getArticles } from "@/server/content";
+ import { Comments } from "@/features/comments/Comments";
+ import { features } from "@/domain/features";
+@@ -36,23 +37,23 @@
+           <span>/</span>
+           <Link href="/blog">Chuyện hoa</Link>
+         </div>
+-        <div className="article-title">
++        <StoreTextRevealGroup initial className="article-title">
+           <span className="eyebrow">{p.category}</span>
+           <h1>{p.title}</h1>
+           <div className="article-meta">
+-            <span>Hòe</span>
+-            <time dateTime={p.date}>
++            <StoreTextReveal role="eyebrow" delayMs={180} initial>Hòe</StoreTextReveal>
++            <StoreTextReveal as="time" role="eyebrow" delayMs={180} initial dateTime={p.date}>
+               {new Intl.DateTimeFormat("vi-VN", {
+                 dateStyle: "long",
+                 timeZone: "Asia/Ho_Chi_Minh",
+               }).format(new Date(p.date + "T00:00:00+07:00"))}
+-            </time>
++            </StoreTextReveal>
+           </div>
+-        </div>
++        </StoreTextRevealGroup>
+       </StoreHeading>
+       <div className="container">
+         <article className="prose">
+-          <Markdown skipHtml>{p.body}</Markdown>
++          <StoreProse>{p.body}</StoreProse>
+         </article>
+         {features.commentsEnabled ? <Comments postId={p.id} /> : null}
+       </div>
+--- a/src/app/(shop)/blog/page.tsx
++++ b/src/app/(shop)/blog/page.tsx
+@@ -1,3 +1,4 @@
++import { StoreTextRevealGroup, StoreTextReveal } from "@/components/ui/StoreTextReveal";
+ import { StoreHeading } from "@/components/StoreHeading";
+ import type { Metadata } from "next";
+ import Link from "next/link";
+@@ -13,7 +14,7 @@
+   return (
+     <>
+       <StoreHeading>
+-        <div className="page-heading">
++        <StoreTextRevealGroup initial className="page-heading">
+           <span className="eyebrow">NHỮNG CÂU CHUYỆN MUỐN ĐƯỢC KỂ</span>
+           <h1>
+             Chuyện hoa,
+@@ -24,18 +25,18 @@
+             Đôi khi, một chút sắc màu và hương thơm cũng đủ để một ngày bình
+             thường trở nên đáng yêu hơn.
+           </p>
+-        </div>
++        </StoreTextRevealGroup>
+       </StoreHeading>
+       <div className="container">
+         {posts.length ? (
+           <div className="blog-grid">
+             {posts.map((p) => (
+               <article key={p.id} className="blog-card">
+-                <span className="eyebrow">{p.category}</span>
+-                <h2>
++                <StoreTextReveal as="span" role="eyebrow" className="eyebrow">{p.category}</StoreTextReveal>
++                <StoreTextReveal as="h2" role="body">
+                   <Link href={`/blog/${p.slug}`}>{p.title}</Link>
+-                </h2>
+-                <p>{p.excerpt}</p>
++                </StoreTextReveal>
++                <StoreTextReveal as="p" role="body">{p.excerpt}</StoreTextReveal>
+                 <Link href={`/blog/${p.slug}`} className="text-link">
+                   Đọc câu chuyện <ArrowRight size={15} />
+                 </Link>
+--- a/src/app/(shop)/chinh-sach/[slug]/page.tsx
++++ b/src/app/(shop)/chinh-sach/[slug]/page.tsx
+@@ -1,7 +1,8 @@
++import { StoreTextRevealGroup } from "@/components/ui/StoreTextReveal";
+ import { StoreHeading } from "@/components/StoreHeading";
+ import type { Metadata } from "next";
+ import { notFound } from "next/navigation";
+-import Markdown from "react-markdown";
++import { StoreProse } from "@/components/StoreProse";
+ import { getArticles } from "@/server/content";
+ type Props = { params: Promise<{ slug: string }> };
+ export async function generateMetadata({ params }: Props): Promise<Metadata> {
+@@ -18,14 +19,14 @@
+   return (
+     <>
+       <StoreHeading containerClassName="section store-policy-heading">
+-        <div className="article-title">
++        <StoreTextRevealGroup initial className="article-title">
+           <span className="eyebrow">CHÍNH SÁCH CỦA HÒE</span>
+           <h1>{p.title}</h1>
+-        </div>
++        </StoreTextRevealGroup>
+       </StoreHeading>
+       <div className="container section store-policy-body">
+         <article className="prose">
+-          <Markdown skipHtml>{p.body}</Markdown>
++          <StoreProse>{p.body}</StoreProse>
+         </article>
+       </div>
+     </>
+--- a/src/app/(shop)/dat-hoa/page.tsx
++++ b/src/app/(shop)/dat-hoa/page.tsx
+@@ -1,3 +1,4 @@
++import { StoreTextRevealGroup } from "@/components/ui/StoreTextReveal";
+ import { StoreHeading } from "@/components/StoreHeading";
+ import type { Metadata } from "next";
+ import { getProducts } from "@/server/content";
+@@ -10,14 +11,14 @@
+   return (
+     <>
+       <StoreHeading>
+-        <div className="page-heading">
++        <StoreTextRevealGroup initial className="page-heading">
+           <span className="eyebrow">HÒE LẮNG NGHE ĐIỀU BẠN MUỐN GỬI</span>
+           <h1>Gửi yêu cầu đặt hoa</h1>
+           <p>
+             Thông tin nhận hoa dùng chung cho giỏ này. Shop sẽ liên hệ xác nhận
+             giá, phí giao và lịch nhận.
+           </p>
+-        </div>
++        </StoreTextRevealGroup>
+       </StoreHeading>
+       <div className="container">
+         <div style={{ paddingBottom: 70 }}>
+--- a/src/app/(shop)/dich-vu/[service]/page.tsx
++++ b/src/app/(shop)/dich-vu/[service]/page.tsx
+@@ -1,3 +1,4 @@
++import { StoreTextRevealGroup, StoreTextReveal } from "@/components/ui/StoreTextReveal";
+ import { StoreHeading } from "@/components/StoreHeading";
+ import type { Metadata } from "next";
+ import Link from "next/link";
+@@ -8,7 +9,6 @@
+ import { Empty } from "@/components/Empty";
+ import { InquiryForm } from "@/features/checkout/InquiryForm";
+ import { HoaThoiServiceFlow } from "@/features/checkout/HoaThoiServiceFlow";
+-import { HoaThoiReveal } from "@/features/checkout/HoaThoiMotion";
+ import { HoaThoiAnchor } from "@/features/checkout/HoaThoiAnchor";
+ import { ScrollAnchor } from "@/components/ui/ScrollAnchor";
+ type Props = { params: Promise<{ service: string }> };
+@@ -35,7 +35,7 @@
+       tabIndex={s.id === "hoa-thoi" ? -1 : undefined}
+       className={s.id === "hoa-thoi" ? "ht-service-section" : undefined}
+     >
+-      <div className="section-heading">
++      <StoreTextRevealGroup className="section-heading">
+         <h2>Mẫu hoa tham khảo</h2>
+         {s.id === "hoa-thoi" ? (
+           <HoaThoiAnchor href="#tu-van" className="text-link">
+@@ -46,16 +46,10 @@
+             Chưa chọn mẫu? Kể Hòe nghe
+           </ScrollAnchor>
+         )}
+-      </div>
++      </StoreTextRevealGroup>
+       {products.length ? (
+         <div className="product-grid">
+-          {products.map((p, index) =>
+-            index < 4 ? (
+-              <HoaThoiReveal key={p.id} delay={index * 0.05}><ProductCard product={p} /></HoaThoiReveal>
+-            ) : (
+-              <ProductCard key={p.id} product={p} />
+-            ),
+-          )}
++          {products.map((p) => <ProductCard key={p.id} product={p} revealText />)}
+         </div>
+       ) : (
+         <Empty
+@@ -76,13 +70,13 @@
+           <span>{s.name}</span>
+         </div>
+         <div className="service-page-top">
+-          <div className="page-heading">
++          <StoreTextRevealGroup initial className="page-heading">
+             <span className="eyebrow">
+               / {s.number} — {s.name}
+             </span>
+             <h1>{s.subtitle}</h1>
+             <p>{s.description}</p>
+-          </div>
++          </StoreTextRevealGroup>
+           <div className="service-art">
+             <Image
+               src={
+@@ -112,11 +106,11 @@
+         )}
+         {s.id !== "hoa-thoi" ? (
+           <section className="inquiry-section" id="tu-van">
+-            <h2>Một ý tưởng bắt đầu từ bạn</h2>
+-            <p>
++            <StoreTextReveal as="h2" role="heading">Một ý tưởng bắt đầu từ bạn</StoreTextReveal>
++            <StoreTextReveal as="p" role="body">
+               Chưa chọn mẫu? Hãy gửi nhu cầu để shop tư vấn. Nếu chọn một mẫu ở
+               trên, bạn sẽ cấu hình mẫu và gửi qua giỏ hoa.
+-            </p>
++            </StoreTextReveal>
+             <InquiryForm serviceType={s.id} guidance={s} />
+           </section>
+         ) : null}
+--- a/src/app/(shop)/error.tsx
++++ b/src/app/(shop)/error.tsx
+@@ -1,14 +1,15 @@
+ "use client";
++import { StoreTextReveal } from "@/components/ui/StoreTextReveal";
+ import Link from "next/link";
+ export default function ShopError({ reset }: { reset: () => void }) {
+   return (
+     <main className="container section">
+-      <span className="eyebrow">HÒE ĐANG CHUẨN BỊ</span>
+-      <h1 style={{ fontSize: 40 }}>Hẹn bạn một chút nhé.</h1>
+-      <p className="muted">
++      <StoreTextReveal as="span" role="eyebrow" className="eyebrow">HÒE ĐANG CHUẨN BỊ</StoreTextReveal>
++      <StoreTextReveal as="h1" role="page" initial style={{ fontSize: 40 }}>Hẹn bạn một chút nhé.</StoreTextReveal>
++      <StoreTextReveal as="p" role="body" className="muted">
+         Nội dung và hệ thống tiếp nhận đang được kết nối. Yêu cầu chưa được xác
+         nhận khi chưa có mã tiếp nhận.
+-      </p>
++      </StoreTextReveal>
+       <div className="hero-actions">
+         <button className="button" onClick={reset}>
+           Thử lại
+--- a/src/app/(shop)/gio-hang/page.tsx
++++ b/src/app/(shop)/gio-hang/page.tsx
+@@ -1,3 +1,4 @@
++import { StoreTextRevealGroup } from "@/components/ui/StoreTextReveal";
+ import { StoreHeading } from "@/components/StoreHeading";
+ import type { Metadata } from "next";
+ import { getProducts, getServices } from "@/server/content";
+@@ -14,14 +15,14 @@
+   return (
+     <>
+       <StoreHeading>
+-        <div className="page-heading">
++        <StoreTextRevealGroup initial className="page-heading">
+           <span className="eyebrow">MỘT CHÚT DỊU DÀNG SẮP ĐƯỢC GỬI ĐI</span>
+           <h1>Giỏ hoa của bạn</h1>
+           <p>
+             Xem lại từng mẫu, lời nhắn và ngày nhận mong muốn trước khi gửi yêu
+             cầu.
+           </p>
+-        </div>
++        </StoreTextRevealGroup>
+       </StoreHeading>
+       <div className="container">
+         <CartView products={products} services={services} />
+--- a/src/app/(shop)/layout.tsx
++++ b/src/app/(shop)/layout.tsx
+@@ -5,6 +5,7 @@
+ import { termes, cormorant } from "@/fonts/store-fonts";
+ import "@/styles/store-typography.css";
+ import "@/styles/store-gradients.css";
++import "@/styles/store-text-reveal.css";
+ import {
+   getSite,
+   getAssets,
+--- a/src/app/(shop)/lien-he/page.tsx
++++ b/src/app/(shop)/lien-he/page.tsx
+@@ -1,3 +1,4 @@
++import { StoreTextRevealGroup, StoreTextReveal } from "@/components/ui/StoreTextReveal";
+ import { StoreHeading } from "@/components/StoreHeading";
+ import type { Metadata } from "next";
+ import { getSite } from "@/server/content";
+@@ -13,27 +14,27 @@
+   return (
+     <>
+       <StoreHeading>
+-        <div className="page-heading">
++        <StoreTextRevealGroup initial className="page-heading">
+           <span className="eyebrow">BẮT ĐẦU BẰNG MỘT LỜI KỂ</span>
+           <h1>
+             Hòe ở đây,
+             <br />
+             để nghe bạn.
+           </h1>
+-        </div>
++        </StoreTextRevealGroup>
+       </StoreHeading>
+       <div className="container">
+         <div className="contact-layout">
+           <div>
+-            <h2>
++            <StoreTextReveal as="h2" role="heading">
+               Một chút hoa,
+               <br />
+               một chút dịu dàng.
+-            </h2>
+-            <p className="muted" style={{ marginTop: 25 }}>
++            </StoreTextReveal>
++            <StoreTextReveal as="p" role="body" className="muted" style={{ marginTop: 25 }}>
+               Bạn đang nghĩ đến một người, một cảm xúc hay một thiết kế riêng?
+               Hãy kể để Hòe cùng bạn tìm cách gửi.
+-            </p>
++            </StoreTextReveal>
+             <div className="footer-links" style={{ marginTop: 30 }}>
+               {site.contact.phone && phoneHref(site.contact.phone) ? (
+                 <a href={phoneHref(site.contact.phone)!}>
+@@ -45,8 +46,8 @@
+                   {site.contact.email}
+                 </a>
+               ) : null}
+-              {site.contact.address ? <p>{site.contact.address}</p> : null}
+-              {site.contact.hours ? <p>{site.contact.hours}</p> : null}
++              {site.contact.address ? <StoreTextReveal as="p" role="body">{site.contact.address}</StoreTextReveal> : null}
++              {site.contact.hours ? <StoreTextReveal as="p" role="body">{site.contact.hours}</StoreTextReveal> : null}
+               {site.social.map((s) => (
+                 <a
+                   href={s.url}
+--- a/src/app/(shop)/san-pham/[slug]/page.tsx
++++ b/src/app/(shop)/san-pham/[slug]/page.tsx
+@@ -1,3 +1,4 @@
++import { StoreTextRevealGroup, StoreTextReveal } from "@/components/ui/StoreTextReveal";
+ import type { Metadata } from "next";
+ import Link from "next/link";
+ import Image from "next/image";
+@@ -46,7 +47,7 @@
+               />
+             </div>
+           </div>
+-          <div className="detail-copy">
++          <StoreTextRevealGroup initial className="detail-copy">
+             <span className="eyebrow">{service.name}</span>
+             <h1>{product.name}</h1>
+             <p>{product.description}</p>
+@@ -55,13 +56,13 @@
+               Thiết kế, giá cuối và lịch nhận được Hòe xác nhận khi liên hệ.
+             </p>
+             {product.fixture ? (
+-              <p className="form-note">
++              <StoreTextReveal as="p" role="body" className="form-note">
+                 Mẫu test — không phải sản phẩm đang bán.
+-              </p>
++              </StoreTextReveal>
+             ) : null}
+             <hr className="divider" />
+             <ProductForm product={product} guidance={service} />
+-          </div>
++          </StoreTextRevealGroup>
+         </div>
+       </div>
+     </div>
+--- a/src/app/(shop)/san-pham/page.tsx
++++ b/src/app/(shop)/san-pham/page.tsx
+@@ -1,3 +1,4 @@
++import { StoreTextRevealGroup } from "@/components/ui/StoreTextReveal";
+ import { StoreHeading } from "@/components/StoreHeading";
+ import type { Metadata } from "next";
+ import { getProducts } from "@/server/content";
+@@ -13,7 +14,7 @@
+   return (
+     <>
+       <StoreHeading>
+-        <div className="page-heading">
++        <StoreTextRevealGroup initial className="page-heading">
+           <span className="eyebrow">CHỌN HOA TỪ ĐIỀU BẠN MUỐN GỬI</span>
+           <h1>
+             Những đóa hoa,
+@@ -24,19 +25,19 @@
+             Một chút cảm hứng cho ngày hôm nay. Chọn mẫu hoa, kể mong muốn, Hòe
+             sẽ liên hệ xác nhận giá và lịch nhận.
+           </p>
+-        </div>
++        </StoreTextRevealGroup>
+       </StoreHeading>
+       <div className="container">
+         <ServiceCards />
+         <section className="section">
+-          <div className="section-heading">
++          <StoreTextRevealGroup className="section-heading">
+             <h2>Các mẫu hoa</h2>
+             <p>Thay đổi thiết kế ngoài mẫu sẽ cần shop báo giá.</p>
+-          </div>
++          </StoreTextRevealGroup>
+           {products.length ? (
+             <div className="product-grid">
+               {products.map((p) => (
+-                <ProductCard key={p.id} product={p} />
++                <ProductCard key={p.id} product={p} revealText />
+               ))}
+             </div>
+           ) : (
+--- a/src/app/(shop)/ve-hoe/page.tsx
++++ b/src/app/(shop)/ve-hoe/page.tsx
+@@ -1,8 +1,8 @@
++import { StoreTextRevealGroup, StoreTextReveal } from "@/components/ui/StoreTextReveal";
+ import { StoreHeading } from "@/components/StoreHeading";
+ import type { Metadata } from "next";
+ import Link from "next/link";
+ import { getSite } from "@/server/content";
+-import { StoreReveal } from "@/components/ui/StoreMotion";
+ export const metadata: Metadata = {
+   title: "Về Hòe",
+   description: "Hòe — nơi những điều khó nói được kể bằng hoa.",
+@@ -12,7 +12,7 @@
+   return (
+     <>
+       <StoreHeading>
+-        <div className="page-heading">
++        <StoreTextRevealGroup initial className="page-heading">
+           <span className="eyebrow">HOA & NHỮNG ĐIỀU DỊU DÀNG</span>
+           <h1>
+             Hòe bắt đầu từ
+@@ -24,7 +24,7 @@
+             nói lời yêu thương, cảm ơn, nhớ nhung, hoặc đơn giản là nhắc ta dịu
+             dàng với chính mình.
+           </p>
+-        </div>
++        </StoreTextRevealGroup>
+       </StoreHeading>
+       <div className="container">
+         <section className="service-grid" style={{ marginBottom: 65 }}>
+@@ -44,20 +44,20 @@
+               "Thanh lịch",
+               "Vẻ đẹp từ những điều vừa đủ. Hòe chăm chút màu sắc, hình dáng và cảm giác mà những đóa hoa mang đến.",
+             ],
+-          ].map(([letter, title, body], index) => (
+-            <StoreReveal as="article" key={letter} index={index} className="service-card">
++          ].map(([letter, title, body]) => (
++            <StoreTextRevealGroup as="article" key={letter} className="service-card">
+               <span className="eyebrow">{letter}</span>
+               <h3 style={{ fontSize: 30 }}>{title}</h3>
+               <p>{body}</p>
+-            </StoreReveal>
++            </StoreTextRevealGroup>
+           ))}
+         </section>
+-        <h2>Những điều bạn muốn biết</h2>
++        <StoreTextReveal as="h2" role="heading">Những điều bạn muốn biết</StoreTextReveal>
+         <div className="faq">
+           {site.faq.map((q) => (
+             <details key={q.question}>
+               <summary>{q.question}</summary>
+-              <p>{q.answer}</p>
++              <StoreTextReveal as="p" role="body">{q.answer}</StoreTextReveal>
+             </details>
+           ))}
+         </div>
+--- a/src/app/error.tsx
++++ b/src/app/error.tsx
+@@ -1,9 +1,15 @@
+ "use client";
++import { StoreFallbackScope } from "@/components/StoreFallbackScope";
++import { StoreTextRevealGroup } from "@/components/ui/StoreTextReveal";
++import { termes, cormorant } from "@/fonts/store-fonts";
++import "@/styles/store-typography.css";
++import "@/styles/store-gradients.css";
++import "@/styles/store-text-reveal.css";
+ export default function AvailabilityError({ reset }: { reset: () => void }) {
+   return (
+-    <main className="container section">
++    <StoreFallbackScope className={`hoe-store-scope ${termes.variable} ${cormorant.variable}`}><main className="container section">
+       <span className="brand">hòe</span>
+-      <div className="page-heading">
++      <StoreTextRevealGroup initial className="page-heading">
+         <span className="eyebrow">HÒE ĐANG CHUẨN BỊ</span>
+         <h1 style={{ fontSize: 40 }}>Hẹn bạn một chút nhé.</h1>
+         <p>
+@@ -13,7 +19,7 @@
+         <button className="button" onClick={reset}>
+           Thử lại
+         </button>
+-      </div>
+-    </main>
++      </StoreTextRevealGroup>
++    </main></StoreFallbackScope>
+   );
+ }
+--- a/src/app/not-found.tsx
++++ b/src/app/not-found.tsx
+@@ -1,11 +1,13 @@
++import { StoreTextReveal } from "@/components/ui/StoreTextReveal";
+ import Link from "next/link";
+ import { StoreFallbackScope } from "@/components/StoreFallbackScope";
+ import { termes, cormorant } from "@/fonts/store-fonts";
+ import "@/styles/store-typography.css";
+ import "@/styles/store-gradients.css";
++import "@/styles/store-text-reveal.css";
+ 
+ export default function NotFound() {
+   return <StoreFallbackScope className={`hoe-store-scope ${termes.variable} ${cormorant.variable}`}>
+-    <div className="container section empty"><span className="eyebrow">404</span><h1>Chưa tìm thấy đóa hoa này</h1><p>Trang bạn tìm chưa được xuất bản hoặc không còn khả dụng.</p><Link href="/" className="button">Về trang chủ</Link></div>
++    <div className="container section empty"><StoreTextReveal as="span" role="eyebrow" className="eyebrow">404</StoreTextReveal><StoreTextReveal as="h1" role="page" initial>Chưa tìm thấy đóa hoa này</StoreTextReveal><StoreTextReveal as="p" role="body">Trang bạn tìm chưa được xuất bản hoặc không còn khả dụng.</StoreTextReveal><Link href="/" className="button">Về trang chủ</Link></div>
+   </StoreFallbackScope>;
+ }
+--- a/src/components/Empty.tsx
++++ b/src/components/Empty.tsx
+@@ -1,4 +1,5 @@
++import { StoreTextReveal } from "@/components/ui/StoreTextReveal";
+ import Link from "next/link";
+ export function Empty({ title, body, href, action }: { title: string; body: string; href?: string; action?: string }) {
+-  return <div className="empty"><h3>{title}</h3><p>{body}</p>{href && action ? <Link href={href} className="button secondary">{action}</Link> : null}</div>;
++  return <div className="empty"><StoreTextReveal as="h3" role="heading">{title}</StoreTextReveal><StoreTextReveal as="p" role="body">{body}</StoreTextReveal>{href && action ? <Link href={href} className="button secondary">{action}</Link> : null}</div>;
+ }
+--- a/src/components/Footer.tsx
++++ b/src/components/Footer.tsx
+@@ -1,3 +1,4 @@
++import { StoreTextReveal, StoreTextLink } from "@/components/ui/StoreTextReveal";
+ import Link from "next/link";
+ import Image from "next/image";
+ import { getArticles, getAssets, getSite } from "@/server/content";
+@@ -24,45 +25,45 @@
+               {logo ? <Image src={logo.src} alt={logo.alt} width={logo.width} height={logo.height}
+                 style={{ maxWidth: 130, maxHeight: 65, objectFit: "contain" }} /> : "hòe"}
+             </Link>
+-            <p>{site.tagline}</p>
++            <StoreTextReveal as="p" role="body">{site.tagline}</StoreTextReveal>
+           </div>
+           <nav aria-labelledby="footer-explore-title">
+-            <h3 id="footer-explore-title">Khám phá Hòe</h3>
++            <StoreTextReveal as="h3" role="heading" id="footer-explore-title">Khám phá Hòe</StoreTextReveal>
+             <div className="footer-links">
+-              <Link href="/dich-vu/hoa-thoi">Hoa Thời</Link>
+-              <Link href="/dich-vu/hoa-tam">Hoa Tâm</Link>
+-              <Link href="/dich-vu/hoa-y">Hoa Ý</Link>
+-              {articles.length > 0 && <Link href="/blog">Chuyện của những đóa hoa</Link>}
++              <StoreTextLink><Link href="/dich-vu/hoa-thoi">Hoa Thời</Link></StoreTextLink>
++              <StoreTextLink><Link href="/dich-vu/hoa-tam">Hoa Tâm</Link></StoreTextLink>
++              <StoreTextLink><Link href="/dich-vu/hoa-y">Hoa Ý</Link></StoreTextLink>
++              {articles.length > 0 && <StoreTextLink><Link href="/blog">Chuyện của những đóa hoa</Link></StoreTextLink>}
+             </div>
+           </nav>
+           {hasContact && <div className="footer-contact">
+-            <h3>Ghé Hòe</h3>
++            <StoreTextReveal as="h3" role="heading">Ghé Hòe</StoreTextReveal>
+             <div className="footer-links">
+-              {address && (mapUrl ? <a href={mapUrl} target="_blank" rel="noopener noreferrer">{address}</a> : <span>{address}</span>)}
+-              {!address && mapUrl && <a href={mapUrl} target="_blank" rel="noopener noreferrer">Xem đường đi</a>}
+-              {tel && <a href={tel}>{phone}</a>}
+-              {email && <a href={`mailto:${email}`}>{email}</a>}
+-              {hours && <span>{hours}</span>}
+-              <Link href="/lien-he">Liên hệ & tư vấn</Link>
++              {address && (mapUrl ? <StoreTextLink><a href={mapUrl} target="_blank" rel="noopener noreferrer">{address}</a></StoreTextLink> : <StoreTextReveal>{address}</StoreTextReveal>)}
++              {!address && mapUrl && <StoreTextLink><a href={mapUrl} target="_blank" rel="noopener noreferrer">Xem đường đi</a></StoreTextLink>}
++              {tel && <StoreTextLink><a href={tel}>{phone}</a></StoreTextLink>}
++              {email && <StoreTextLink><a href={`mailto:${email}`}>{email}</a></StoreTextLink>}
++              {hours && <StoreTextReveal>{hours}</StoreTextReveal>}
++              <StoreTextLink><Link href="/lien-he">Liên hệ & tư vấn</Link></StoreTextLink>
+             </div>
+           </div>}
+           {socials.length > 0 && <nav className="footer-social" aria-labelledby="footer-social-title">
+-            <h3 id="footer-social-title">Kết nối với Hòe</h3>
++            <StoreTextReveal as="h3" role="heading" id="footer-social-title">Kết nối với Hòe</StoreTextReveal>
+             <div className="footer-social-links">
+               {socials.map((social, index) => <a key={`${social.url}-${index}`} href={social.url} target="_blank" rel="noopener noreferrer">
+                 {social.platform && <SocialBrandIcon platform={social.platform} />}
+-                <span>{social.label}</span>
++                <StoreTextReveal>{social.label}</StoreTextReveal>
+               </a>)}
+             </div>
+           </nav>}
+         </div>
+         <div className="footer-bottom">
+           <div className="footer-copyright">
+-            <span>© Hòe. Một chút hoa, một chút dịu dàng.</span>
+-            <p className="footer-footnote">Giá và lịch nhận hoa được shop xác nhận sau khi tiếp nhận yêu cầu.</p>
++            <StoreTextReveal>© Hòe. Một chút hoa, một chút dịu dàng.</StoreTextReveal>
++            <StoreTextReveal as="p" role="body" className="footer-footnote">Giá và lịch nhận hoa được shop xác nhận sau khi tiếp nhận yêu cầu.</StoreTextReveal>
+           </div>
+           {policies.length > 0 && <nav className="footer-policies" aria-label="Chính sách">
+-            {policies.map((policy) => <Link key={policy.id} href={`/chinh-sach/${policy.slug}`}>{policy.title}</Link>)}
++            {policies.map((policy) => <StoreTextLink key={policy.id}><Link href={`/chinh-sach/${policy.slug}`}>{policy.title}</Link></StoreTextLink>)}
+           </nav>}
+         </div>
+       </div>
+--- a/src/components/HoaThoiRecommendations.tsx
++++ b/src/components/HoaThoiRecommendations.tsx
+@@ -1,21 +1,21 @@
+ import { CalendarDays, Check, ArrowDown } from "lucide-react";
+ import { periodLabel, recommendationPrice, type Recommendation } from "@/domain/recurrence";
+-import { HoaThoiReveal } from "@/features/checkout/HoaThoiMotion";
++import { StoreTextReveal, StoreTextRevealGroup } from "@/components/ui/StoreTextReveal";
+ 
+ export function HoaThoiRecommendations({ recommendations, referenceId, period, bouquets, choose, id, disabled = false }: { recommendations: Recommendation[]; referenceId: string; period: string; bouquets: number; choose: (r: Recommendation) => void; id: string; disabled?: boolean }) {
+   const rows = recommendations.filter((r) => r.enabled);
+   if (!rows.length) return null;
+   return <section className="ht-recommendations" aria-labelledby={`${id}-recommendations`}>
+-    <span className="eyebrow">MỘT NHỊP HOA CHO RIÊNG BẠN</span>
+-    <h2 id={`${id}-recommendations`}>Chọn nhịp hoa phù hợp với bạn</h2>
+-    <p>Một chút hoa ghé nhà đều đặn. Bắt đầu từ một gợi ý, rồi chọn những ngày bạn muốn nhận.</p>
+-    <div className="ht-recommendation-grid">{rows.map((r, index) => <HoaThoiReveal key={r.id} delay={index * 0.05}><article className={`ht-recommendation ${referenceId === r.id ? "is-selected" : ""}`}>
++    <StoreTextReveal role="eyebrow" className="eyebrow">MỘT NHỊP HOA CHO RIÊNG BẠN</StoreTextReveal>
++    <StoreTextReveal as="h2" role="heading" delayMs={90} id={`${id}-recommendations`}>Chọn nhịp hoa phù hợp với bạn</StoreTextReveal>
++    <StoreTextReveal as="p" delayMs={180}>Một chút hoa ghé nhà đều đặn. Bắt đầu từ một gợi ý, rồi chọn những ngày bạn muốn nhận.</StoreTextReveal>
++    <div className="ht-recommendation-grid">{rows.map((r) => <StoreTextRevealGroup key={r.id} className="ht-reveal"><article className={`ht-recommendation ${referenceId === r.id ? "is-selected" : ""}`}>
+       <CalendarDays size={24} aria-hidden="true" /><h3>{r.bouquetsPerPeriod} bó/{periodLabel(r.period)}</h3>
+       <p className="ht-card-price">{recommendationPrice(r)}</p>
+-      <p className="ht-helper">{r.period === "week" ? "Một chút dịu dàng trong mỗi tuần." : "Để hoa cùng bạn đi qua từng tháng."}</p>
++      <StoreTextReveal as="p" className="ht-helper">{r.period === "week" ? "Một chút dịu dàng trong mỗi tuần." : "Để hoa cùng bạn đi qua từng tháng."}</StoreTextReveal>
+       <button type="button" className="ht-package-button" disabled={disabled} aria-pressed={referenceId === r.id} aria-label={`Tham khảo ${r.bouquetsPerPeriod} bó/${periodLabel(r.period)}`} onClick={() => choose(r)}>{referenceId === r.id ? <><Check size={16} aria-hidden="true" /> Đang tham khảo</> : <>Chọn nhịp này <ArrowDown size={15} aria-hidden="true" /></>}</button>
+       <span className="ht-card-match">{r.period === period && r.bouquetsPerPeriod === bouquets ? "Khớp cấu hình của bạn" : ""}</span>
+-    </article></HoaThoiReveal>)}</div>
+-    <p className="ht-helper">Giá tham khảo. Hòe sẽ liên hệ xác nhận hoa, giá và lịch nhận phù hợp.</p>
++    </article></StoreTextRevealGroup>)}</div>
++    <StoreTextReveal as="p" className="ht-helper">Giá tham khảo. Hòe sẽ liên hệ xác nhận hoa, giá và lịch nhận phù hợp.</StoreTextReveal>
+   </section>;
+ }
+--- a/src/components/ProductCard.tsx
++++ b/src/components/ProductCard.tsx
+@@ -4,7 +4,8 @@
+ import { priceLabel } from "@/domain/pricing";
+ import { valueLabel } from "@/domain/labels";
+ import type { Product } from "@/domain/schemas";
+-export function ProductCard({ product, variant = "default" }: { product: Product; variant?: "default" | "home" }) {
++import { StoreTextReveal } from "./ui/StoreTextReveal";
++export function ProductCard({ product, variant = "default", revealText = false }: { product: Product; variant?: "default" | "home"; revealText?: boolean }) {
+   const href = "/san-pham/" + product.slug;
+   const placeholder = variant === "home" && product.fixture && product.image === "/images/preview/peonies.jpg";
+   return (
+@@ -19,9 +20,9 @@
+           />
+         </div>
+       </Link>
+-      <span className="category">{valueLabel(product.serviceType)}</span>
++      {revealText ? <StoreTextReveal role="eyebrow" className="category">{valueLabel(product.serviceType)}</StoreTextReveal> : <span className="category">{valueLabel(product.serviceType)}</span>}
+       <h3>
+-        <Link href={href}>{product.name}</Link>
++        <Link href={href}>{revealText ? <StoreTextReveal className="store-card-title-copy" role="body">{product.name}</StoreTextReveal> : product.name}</Link>
+       </h3>
+       <div className="product-price">{priceLabel(product.price)}</div>
+       <div className="product-link">
+--- a/src/components/ServiceCards.tsx
++++ b/src/components/ServiceCards.tsx
+@@ -1,26 +1,25 @@
++import { StoreTextReveal } from "@/components/ui/StoreTextReveal";
+ import Link from "next/link";
+ import { ArrowUpRight } from "lucide-react";
+ import { ServiceTypeIcon } from "./ServiceTypeIcon";
+ import { getServices } from "@/server/content";
+-import { LandingScrollFade } from "@/features/storefront/LandingMotion";
+-import { StoreReveal } from "@/components/ui/StoreMotion";
+ export async function ServiceCards({ variant = "default" }: { variant?: "default" | "home" }) {
+   return (
+     <div className={variant === "home" ? "olf-service-grid" : "service-grid"}>
+-      {(await getServices()).map((service, index) => {
++      {(await getServices()).map((service) => {
+         const card = (
+           <article className={variant === "home" ? "olf-service-card" : "service-card"} key={service.id}>
+             <span className="number">{service.number}</span>
+             <ServiceTypeIcon serviceId={service.id} className="service-flower" />
+-            <h3>{variant === "home" ? service.name : service.shortName}</h3>
+-            <p>{service.subtitle}</p>
++            <StoreTextReveal as="h3" role="body">{variant === "home" ? service.name : service.shortName}</StoreTextReveal>
++            <StoreTextReveal as="p" role="body" delayMs={90}>{service.subtitle}</StoreTextReveal>
+             <Link href={`/dich-vu/${service.id}`} className="text-link">
+               Khám phá {service.name}
+               <ArrowUpRight size={15} />
+             </Link>
+           </article>
+         );
+-        return variant === "home" ? <LandingScrollFade key={service.id}>{card}</LandingScrollFade> : <StoreReveal key={service.id} index={index}>{card}</StoreReveal>;
++        return variant === "home" ? <div key={service.id} data-scroll-fade data-text-group><div data-scroll-fade-content>{card}</div></div> : <div key={service.id} className="store-motion-reveal" data-text-group>{card}</div>;
+       })}
+     </div>
+   );
+--- a/src/components/StoreFallbackScope.tsx
++++ b/src/components/StoreFallbackScope.tsx
+@@ -2,10 +2,11 @@
+ 
+ import { usePathname } from "next/navigation";
+ import type { ReactNode } from "react";
++import { StoreScope } from "./StoreScope";
+ 
+ /** Root 404s bypass ShopLayout. Keep internal/auth fallbacks outside Store. */
+ export function StoreFallbackScope({ className, children }: { className: string; children: ReactNode }) {
+   const pathname = usePathname();
+   const outsideStore = /^\/(?:admin|dang-nhap|xem-thu)(?:\/|$)/.test(pathname ?? "");
+-  return outsideStore ? children : <div className={className}>{children}</div>;
++  return outsideStore ? children : <StoreScope className={className}>{children}</StoreScope>;
+ }
+--- a/src/components/StoreProse.tsx
++++ b/src/components/StoreProse.tsx
+@@ -0,0 +1,19 @@
++import Markdown from "react-markdown";
++import type { Components } from "react-markdown";
++import { StoreTextReveal, StoreTextExemption } from "./ui/StoreTextReveal";
++
++const components: Components = {
++  h1: ({ children }) => <StoreTextReveal as="h1" role="heading">{children}</StoreTextReveal>,
++  h2: ({ children }) => <StoreTextReveal as="h2" role="heading">{children}</StoreTextReveal>,
++  h3: ({ children }) => <StoreTextReveal as="h3" role="heading">{children}</StoreTextReveal>,
++  h4: ({ children }) => <StoreTextReveal as="h4" role="heading">{children}</StoreTextReveal>,
++  p: ({ children }) => <StoreTextReveal as="p">{children}</StoreTextReveal>,
++  ul: ({ children }) => <StoreTextExemption><ul>{children}</ul></StoreTextExemption>,
++  ol: ({ children }) => <StoreTextExemption><ol>{children}</ol></StoreTextExemption>,
++  table: ({ children }) => <StoreTextExemption><table>{children}</table></StoreTextExemption>,
++};
++
++/** Markdown retains its inline tree; paragraphs, not entire articles, are units. */
++export function StoreProse({ children }: { children: string }) {
++  return <Markdown skipHtml components={components}>{children}</Markdown>;
++}
+--- a/src/components/ui/StoreMotion.tsx
++++ b/src/components/ui/StoreMotion.tsx
+@@ -1,47 +1,9 @@
+ "use client";
+ 
+-import { useEffect, useRef, type ReactNode, type RefObject } from "react";
++import { useEffect, useRef, type RefObject } from "react";
+ import { useStoreScope } from "@/components/StoreScope";
+ import { storeMotionRole } from "@/lib/store-motion";
+ import { useReducedMotionPreference } from "./useReducedMotionPreference";
+-
+-/** Decorative groups only. SSR and delayed hydration keep all copy visible. */
+-export function StoreReveal({ children, className = "", as: Tag = "div", index = 0 }: {
+-  children: ReactNode;
+-  className?: string;
+-  as?: "div" | "article";
+-  index?: number;
+-}) {
+-  const node = useRef<HTMLElement | null>(null);
+-  const entered = useRef(false);
+-  const effect = useRef<Animation | null>(null);
+-  const reduced = useReducedMotionPreference();
+-  const { portalClassName } = useStoreScope();
+-
+-  useEffect(() => {
+-    const target = node.current;
+-    if (!target || !portalClassName || entered.current || !window.IntersectionObserver) return;
+-    const observer = new IntersectionObserver(entries => {
+-      if (!entries.some(entry => entry.isIntersecting)) return;
+-      if (entered.current) { observer.disconnect(); return; }
+-      entered.current = true;
+-      observer.disconnect();
+-      if (reduced || target.contains(document.activeElement) || typeof target.animate !== "function") return;
+-      const role = storeMotionRole(target, "reveal");
+-      if (!role.duration) return;
+-      effect.current = target.animate([
+-        { transform: `translateY(${role.distance}px)` }, { transform: "translateY(0)" },
+-      ], { duration: role.duration, delay: index < 4 ? Math.max(0, index) * role.stagger : 0, easing: role.easing });
+-    }, { threshold: .15 });
+-    observer.observe(target);
+-    return () => { observer.disconnect(); effect.current?.cancel(); };
+-  }, [index, portalClassName, reduced]);
+-
+-  return <Tag ref={element => { node.current = element; }} className={`store-motion-reveal ${className}`.trim()} data-store-reveal onFocusCapture={() => {
+-    entered.current = true;
+-    effect.current?.cancel();
+-  }}>{children}</Tag>;
+-}
+ 
+ /** State updates immediately; only the changed value's background is highlighted. */
+ export function useStoreValueFeedback(ref: RefObject<HTMLElement | null>, value: string | number) {
+--- a/src/components/ui/StoreTextReveal.tsx
++++ b/src/components/ui/StoreTextReveal.tsx
+@@ -0,0 +1,99 @@
++"use client";
++
++import { Children, cloneElement, createContext, isValidElement, useContext, useId, useLayoutEffect, useRef, useSyncExternalStore, type HTMLAttributes, type ReactElement, type ReactNode, type RefObject } from "react";
++import { useStoreScope } from "@/components/StoreScope";
++import { initialTextEntrance, registerTextReveal, textRevealPresets, type EntranceNode, type TextRevealRole } from "@/lib/store-text-reveal";
++
++const TextContext = createContext<{ exempt: boolean; root?: RefObject<HTMLElement | null> }>({ exempt: false });
++const subscribe = () => () => {};
++const clientSnapshot = () => true;
++const serverSnapshot = () => false;
++type TextTag = "h1" | "h2" | "h3" | "h4" | "p" | "span" | "div" | "time";
++type TextProps = Omit<HTMLAttributes<HTMLElement>, "role"> & { as?: TextTag; role?: TextRevealRole; delayMs?: number; initial?: boolean; disabled?: boolean; dateTime?: string };
++
++function copyMarkup(children: ReactNode): ReactNode {
++  return Children.map(children, child => {
++    if (!isValidElement<{ children?: ReactNode; href?: unknown }>(child) || !child.props.children) return child;
++    return cloneElement(child, {}, child.props.href !== undefined
++      ? <span data-text-link-copy>{child.props.children}</span>
++      : copyMarkup(child.props.children));
++  });
++}
++
++export function StoreTextExemption({ children }: { children: ReactNode }) {
++  const context = useContext(TextContext);
++  return <TextContext.Provider value={{ ...context, exempt: true }}>{children}</TextContext.Provider>;
++}
++
++/** Portal callers pass the real scroll owner; the provider adds no layout node. */
++export function StoreTextRoot({ root, children }: { root: RefObject<HTMLElement | null>; children: ReactNode }) {
++  const context = useContext(TextContext);
++  return <TextContext.Provider value={{ ...context, root }}>{children}</TextContext.Provider>;
++}
++
++export function StoreTextReveal({ as: Tag = "span", role = "body", delayMs = 0, initial = false, disabled = false, children, ...attributes }: TextProps) {
++  const generatedId = useId();
++  const context = useContext(TextContext);
++  const { portalClassName } = useStoreScope();
++  const clientCreated = useSyncExternalStore(subscribe, clientSnapshot, serverSnapshot);
++  const node = useRef<EntranceNode | null>(null);
++  const controller = useRef<ReturnType<typeof registerTextReveal> | null>(null);
++  const previousChildren = useRef(children);
++  const originalMount = useRef(clientCreated);
++  const excluded = disabled || context.exempt || !portalClassName;
++  const id = attributes.id ?? generatedId;
++
++  useLayoutEffect(() => {
++    const target = node.current;
++    if (!target || excluded || target.closest("[data-text-exempt]")) return;
++    let disposed = false;
++    const attach = () => {
++      if (disposed) return;
++      const root = context.root?.current ?? target.closest<HTMLElement>("[data-text-scroll-root]");
++      controller.current = registerTextReveal(target, role, delayMs, root, originalMount.current);
++    };
++    // Child layout effects precede the parent's ref attachment. Defer to the
++    // end of this commit when a scroll-owner ref has not been attached yet.
++    if (context.root && !context.root.current) queueMicrotask(attach);
++    else attach();
++    return () => { disposed = true; controller.current?.dispose(); controller.current = null; };
++  }, [excluded, context.root, role, delayMs]);
++
++  useLayoutEffect(() => {
++    if (previousChildren.current !== children) controller.current?.settle();
++    previousChildren.current = children;
++  }, [children]);
++
++  if (excluded) return <Tag {...attributes}>{children}</Tag>;
++  const scriptId = JSON.stringify(id).replace(/</g, "\\u003c");
++  const script = initial ? `try{(${initialTextEntrance.toString()})(${scriptId},${JSON.stringify(textRevealPresets)},${JSON.stringify(role)},${Math.max(0, Math.min(180, delayMs))})}catch{}` : "";
++  return <>
++    <Tag {...attributes} id={id} ref={(element: HTMLElement | null) => { node.current = element; }} data-store-text={role} data-text-inline={Tag === "span" ? "true" : undefined}>
++      <span data-text-layer>{copyMarkup(children)}</span>
++    </Tag>
++    {initial && <script type={typeof window === "undefined" ? "text/javascript" : "text/plain"} suppressHydrationWarning dangerouslySetInnerHTML={{ __html: script }} />}
++  </>;
++}
++
++/** Wrap explicit direct semantic children, never discover or mutate document text. */
++export function StoreTextRevealGroup({ children, as: Tag = "div", initial = false, legacyLayout = false, ...attributes }: HTMLAttributes<HTMLElement> & { as?: "div" | "section" | "article"; initial?: boolean; legacyLayout?: boolean }) {
++  const items = Children.toArray(children);
++  const hasEyebrow = items.some(child => isValidElement<{ className?: string }>(child) && /(?:eyebrow|category|number)/.test(child.props.className ?? ""));
++  const card = /(?:^|\s)(?:service-card|blog-card)(?:\s|$)/.test(attributes.className ?? "");
++  const content = items.map(child => {
++    if (!isValidElement<HTMLAttributes<HTMLElement>>(child) || typeof child.type !== "string") return child;
++    if (child.props.role || child.props["aria-live"] || /(?:error|success|status)/.test(child.props.className ?? "")) return child;
++    const tag = child.type;
++    if (!["h1", "h2", "h3", "h4", "p", "span"].includes(tag)) return child;
++    const eyebrow = /(?:eyebrow|category|number)/.test(child.props.className ?? "");
++    const heading = /^h[1-4]$/.test(tag);
++    const role: TextRevealRole = tag === "h1" ? "page" : heading && !card ? "heading" : eyebrow ? "eyebrow" : "body";
++    return <StoreTextReveal key={child.key} {...child.props} as={tag as TextTag} role={role} delayMs={eyebrow ? 0 : heading ? hasEyebrow ? 90 : 0 : hasEyebrow ? 180 : 90} initial={initial}>{child.props.children}</StoreTextReveal>;
++  });
++  return <Tag {...attributes} data-text-group data-scroll-fade={legacyLayout ? true : undefined}>{legacyLayout ? <div data-scroll-fade-content>{content}</div> : content}</Tag>;
++}
++
++/** Entire link stays in final layout. Only its copy receives motion. */
++export function StoreTextLink({ children }: { children: ReactElement<{ children?: ReactNode }> }) {
++  return cloneElement(children, {}, <StoreTextReveal>{children.props.children}</StoreTextReveal>);
++}
+--- a/src/features/cart/CartView.tsx
++++ b/src/features/cart/CartView.tsx
+@@ -24,6 +24,7 @@
+ import { RecurrenceSummary } from "@/features/checkout/RecurrenceSummary";
+ import { isCalendarRecurrence } from "@/domain/delivery-schedule";
+ import { useStoreValueFeedback } from "@/components/ui/StoreMotion";
++import { StoreTextReveal } from "@/components/ui/StoreTextReveal";
+ export function CartSummary({
+   products,
+   checkout = false,
+@@ -47,7 +48,7 @@
+   useStoreValueFeedback(total, display.value);
+   return (
+     <aside className="card cart-summary">
+-      <span className="eyebrow">GIỎ HOA CỦA BẠN</span>
++      <StoreTextReveal role="eyebrow" className="eyebrow">GIỎ HOA CỦA BẠN</StoreTextReveal>
+       <h3>{display.label}</h3>
+       <div className="total" ref={total}>{display.value}</div>
+       {totals.quoteCount ? (
+@@ -66,11 +67,11 @@
+           </div>
+         );
+       })}
+-      <p className="form-note">
++      <StoreTextReveal as="p" className="form-note">
+         Phí giao: chờ shop xác nhận.
+         <br />
+         Gửi yêu cầu chưa phải xác nhận đơn hoặc thanh toán.
+-      </p>
++      </StoreTextReveal>
+       {!checkout ? (
+         <Link href="/dat-hoa" className="button">
+           Gửi yêu cầu đặt hoa
+--- a/src/features/checkout/HoaThoiDeliveryCalendar.tsx
++++ b/src/features/checkout/HoaThoiDeliveryCalendar.tsx
+@@ -1,4 +1,5 @@
+ "use client";
++import { StoreTextRevealGroup, StoreTextReveal } from "@/components/ui/StoreTextReveal";
+ import { createContext, useContext, useEffect, useId, useRef, useState } from "react";
+ import { DayPicker, DayButton, Week, Month, CaptionLabel, type DayButtonProps, type WeekProps, type MonthProps, type CaptionLabelProps } from "@daypicker/react";
+ import { vi } from "@daypicker/react/locale";
+@@ -73,7 +74,7 @@
+     const missing = groups.find((g) => g.dates.length !== g.required);
+     if (missing) setMonth(localDate(missing.start < today ? today : missing.start));
+   }}>
+-    <div className="ht-calendar-heading"><div><span className="eyebrow">02 / NGÀY HOA GHÉ</span><h3 id={`${id}-title`}>Chọn những ngày nhận hoa</h3></div><div className="ht-calendar-controls"><button type="button" aria-label="Tháng trước" disabled={currentMonth <= today.slice(0, 7)} onClick={() => navigate(-1)}><ChevronLeft size={18} aria-hidden="true" /></button><button ref={nextButton} type="button" aria-label="Tháng sau" onClick={() => navigate(1)}><ChevronRight size={18} aria-hidden="true" /></button></div></div>
++    <StoreTextRevealGroup className="ht-calendar-heading"><div><StoreTextReveal as="span" role="eyebrow" className="eyebrow">02 / NGÀY HOA GHÉ</StoreTextReveal><StoreTextReveal as="h3" role="heading" delayMs={90} id={`${id}-title`}>Chọn những ngày nhận hoa</StoreTextReveal></div><div className="ht-calendar-controls"><button type="button" aria-label="Tháng trước" disabled={currentMonth <= today.slice(0, 7)} onClick={() => navigate(-1)}><ChevronLeft size={18} aria-hidden="true" /></button><button ref={nextButton} type="button" aria-label="Tháng sau" onClick={() => navigate(1)}><ChevronRight size={18} aria-hidden="true" /></button></div></StoreTextRevealGroup>
+     <p className="ht-helper" id={`${id}-hint`}>{disabledPackage ? "Nhập số bó và số combo hợp lệ để chọn ngày." : "Mỗi ngày nhận 1 bó. Chọn đủ ngày trong từng chu kỳ; bấm lại ngày đã chọn để bỏ."}</p>
+     <p className="ht-calendar-total" ref={total} aria-live="polite" aria-atomic="true"><span>Đã chọn {draft.deliveryDates.length}/{target} ngày</span><span className="ht-helper">Số ngày cần chọn: {target}</span><span className="visually-hidden">Lịch tháng {month.getMonth() + 1}, năm {month.getFullYear()}{wide ? " và tháng kế tiếp" : ""}.</span></p>
+     <CalendarProgressContext.Provider value={{ period: draft.period, groups }}>
+--- a/src/features/checkout/HoaThoiMotion.tsx
++++ b/src/features/checkout/HoaThoiMotion.tsx
+@@ -1,12 +1,4 @@
+ "use client";
+-
+-import { type ReactNode } from "react";
+-import { StoreReveal } from "@/components/ui/StoreMotion";
+-
+-/** Visible server fallback; decorative cards enter only once. */
+-export function HoaThoiReveal({ children, delay = 0 }: { children: ReactNode; delay?: number }) {
+-  return <StoreReveal className="ht-reveal" index={Math.round(delay / .05)}>{children}</StoreReveal>;
+-}
+ 
+ /** Highlight the changed value without remounting controls or delaying state. */
+ export { useStoreValueFeedback as useHoaThoiFeedback } from "@/components/ui/StoreMotion";
+--- a/src/features/checkout/HoaThoiScheduleProgress.tsx
++++ b/src/features/checkout/HoaThoiScheduleProgress.tsx
+@@ -5,6 +5,7 @@
+ import { useEffect, useRef } from "react";
+ import { shortDate } from "@/domain/delivery-schedule";
+ import { useHoaThoiFeedback } from "./HoaThoiMotion";
++import { StoreTextReveal } from "@/components/ui/StoreTextReveal";
+ 
+ export function HoaThoiScheduleProgress({ draft, recommendations = [], receiptPrice, historical = false, remove }: { draft: ScheduleDraft; recommendations?: Recommendation[]; receiptPrice?: Recommendation | null; historical?: boolean; remove?: (date: string) => void }) {
+   const panel = useRef<HTMLElement>(null), total = useRef<HTMLParagraphElement>(null), price = useRef<HTMLDivElement>(null), dates = useRef<HTMLDivElement>(null);
+@@ -29,7 +30,7 @@
+   const complete = valid && draft.deliveryDates.length === target && groups.length > 0 && groups.every((g) => g.dates.length === g.required) && !outside.length;
+   const matched = historical ? receiptPrice : recommendations.find((r) => r.enabled && r.period === draft.period && r.bouquetsPerPeriod === draft.bouquetsPerPeriod);
+   return <aside className="ht-summary ht-calendar-summary" ref={panel}>
+-    <span className="eyebrow">NHỊP HOA CỦA BẠN</span>
++    <StoreTextReveal role="eyebrow" className="eyebrow" disabled={historical}>NHỊP HOA CỦA BẠN</StoreTextReveal>
+     <p className="ht-summary-label">Gói</p>
+     <h3>{valid ? `${draft.bouquetsPerPeriod} bó/${draft.period === "week" ? "tuần" : "tháng"} × ${draft.comboCount} combo` : "Chọn gói phù hợp"}</h3>
+     {valid ? <p className="ht-helper">Nhận trong {draft.comboCount} {draft.period === "week" ? "tuần" : "tháng"} liên tiếp, mỗi ngày 1 bó.</p> : null}
+--- a/src/features/checkout/InquiryForm.tsx
++++ b/src/features/checkout/InquiryForm.tsx
+@@ -1,4 +1,5 @@
+ "use client";
++import { StoreTextRevealGroup } from "@/components/ui/StoreTextReveal";
+ import { useContext } from "react";
+ import { Field, Honeypot } from "@/components/Fields";
+ import {
+@@ -84,7 +85,7 @@
+             <hr className="divider" />
+           </>
+         ) : null}
+-        {serviceType === "hoa-thoi" ? <div className="ht-contact-heading"><span className="eyebrow">03 / KỂ HÒE NGHE</span><h3>Để Hòe liên hệ với bạn</h3><p className="ht-helper">Hòe sẽ cùng bạn xác nhận hoa, giá và lịch nhận.</p></div> : null}
++        {serviceType === "hoa-thoi" ? <StoreTextRevealGroup className="ht-contact-heading"><span className="eyebrow">03 / KỂ HÒE NGHE</span><h3>Để Hòe liên hệ với bạn</h3><p className="ht-helper">Hòe sẽ cùng bạn xác nhận hoa, giá và lịch nhận.</p></StoreTextRevealGroup> : null}
+         <div className="form-grid">
+           <Field
+             name="name"
+--- a/src/features/checkout/RecurrenceFields.tsx
++++ b/src/features/checkout/RecurrenceFields.tsx
+@@ -1,4 +1,5 @@
+ "use client";
++import { StoreTextRevealGroup } from "@/components/ui/StoreTextReveal";
+ import { useContext, useEffect, useId, useRef, useState } from "react";
+ import { CalendarDays, Flower2, Minus, Plus, Check } from "lucide-react";
+ import { HoaThoiRecommendations } from "@/components/HoaThoiRecommendations";
+@@ -59,7 +60,7 @@
+   }
+   return <div className="ht-fields full">
+     {showRecommendations ? <HoaThoiRecommendations recommendations={recommendations} referenceId={referenceId} period={period} bouquets={draft.bouquetsPerPeriod} choose={choose} id={id} /> : null}
+-    <div className="ht-form-heading"><span className="eyebrow">BẠN CHỌN NGÀY, HÒE GỬI HOA</span><h2>Chọn gói và lịch nhận hoa</h2><p>Chọn nhịp phù hợp và những ngày bạn muốn hoa ghé đến. Hòe sẽ cùng bạn chốt từng điều nhỏ.</p>{showRecommendations ? <HoaThoiAnchor href="#mau-hoa" className="text-link">Xem mẫu hoa tham khảo</HoaThoiAnchor> : null}</div>
++    <StoreTextRevealGroup className="ht-form-heading"><span className="eyebrow">BẠN CHỌN NGÀY, HÒE GỬI HOA</span><h2>Chọn gói và lịch nhận hoa</h2><p>Chọn nhịp phù hợp và những ngày bạn muốn hoa ghé đến. Hòe sẽ cùng bạn chốt từng điều nhỏ.</p>{showRecommendations ? <HoaThoiAnchor href="#mau-hoa" className="text-link">Xem mẫu hoa tham khảo</HoaThoiAnchor> : null}</StoreTextRevealGroup>
+     <div className="ht-package-controls" ref={controls} data-recurrence-root tabIndex={-1}>
+       <input type="hidden" name="recurrence" value={JSON.stringify(normalized.success ? normalized.data : candidate)} />
+       <span className="eyebrow">01 / CHỌN NHỊP HOA</span>
+--- a/src/features/comments/Comments.tsx
++++ b/src/features/comments/Comments.tsx
+@@ -1,4 +1,5 @@
+ "use client";
++import { StoreTextReveal } from "@/components/ui/StoreTextReveal";
+ import { useCallback,useEffect,useState } from "react";
+ import { commentSchema,type CommentPage,type PublicComment } from "@/domain/schemas";
+ import { Field,Honeypot } from "@/components/Fields";
+@@ -38,7 +39,7 @@
+       setReadError("");
+     }
+   }
+-  return <section className="comments" aria-label="Bình luận bài viết"><h2>Một lời gửi lại Hòe</h2><p>Bình luận được công khai ngay sau khi lưu. Tên hiển thị do người viết tự nhập, chưa được xác minh.</p>
++  return <section className="comments" aria-label="Bình luận bài viết"><StoreTextReveal as="h2" role="heading">Một lời gửi lại Hòe</StoreTextReveal><StoreTextReveal as="p" delayMs={90}>Bình luận được công khai ngay sau khi lưu. Tên hiển thị do người viết tự nhập, chưa được xác minh.</StoreTextReveal>
+     <form onSubmit={handleSubmit} noValidate onChange={()=>{if(submission.phase==="success")submission.reset();}}>
+       <fieldset disabled={submission.phase==="submitting" || loading}><div className="form-grid">
+         <Field name="displayName" label="Tên hiển thị" required full maxLength={80} errors={submission.errors}/>
+--- a/src/features/storefront/EditorialHome.tsx
++++ b/src/features/storefront/EditorialHome.tsx
+@@ -1,3 +1,4 @@
++import { StoreTextReveal, StoreTextRevealGroup, StoreTextExemption } from "@/components/ui/StoreTextReveal";
+ import Image from "next/image";
+ import Link from "next/link";
+ import { ArrowUpRight, Flower2, Heart } from "lucide-react";
+@@ -41,7 +42,7 @@
+   }
+   return (
+     <div className="olf-home" data-home-design="oh-les-fleurs">
+-      <LandingHeroMotion>
++      <StoreTextExemption><LandingHeroMotion>
+         <div className="olf-shell olf-hero-stage">
+           <div className="olf-hero-heading">
+             <span className="olf-eyebrow">{home.eyebrow}</span>
+@@ -76,49 +77,49 @@
+         </div>
+         <div className="olf-hero-gallery" aria-hidden="true" />
+         </div>
+-      </LandingHeroMotion>
++      </LandingHeroMotion></StoreTextExemption>
+ 
+       <section className="olf-section olf-story" aria-labelledby="story-title">
+         <div className="olf-shell">
+           {home.benefits.length > 0 && <LandingBenefitsMotion intro={<>
+-          <span className="olf-eyebrow">{home.benefitEyebrow}</span>
+-          <h3 className="copy-lines">{home.benefitTitle}</h3>
+-          <p>{home.benefitIntro}</p>
++          <StoreTextReveal as="span" role="eyebrow" className="olf-eyebrow">{home.benefitEyebrow}</StoreTextReveal>
++          <StoreTextReveal as="h3" role="heading" delayMs={90} className="copy-lines">{home.benefitTitle}</StoreTextReveal>
++          <StoreTextReveal as="p" role="body" delayMs={180}>{home.benefitIntro}</StoreTextReveal>
+           </>}
+             cards={home.benefits.map((benefit, index) => <div key={index}>
+               <Flower2 className="olf-benefit-art" aria-hidden="true" />
+-              <span className="olf-step-number">{String(index + 1).padStart(2, "0")}</span><h3>{benefit.title}</h3><p>{benefit.body}</p>
++              <span className="olf-step-number">{String(index + 1).padStart(2, "0")}</span><StoreTextReveal as="h3" role="body">{benefit.title}</StoreTextReveal><StoreTextReveal as="p" role="body" delayMs={90}>{benefit.body}</StoreTextReveal>
+             </div>)} />}
+         </div>
+       </section>
+ 
+       <section id="dich-vu" className="olf-section olf-services" aria-labelledby="services-title">
+         <div className="olf-shell">
+-          <LandingScrollFade className="olf-section-heading">
++          <StoreTextRevealGroup legacyLayout className="olf-section-heading">
+             <span className="olf-eyebrow">{home.servicesEyebrow}</span>
+             <h2 id="services-title" className="copy-lines">{home.servicesTitle}</h2><p>{home.servicesIntro}</p>
+-          </LandingScrollFade>
++          </StoreTextRevealGroup>
+           <ServiceCards variant="home" />
+         </div>
+       </section>
+ 
+       <section id="nhung-doa-hoa" className="olf-section olf-shell olf-featured" aria-labelledby="featured-title">
+-        <LandingScrollFade><div className="olf-heading-row"><div><span className="olf-eyebrow">{home.featuredEyebrow}</span><h2 id="featured-title">{home.featuredTitle}</h2></div>
++        <StoreTextRevealGroup legacyLayout><div className="olf-heading-row"><div><StoreTextReveal as="span" role="eyebrow" className="olf-eyebrow">{home.featuredEyebrow}</StoreTextReveal><StoreTextReveal as="h2" role="heading" delayMs={90} id="featured-title">{home.featuredTitle}</StoreTextReveal></div>
+           <Link className="olf-link" href={home.featuredCta.href}>{home.featuredCta.label}<ArrowUpRight aria-hidden="true" size={19} /></Link>
+-        </div></LandingScrollFade>
+-        <LandingScrollFade>{products.length ? <FeaturedProductCarousel slides={products.map((p) => ({ id: p.id, card: <ProductCard product={p} variant="home" /> }))} />
+-          : <Empty title="Những mùa hoa đang được chuẩn bị" body="Hòe sẽ giới thiệu mẫu hoa khi thông tin và hình ảnh đã sẵn sàng." href="/dich-vu/hoa-tam" action="Khám phá Hoa Tâm" />}</LandingScrollFade>
++        </div></StoreTextRevealGroup>
++        <StoreTextExemption><LandingScrollFade>{products.length ? <FeaturedProductCarousel slides={products.map((p) => ({ id: p.id, card: <ProductCard product={p} variant="home" /> }))} />
++          : <Empty title="Những mùa hoa đang được chuẩn bị" body="Hòe sẽ giới thiệu mẫu hoa khi thông tin và hình ảnh đã sẵn sàng." href="/dich-vu/hoa-tam" action="Khám phá Hoa Tâm" />}</LandingScrollFade></StoreTextExemption>
+       </section>
+ 
+       <section className="olf-section olf-story" aria-labelledby="story-title">
+         <div className="olf-shell">
+           <div className="olf-story-grid">
+             <LandingScrollFade><LandingStoryPhoto><Image src={storyPhoto.src} alt={storyPhoto.alt} fill sizes="(max-width: 767px) 90vw, 42vw" /></LandingStoryPhoto></LandingScrollFade>
+-            <LandingScrollFade className="olf-story-copy"><span className="olf-eyebrow">{home.storyEyebrow}</span>
++            <StoreTextRevealGroup legacyLayout className="olf-story-copy"><span className="olf-eyebrow">{home.storyEyebrow}</span>
+               <h2 id="story-title" className="copy-lines">{home.storyTitle}</h2><p>{home.storyBody}</p>
+               <Link className="olf-link" href={story ? `/blog/${story.slug}` : "/ve-hoe"}>{home.storyCtaLabel}<ArrowUpRight aria-hidden="true" size={19} /></Link>
+               <Flower2 className="olf-story-flower" aria-hidden="true" />
+-            </LandingScrollFade>
++            </StoreTextRevealGroup>
+           </div>
+           {/* {home.benefits.length > 0 && <LandingBenefitsMotion intro={<>
+           <span className="olf-eyebrow">{home.benefitEyebrow}</span>
+@@ -144,16 +145,16 @@
+ 
+       <section className="olf-section olf-process" aria-labelledby="process-title">
+         <div className="olf-shell">
+-          <LandingScrollFade className="olf-section-heading"><span className="olf-eyebrow">TỪ MONG MUỐN ĐẾN MỘT CHÚT HOA</span><h2 id="process-title">{home.processTitle}</h2></LandingScrollFade>
+-          <div className="olf-process-grid">{home.process.map((step, index) => <LandingScrollFade key={step.title}><span className="olf-step-number">0{index + 1}</span><h3>{step.title}</h3><p>{step.body}</p></LandingScrollFade>)}</div>
+-          {site.faq.length > 0 && <div className="olf-faq"><h2>{home.faqTitle}</h2>{site.faq.map(q => <details key={q.question}><summary>{q.question}</summary><p>{q.answer}</p></details>)}</div>}
++          <StoreTextRevealGroup legacyLayout className="olf-section-heading"><span className="olf-eyebrow">TỪ MONG MUỐN ĐẾN MỘT CHÚT HOA</span><h2 id="process-title">{home.processTitle}</h2></StoreTextRevealGroup>
++          <div className="olf-process-grid">{home.process.map((step, index) => <StoreTextRevealGroup legacyLayout key={step.title}><span className="olf-step-number">0{index + 1}</span><h3>{step.title}</h3><p>{step.body}</p></StoreTextRevealGroup>)}</div>
++          {site.faq.length > 0 && <div className="olf-faq"><StoreTextReveal as="h2" role="heading">{home.faqTitle}</StoreTextReveal>{site.faq.map(q => <details key={q.question}><summary>{q.question}</summary><StoreTextReveal as="p" role="body">{q.answer}</StoreTextReveal></details>)}</div>}
+         </div>
+       </section>
+ 
+       <section className="olf-section olf-cta" aria-labelledby="cta-title"><div className="olf-shell">
+-        <LandingScrollFade><Flower2 className="olf-cta-flower" aria-hidden="true" /><span className="olf-eyebrow">{home.ctaEyebrow}</span><h2 id="cta-title">{home.ctaTitle}</h2><p>{home.ctaBody}</p>
++        <StoreTextRevealGroup legacyLayout><Flower2 className="olf-cta-flower" aria-hidden="true" /><span className="olf-eyebrow">{home.ctaEyebrow}</span><h2 id="cta-title">{home.ctaTitle}</h2><p>{home.ctaBody}</p>
+           <div className="olf-actions"><ScrollAnchor className="olf-button" href={home.primaryCta.href}>{home.primaryCta.label}<ArrowUpRight aria-hidden="true" size={20} /></ScrollAnchor><Link className="olf-link" href={home.secondaryCta.href}>{home.secondaryCta.label}</Link></div>
+-        </LandingScrollFade>
++        </StoreTextRevealGroup>
+       </div></section>
+       <HomeBackToTop />
+     </div>
+--- a/src/features/storefront/LandingBenefitsMotion.tsx
++++ b/src/features/storefront/LandingBenefitsMotion.tsx
+@@ -3,13 +3,12 @@
+ import {useScroll, useTransform, type MotionValue} from "motion/react";
+ import * as m from "motion/react-m";
+ import {useDesktopMotion} from "./LandingHeroMotion";
+-import {LandingScrollFade} from "./LandingMotion";
+ import {benefitJourney} from "./landing-geometry";
+ 
+ function BenefitCard({children, index, progress, enabled}: {children: React.ReactNode; index: number; progress: MotionValue<number>; enabled: boolean}) {
+   const rotate = useTransform(progress, [0, 0.5, 1], index % 2 ? [-8, 4, 10] : [10, -4, -10]);
+   const y = useTransform(progress, [0, 0.5, 1], index % 2 ? [24, -16, 24] : [-16, 24, -16]);
+-  return <LandingScrollFade><m.article className="olf-benefit-card" data-benefit-card initial={false} style={enabled ? {rotate, y} : {}}>{children}</m.article></LandingScrollFade>;
++  return <div data-scroll-fade data-text-group><div data-scroll-fade-content><m.article className="olf-benefit-card" data-benefit-card initial={false} style={enabled ? {rotate, y} : {}}>{children}</m.article></div></div>;
+ }
+ 
+ /** No wheel interception. Without JS/reduced motion/small screens, cards stay in normal flow. */
+@@ -45,7 +44,7 @@
+   // className="olf-benefits"
+   return <div ref={ref} className="" data-benefits-motion={enabled} style={enabled ? {height: journey.height, "--benefit-card-width": `${size.cardWidth}px`, "--benefit-stage-height": `${stageHeight}px`} as React.CSSProperties : {}}>
+     <div ref={stage} className="olf-benefits-stage">
+-      <LandingScrollFade className="olf-benefits-intro">{intro}</LandingScrollFade>
++      <div className="olf-benefits-intro" data-scroll-fade data-text-group><div data-scroll-fade-content>{intro}</div></div>
+       <div className="olf-benefits-viewport">
+         <m.div ref={track} className="olf-benefit-grid" data-benefit-track initial={false} style={enabled ? {x} : {}}>
+           {cards.map((card, index) => <BenefitCard key={index} index={index} progress={scrollYProgress} enabled={enabled}>{card}</BenefitCard>)}
+--- a/src/lib/store-text-reveal.ts
++++ b/src/lib/store-text-reveal.ts
+@@ -0,0 +1,303 @@
++export type TextRevealRole = "page" | "heading" | "eyebrow" | "body";
++export const textRevealPresets = {
++  page: { desktop: [56, 1000], mobile: [40, 900] },
++  heading: { desktop: [48, 950], mobile: [32, 850] },
++  eyebrow: { desktop: [24, 800], mobile: [20, 750] },
++  body: { desktop: [32, 900], mobile: [24, 800] },
++} as const;
++export const textRevealEase = "cubic-bezier(0.22, 0.61, 0.36, 1)";
++type State = "FALLBACK_VISIBLE" | "ARMED_OFFSCREEN" | "ENTERING" | "VISIBLE" | "BYPASS_VISIBLE";
++export type EntranceNode = HTMLElement & { __hoeTextEntrance?: Animation; __hoeTextBypass?: boolean; __hoeTextSettled?: boolean };
++type Unit = { node: EntranceNode; layers: HTMLElement[]; role: TextRevealRole; delay: number; state: State; animations: Animation[]; settle: () => void; enter: () => void; arm: () => void };
++
++/** Parser-time, finite enhancement. No hidden style survives absent/late hydration. */
++export function initialTextEntrance(id: string, presets: typeof textRevealPresets, role: TextRevealRole, delay: number) {
++  const node = document.getElementById(id) as EntranceNode | null;
++  if (!node || !node.closest(".hoe-store-scope") || node.closest("[data-text-exempt]") || !window.IntersectionObserver || typeof node.animate !== "function") return;
++  const reduced = matchMedia("(prefers-reduced-motion: reduce)");
++  const forced = matchMedia("(forced-colors: active)");
++  const navigation = performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming | undefined;
++  if (reduced.matches || forced.matches || location.hash || navigation?.type === "back_forward" || scrollY > 0 || document.readyState !== "loading" || performance.getEntriesByType("paint").length) { node.__hoeTextBypass = true; return; }
++  const box = node.getBoundingClientRect(), height = document.documentElement.clientHeight;
++  if (box.bottom <= height * .08 || box.top >= height * .85 || box.height <= 0) return;
++  const layer = node.querySelector<HTMLElement>("[data-text-layer]");
++  if (!layer) return;
++  const [distance, duration] = presets[role][innerWidth < 768 ? "mobile" : "desktop"];
++  const linked = !!layer.querySelector("a");
++  const animation = layer.animate([
++    { opacity: 0, transform: `translateY(${distance}px)`, ...(linked ? { "--store-text-y": `${distance}px` } : {}) },
++    { opacity: 1, transform: "translateY(0px)", ...(linked ? { "--store-text-y": "0px" } : {}) },
++  ], { duration, delay, easing: "cubic-bezier(0.22, 0.61, 0.36, 1)", fill: "backwards" });
++  node.__hoeTextEntrance = animation;
++  const group = node.closest("[data-text-group]") || node;
++  const cleanup = () => { group.removeEventListener("focusin", bypass, true); group.removeEventListener("pointerdown", bypass, true); reduced.removeEventListener("change", preference); forced.removeEventListener("change", preference); };
++  const bypass = (event?: Event) => {
++    // A finger landing on copy may start a scroll, rather than activate it.
++    if (event instanceof PointerEvent && event.pointerType === "touch" && !(event.target instanceof Element && event.target.closest('a[href],button,input,select,textarea,summary,[tabindex]:not([tabindex="-1"]),[role="button"],[role="combobox"],[contenteditable="true"]'))) return;
++    node.__hoeTextBypass = true; animation.cancel(); cleanup();
++  };
++  const preference = () => { if (reduced.matches || forced.matches) bypass(); };
++  group.addEventListener("focusin", bypass, true);
++  group.addEventListener("pointerdown", bypass, true);
++  reduced.addEventListener("change", preference);
++  forced.addEventListener("change", preference);
++  animation.onfinish = cleanup;
++  animation.oncancel = cleanup;
++}
++
++const pools = new Map<HTMLElement | null, ReturnType<typeof createPool>>();
++let restoringHistory = false;
++
++function createPool(root: HTMLElement | null) {
++  const units = new Map<Element, Unit>();
++  const reduced = matchMedia("(prefers-reduced-motion: reduce)");
++  const forced = matchMedia("(forced-colors: active)");
++  let trigger!: IntersectionObserver;
++  let reset!: IntersectionObserver;
++  let resize: ResizeObserver | undefined;
++  let observedHeight = -1;
++  let finding = false;
++  let interactingTarget: Element | null = null;
++  const bounds = () => {
++    if (!root) return { top: 0, bottom: document.documentElement.clientHeight, height: document.documentElement.clientHeight };
++    const top = root.getBoundingClientRect().top + root.clientTop;
++    return { top, bottom: top + root.clientHeight, height: root.clientHeight };
++  };
++  const hashTarget = () => {
++    try { return location.hash ? document.getElementById(decodeURIComponent(location.hash.slice(1))) : null; }
++    catch { return null; }
++  };
++  const protectedUnit = (unit: Unit) => {
++    const group = unit.node.closest("[data-text-group]") || unit.node;
++    const anchor = hashTarget();
++    const selection = document.getSelection();
++    const active = document.activeElement;
++    const focusedOwner = active instanceof Element && active.matches("a[href], [tabindex]") && active.contains(unit.node);
++    const interactingOwner = interactingTarget?.matches("a[href]") && interactingTarget.contains(unit.node);
++    return reduced.matches || forced.matches || finding || group.contains(active) || focusedOwner || !!unit.node.closest("form")?.contains(active) || !!(interactingTarget && group.contains(interactingTarget)) || !!interactingOwner || !!(anchor && (anchor.contains(unit.node) || group.contains(anchor))) || !!(selection?.anchorNode && group.contains(selection.anchorNode) && !selection.isCollapsed);
++  };
++  const farAway = (unit: Unit, box = unit.node.getBoundingClientRect()) => {
++    if (box.width <= 0 || box.height <= 0) return false;
++    const viewport = bounds();
++    return box.bottom < viewport.top - 120 || box.top > viewport.bottom + 120;
++  };
++  const observe = () => {
++    const { height } = bounds();
++    // Document content can resize while its viewport does not. Rebuilding both
++    // observers then needlessly queues every target again during scrolling.
++    if (height === observedHeight) return;
++    observedHeight = height;
++    trigger?.disconnect(); reset?.disconnect();
++    trigger = new IntersectionObserver(entries => {
++      const viewport = bounds();
++      // Read geometry in one batch before any animation/style writes. Entries
++      // can precede the latest scroll; reconcile against the current layout.
++      const entering = entries.flatMap(entry => {
++        const unit = units.get(entry.target);
++        if (!unit || unit.state !== "ARMED_OFFSCREEN") return [];
++        const box = unit.node.getBoundingClientRect();
++        return box.height > 0 && box.bottom > viewport.top + viewport.height * .08 && box.top < viewport.top + viewport.height * .85 ? [unit] : [];
++      });
++      for (const unit of entering) {
++        if (protectedUnit(unit)) unit.settle(); else unit.enter();
++      }
++    }, { root, rootMargin: `${-height * .08}px 0px ${-height * .15}px 0px`, threshold: [0, .001] });
++    reset = new IntersectionObserver(entries => {
++      const rearming = entries.flatMap(entry => {
++        const unit = units.get(entry.target);
++        // Entry rectangles can be stale after a rapid scroll or route/resize
++        // commit. Never hide a target based on an earlier offscreen snapshot.
++        return unit && unit.state !== "ARMED_OFFSCREEN" && farAway(unit) && !protectedUnit(unit) ? [unit] : [];
++      });
++      for (const unit of rearming) unit.arm();
++    }, { root, rootMargin: "120px 0px 120px 0px", threshold: 0 });
++    for (const unit of units.values()) { trigger.observe(unit.node); reset.observe(unit.node); }
++  };
++  const settleAll = () => { for (const unit of units.values()) unit.settle(); };
++  const preference = () => { if (reduced.matches || forced.matches) settleAll(); };
++  const history = () => { restoringHistory = true; settleAll(); };
++  const pageshow = (event: PageTransitionEvent) => { if (event.persisted) history(); };
++  const interaction = (event: Event) => {
++    const target = event.target instanceof Element ? event.target : null;
++    if (!target) return;
++    // Do not snap an entrance to its end when a touch starts native scrolling.
++    // Actual controls still settle synchronously before their own handlers.
++    if (event instanceof PointerEvent && event.type === "pointerdown" && event.pointerType === "touch" && !target.closest('a[href],button,input,select,textarea,summary,[tabindex]:not([tabindex="-1"]),[role="button"],[role="combobox"],[contenteditable="true"]')) { userScroll(); return; }
++    if (event.type === "pointerdown") { interactingTarget = target; userScrollAt = performance.now(); }
++    for (const unit of units.values()) {
++      const group = unit.node.closest("[data-text-group]") || unit.node;
++      if (group.contains(target) || target.contains(unit.node) && (event.type === "focusin" || target.matches("a[href]")) || target.closest("form")?.contains(unit.node)) unit.settle();
++    }
++    if (event.type === "click") {
++      const link = target.closest<HTMLAnchorElement>("a[href]");
++      if (link && link.origin === location.origin) {
++        if (link.hash) {
++          try {
++            const anchor = document.getElementById(decodeURIComponent(link.hash.slice(1)));
++            if (anchor) for (const unit of units.values()) if (anchor.contains(unit.node)) unit.settle();
++          } catch { /* Invalid hashes leave readable fallback. */ }
++        } else { restoringHistory = false; finding = false; }
++      }
++    }
++  };
++  const interactionEnd = () => {
++    interactingTarget = null;
++    queueMicrotask(() => {
++      const rearming = [...units.values()].filter(unit => unit.state !== "ARMED_OFFSCREEN" && farAway(unit) && !protectedUnit(unit));
++      for (const unit of rearming) unit.arm();
++    });
++  };
++  const hashchange = () => {
++    const anchor = hashTarget();
++    if (anchor) for (const unit of units.values()) if (anchor.contains(unit.node) || unit.node.contains(anchor)) unit.settle();
++  };
++  const selection = () => {
++    const selected = document.getSelection();
++    if (!selected || selected.isCollapsed) return;
++    for (const unit of units.values()) if (selected.containsNode(unit.node, true)) unit.settle();
++  };
++  const keydown = (event: KeyboardEvent) => {
++    if (event.key === "F3" || (event.ctrlKey || event.metaKey) && ["f", "g"].includes(event.key.toLowerCase())) { finding = true; settleAll(); }
++    else if (event.key === "Escape" && finding) {
++      finding = false;
++      for (const unit of units.values()) if (farAway(unit) && !protectedUnit(unit)) unit.arm();
++    }
++  };
++  // Browser-menu find and AT jumps have no portable DOM event. On an unprompted
++  // scroll jump, reveal the newly visible copy rather than delay its readability.
++  let lastScroll = root?.scrollTop ?? scrollY;
++  let userScrollAt = 0;
++  const userScroll = () => { userScrollAt = performance.now(); };
++  const drag = (event: PointerEvent) => { if (event.buttons) userScroll(); };
++  const scroll = () => {
++    const position = root?.scrollTop ?? scrollY;
++    // Cover the existing 1.1s Lenis wheel tail without changing its clock.
++    if (Math.abs(position - lastScroll) > 2 && performance.now() - userScrollAt > 2000) {
++      const viewport = bounds();
++      const visible = [...units.values()].filter(unit => {
++        if (unit.state !== "ARMED_OFFSCREEN" && unit.state !== "ENTERING") return false;
++        const box = unit.node.getBoundingClientRect();
++        return box.bottom > viewport.top && box.top < viewport.bottom;
++      });
++      for (const unit of visible) unit.settle();
++    }
++    lastScroll = position;
++  };
++  const scrollOwner = root ?? window;
++  try {
++    observe();
++    if (typeof ResizeObserver !== "undefined") { resize = new ResizeObserver(observe); resize.observe(root ?? document.documentElement); }
++    window.addEventListener("resize", observe);
++    window.addEventListener("popstate", history);
++    window.addEventListener("pageshow", pageshow);
++    window.addEventListener("hashchange", hashchange);
++    document.addEventListener("focusin", interaction, true);
++    document.addEventListener("pointerdown", interaction, true);
++    document.addEventListener("pointerup", interactionEnd, true);
++    document.addEventListener("pointercancel", interactionEnd, true);
++    document.addEventListener("focusout", interactionEnd, true);
++    document.addEventListener("click", interaction, true);
++    document.addEventListener("selectionchange", selection);
++    document.addEventListener("keydown", keydown);
++    document.addEventListener("wheel", userScroll, { passive: true });
++    document.addEventListener("touchmove", userScroll, { passive: true });
++    document.addEventListener("pointermove", drag, { passive: true });
++    document.addEventListener("keydown", userScroll);
++    scrollOwner.addEventListener("scroll", scroll, { passive: true });
++    reduced.addEventListener("change", preference); forced.addEventListener("change", preference);
++  } catch { trigger?.disconnect(); reset?.disconnect(); resize?.disconnect(); throw new Error("Text observer unavailable"); }
++
++  const remove = (unit: Unit) => {
++    unit.settle(); units.delete(unit.node); trigger.unobserve(unit.node); reset.unobserve(unit.node);
++    if (units.size) return;
++    trigger.disconnect(); reset.disconnect(); resize?.disconnect();
++    window.removeEventListener("resize", observe); window.removeEventListener("popstate", history); window.removeEventListener("pageshow", pageshow); window.removeEventListener("hashchange", hashchange);
++    document.removeEventListener("focusin", interaction, true); document.removeEventListener("pointerdown", interaction, true); document.removeEventListener("click", interaction, true);
++    document.removeEventListener("pointerup", interactionEnd, true); document.removeEventListener("pointercancel", interactionEnd, true); document.removeEventListener("focusout", interactionEnd, true);
++    document.removeEventListener("selectionchange", selection); document.removeEventListener("keydown", keydown); document.removeEventListener("keydown", userScroll);
++    document.removeEventListener("wheel", userScroll); document.removeEventListener("touchmove", userScroll);
++    document.removeEventListener("pointermove", drag);
++    scrollOwner.removeEventListener("scroll", scroll);
++    reduced.removeEventListener("change", preference); forced.removeEventListener("change", preference);
++    pools.delete(root);
++  };
++  return {
++    add(unit: Unit, clientCreated: boolean) {
++      units.set(unit.node, unit);
++      const box = unit.node.getBoundingClientRect(), viewport = bounds();
++      if (box.width <= 0 || box.height <= 0 || unit.node.__hoeTextBypass || unit.node.__hoeTextSettled || protectedUnit(unit) || (restoringHistory && box.bottom > viewport.top && box.top < viewport.bottom)) unit.settle();
++      else if (unit.node.__hoeTextEntrance) {
++        const animation = unit.node.__hoeTextEntrance;
++        if (animation.playState === "finished" || animation.playState === "idle") unit.state = "VISIBLE";
++        else { unit.state = "ENTERING"; unit.animations = [animation]; animation.addEventListener("finish", () => { if (unit.state === "ENTERING") unit.state = "VISIBLE"; unit.node.dataset.textState = unit.state; }, { once: true }); }
++      } else if (box.bottom <= viewport.top || box.top >= viewport.bottom) unit.arm();
++      else if (clientCreated && box.bottom > viewport.top + viewport.height * .08 && box.top < viewport.top + viewport.height * .85) unit.enter();
++      else unit.settle();
++      unit.node.dataset.textState = unit.state;
++      trigger.observe(unit.node); reset.observe(unit.node);
++      return () => remove(unit);
++    },
++  };
++}
++
++/** Read-only diagnostics for the browser harness; no extra product listeners. */
++export function textRevealPoolCount() { return pools.size; }
++
++function framesFor(layer: HTMLElement, distance: number): Keyframe[] {
++  // Keep ordinary text on the compositor. An inherited animated custom
++  // property forces style recalculation on every frame, even without links.
++  const linked = !!layer.querySelector("a");
++  return [
++    { opacity: 0, transform: `translateY(${distance}px)`, ...(linked ? { "--store-text-y": `${distance}px` } : {}) },
++    { opacity: 1, transform: "translateY(0px)", ...(linked ? { "--store-text-y": "0px" } : {}) },
++  ];
++}
++
++export function registerTextReveal(node: EntranceNode, role: TextRevealRole, delay: number, root: HTMLElement | null, clientCreated: boolean) {
++  const layers = Array.from(node.querySelectorAll<HTMLElement>("[data-text-layer]"));
++  const unit: Unit = { node, layers, role, delay: Math.max(0, Math.min(180, delay)), state: "FALLBACK_VISIBLE", animations: [], settle: () => {}, enter: () => {}, arm: () => {} };
++  const prepared = new Map<HTMLElement, { opacity: string; priority: string }>();
++  const cancel = () => {
++    for (const animation of unit.animations) animation.cancel();
++    unit.animations = []; node.__hoeTextEntrance?.cancel();
++    for (const [layer, original] of prepared) {
++      if (original.opacity) layer.style.setProperty("opacity", original.opacity, original.priority);
++      else layer.style.removeProperty("opacity");
++    }
++    prepared.clear();
++  };
++  unit.settle = () => { unit.state = "BYPASS_VISIBLE"; cancel(); node.__hoeTextSettled = true; node.dataset.textState = unit.state; };
++  unit.arm = () => {
++    if (unit.state === "ARMED_OFFSCREEN") return;
++    cancel(); node.__hoeTextSettled = false; node.__hoeTextBypass = false;
++    try {
++      // Offscreen preparation needs no paused animation or transformed layer.
++      // Only allocate an effect once the target actually enters the viewport.
++      for (const layer of layers) {
++        prepared.set(layer, { opacity: layer.style.getPropertyValue("opacity"), priority: layer.style.getPropertyPriority("opacity") });
++        layer.style.opacity = "0";
++      }
++      unit.state = "ARMED_OFFSCREEN"; node.dataset.textState = unit.state;
++    } catch { unit.settle(); }
++  };
++  unit.enter = () => {
++    if (unit.state === "ENTERING") return;
++    cancel();
++    const [distance, duration] = textRevealPresets[role][innerWidth < 768 ? "mobile" : "desktop"];
++    try {
++      unit.state = "ENTERING"; node.dataset.textState = unit.state;
++      unit.animations = layers.map(layer => layer.animate(framesFor(layer, distance), { duration, delay: unit.delay, easing: textRevealEase, fill: "backwards" }));
++      const animations = unit.animations;
++      Promise.all(animations.map(animation => animation.finished)).then(() => {
++        if (unit.state !== "ENTERING" || unit.animations !== animations) return;
++        unit.state = "VISIBLE"; node.dataset.textState = unit.state; cancel();
++      }).catch(() => { if (unit.state === "ENTERING" && unit.animations === animations) unit.settle(); });
++    } catch { unit.settle(); }
++  };
++  try {
++    if (!window.IntersectionObserver || typeof node.animate !== "function") { unit.settle(); return { dispose: unit.settle, settle: unit.settle }; }
++    let pool = pools.get(root);
++    if (!pool) { pool = createPool(root); pools.set(root, pool); }
++    return { dispose: pool.add(unit, clientCreated), settle: unit.settle };
++  } catch { unit.settle(); return { dispose: unit.settle, settle: unit.settle }; }
++}
+--- a/src/styles/hoa-thoi.css
++++ b/src/styles/hoa-thoi.css
+@@ -263,10 +263,6 @@
+ @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+   .ht-recommendation:hover { transform: translateY(var(--store-motion-lift, -2px)); border-color: var(--accent); }
+ }
+-@media (prefers-reduced-motion: no-preference) {
+-  .ht-service-page .page-heading { animation: ht-hero-enter 320ms ease-out; }
+-}
+-@keyframes ht-hero-enter { from { opacity: .75; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+ @media (max-width: 600px) {
+   .ht-service-page .service-page-top { margin-block: 32px 40px; gap: 28px; }
+   .ht-service-page .service-art { min-height: 300px; }
+@@ -276,7 +272,6 @@
+   .ht-inquiry .button { width: 100%; }
+ }
+ @media (prefers-reduced-motion: reduce) {
+-  .ht-service-page .page-heading { animation: none; }
+   .ht-reveal { opacity: 1 !important; transform: none !important; }
+   .ht-period-option, .ht-period-check, .ht-calendar-day-button, .ht-day-check, .ht-cycle-check, .ht-package-button,
+   .ht-recommendation, .ht-calendar-controls button, .ht-inquiry .button, .ht-product-form .button { transition: none; }
+--- a/src/styles/store-text-reveal.css
++++ b/src/styles/store-text-reveal.css
+@@ -0,0 +1,13 @@
++/* Visible is the SSR/failure default. WAAPI owns only explicitly opted-in copy. */
++@property --store-text-y { syntax: "<length>"; inherits: true; initial-value: 0px; }
++.hoe-store-scope [data-text-layer] { display: block; }
++.hoe-store-scope [data-text-inline="true"] > [data-text-layer] { display: inline-block; }
++.hoe-store-scope .store-card-title-copy[data-text-inline="true"],
++.hoe-store-scope .store-card-title-copy > [data-text-layer] { display: block; }
++/* Counter the copy's displacement on inline anchors, then restore it on their
++   copy. Relative positioning preserves original line wrapping and hit areas. */
++.hoe-store-scope [data-text-layer] a { position: relative; top: calc(0px - var(--store-text-y)); }
++.hoe-store-scope [data-text-link-copy] { position: relative; top: var(--store-text-y); }
++@media (prefers-reduced-motion: reduce), (forced-colors: active) {
++  .hoe-store-scope [data-text-layer] { opacity: 1 !important; transform: none !important; }
++}
+--- a/tests/e2e/home-scroll-fade.spec.ts
++++ b/tests/e2e/home-scroll-fade.spec.ts
+@@ -5,135 +5,44 @@
+ }
+ 
+ for (const width of [390, 768, 1024, 1440]) {
+-  test(`Home scroll fade and back to top at ${width}px`, async ({ page }, testInfo) => {
++  test(`Home text entrance and back to top at ${width}px`, async ({ page }, testInfo) => {
+     await page.setViewportSize({ width, height: 900 });
+     const errors: string[] = [];
+-    page.on("pageerror", (error) => errors.push(error.message));
++    page.on("pageerror", error => errors.push(error.message));
+     await page.goto("/");
+     const back = page.locator(".olf-back-to-top");
+-    await expect(page.locator('[data-carousel-ready="true"]')).toHaveCount(1);
+     await expect(back).toHaveAttribute("inert", "");
+-    await expect(back).toHaveAttribute("tabindex", "-1");
++    const heading = page.locator(".olf-service-card h3").first();
++    const top = await heading.evaluate(node => node.getBoundingClientRect().top + scrollY);
++    await page.evaluate(y => { document.dispatchEvent(new WheelEvent("wheel")); scrollTo({ top: y, behavior: "instant" }); }, top - 900 * .7);
++    await expect(heading).toHaveAttribute("data-text-state", "ENTERING");
++    await expect(heading).toHaveAttribute("data-text-state", "VISIBLE");
++    await expect(heading.locator("[data-text-layer]")).toHaveCSS("opacity", "1");
++    await jump(page, top - 20);
++    await expect(heading.locator("[data-text-layer]")).toHaveCSS("opacity", "1");
+     const slot = page.locator(".olf-service-grid > [data-scroll-fade]").first();
+-    const content = slot.locator("[data-scroll-fade-content]");
+-    const geometry = await slot.evaluate((node) => {
+-      const rect = node.getBoundingClientRect();
+-      return { top: rect.top + scrollY, height: rect.height, viewport: innerHeight,
+-        band: Math.min(rect.height * 0.45, innerHeight * 0.18) };
+-    });
+-    const { top, height, viewport, band } = geometry;
+-    // Repeated passes, including reversals inside each fade band.
+-    const samples = [
+-      [top - viewport - 2, 0], [top - viewport + band * 0.25, 0.25],
+-      [top - viewport + band * 0.75, 0.75], [top - viewport + band * 0.5, 0.5],
+-      [top - viewport + band + 4, 1], [top + height - band - 4, 1],
+-      [top + height - band * 0.5, 0.5], [top + height + 2, 0],
+-      [top + height - band * 0.25, 0.25], [top + height - band * 0.75, 0.75],
+-      [top + height - band * 0.5, 0.5], [top - viewport + band + 4, 1],
+-      [top - viewport + band * 0.5, 0.5], [top - viewport - 2, 0],
+-      [top - viewport + band * 0.5, 0.5], [top - viewport + band + 4, 1],
+-    ];
+-    for (const [position, opacity] of samples) {
+-      await jump(page, position);
+-      await expect.poll(() => content.evaluate((node) => Number(getComputedStyle(node).opacity)))
+-        .toBeCloseTo(opacity, 1);
+-      await expect(content).toHaveCSS("transform", "none");
+-    }
+-    await expect(content).toHaveCSS("opacity", "1");
+-    await page.waitForTimeout(200);
+-    await expect(content).toHaveCSS("opacity", "1");
+-    // Focus protects a group even after it has scrolled out of view.
+-    const link = slot.locator("a");
+-    await link.focus();
+-    await jump(page, top + height + 10);
+-    await expect(content).toHaveCSS("opacity", "1");
+-    await expect(link).toBeFocused();
+-    await link.evaluate((node: HTMLElement) => node.blur());
+-    await expect(content).toHaveCSS("opacity", "0");
+-    await expect(content).toHaveAttribute("inert", "");
+-
+-    // Resize/font/content geometry updates while stationary, including a tall block.
+-    await slot.locator("article").evaluate((node: HTMLElement) => { node.style.minHeight = "1500px"; });
+-    await jump(page, top + 300);
+-    await expect(content).toHaveCSS("opacity", "1");
+-    await page.setViewportSize({ width, height: 700 });
+-    await expect(content).toHaveCSS("opacity", "1");
+-    await slot.locator("article").evaluate((node: HTMLElement) => { node.style.minHeight = ""; });
+-    await page.setViewportSize({ width, height: 900 });
+-
+-    await jump(page, 330);
+-    await expect(back).toHaveAttribute("data-visible", "true");
+-    await jump(page, 280);
+-    await expect(back).toHaveAttribute("data-visible", "true");
+-    await jump(page, 230);
+-    await expect(back).toHaveAttribute("data-visible", "false");
+-    await jump(page, 280);
+-    await expect(back).toHaveAttribute("data-visible", "false");
+-
+-    // Anchor updates the current fade state immediately; Embla still advances one item.
++    await expect(slot.locator("[data-scroll-fade-content]")).toHaveCSS("opacity", "1");
++    await expect(slot.locator("[data-scroll-fade-content]")).not.toHaveAttribute("inert", "");
++    await jump(page, 330); await expect(back).toHaveAttribute("data-visible", "true");
++    await jump(page, 280); await expect(back).toHaveAttribute("data-visible", "true");
++    await jump(page, 230); await expect(back).toHaveAttribute("data-visible", "false");
++    await jump(page, 280); await expect(back).toHaveAttribute("data-visible", "false");
+     await jump(page, 0);
+     await page.locator(".olf-hero-description .olf-button").click();
+     await expect(page).toHaveURL(/#nhung-doa-hoa$/);
+-    await expect(page.locator(".olf-featured > [data-scroll-fade]").first().locator("[data-scroll-fade-content]"))
+-      .toHaveCSS("opacity", "1");
+-    const position = page.locator(".olf-carousel-position");
+-    const carousel = page.locator(".olf-featured-carousel");
+-    const count = await carousel.locator(".olf-carousel-slide").count();
+-    const next = page.getByRole("button", { name: "Sản phẩm tiếp theo" });
+-    if (await carousel.getAttribute("data-carousel-overflow") === "true") {
+-      await next.click();
+-      await expect(position).toHaveText(`2 / ${count}`);
+-      await page.getByRole("button", { name: "Sản phẩm trước" }).click();
+-      await expect(position).toHaveText(`1 / ${count}`);
+-    } else {
+-      await expect(next).toBeDisabled();
+-    }
++    await expect(page.locator(".olf-featured-carousel [data-store-text]")).toHaveCount(0);
+     await page.screenshot({ path: testInfo.outputPath(`home-${width}-featured.png`) });
+-
+     await jump(page, await page.evaluate(() => document.documentElement.scrollHeight));
+-    await expect(back).toHaveCSS("opacity", "1");
+-    const url = page.url();
+-    const history = await page.evaluate(() => window.history.length);
+-    await back.focus();
+-    await page.keyboard.press("Enter");
++    const url = page.url(), history = await page.evaluate(() => window.history.length);
++    await back.focus(); await page.keyboard.press("Enter");
+     await expect.poll(() => page.evaluate(() => scrollY)).toBe(0);
+     await expect(page.locator("#home-title")).toBeFocused();
+-    await expect(back).toHaveAttribute("data-visible", "false");
+     expect(page.url()).toBe(url);
+     expect(await page.evaluate(() => window.history.length)).toBe(history);
+-    await expect(page.locator(".olf-hero-description .olf-button")).toBeVisible();
+     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+-    await page.screenshot({ path: testInfo.outputPath(`home-${width}-top.png`) });
+     expect(errors).toEqual([]);
+   });
+ }
+-
+-test("wheel scrolling fades visible card copy and reverses without hiding the reading area", async ({ page, isMobile }) => {
+-  test.skip(isMobile, "Wheel regression targets desktop input; mobile viewport cases cover native scroll.");
+-  await page.setViewportSize({ width: 1440, height: 900 });
+-  await page.emulateMedia({ reducedMotion: "no-preference" });
+-  await page.goto("/");
+-  await expect(page.locator('[data-carousel-ready="true"]')).toHaveCount(1);
+-  const slot = page.locator(".olf-service-grid > [data-scroll-fade]").first();
+-  const content = slot.locator("[data-scroll-fade-content]");
+-  const heading = slot.locator("h3");
+-  const entrance = await heading.evaluate((node) => node.getBoundingClientRect().top + scrollY - innerHeight + 18);
+-  await jump(page, entrance - 200);
+-  await expect(content).toHaveCSS("opacity", "0");
+-  await page.mouse.wheel(0, 200);
+-  await expect.poll(() => page.evaluate(() => Math.round(scrollY))).toBe(Math.round(entrance));
+-  await expect(heading).toBeInViewport();
+-  const enteringOpacity = await content.evaluate((node) => Number(getComputedStyle(node).opacity));
+-  // The old short band reached 1 before any of this title was visible.
+-  expect(enteringOpacity).toBeGreaterThan(0.2);
+-  expect(enteringOpacity).toBeLessThan(0.95);
+-  await page.mouse.wheel(0, -40);
+-  await expect.poll(() => content.evaluate((node) => Number(getComputedStyle(node).opacity)))
+-    .toBeLessThan(enteringOpacity - 0.1);
+-  await page.mouse.wheel(0, 300);
+-  await expect(content).toHaveCSS("opacity", "1");
+-  await expect(heading).toBeInViewport();
+-});
+ 
+ test("reduced motion and no JavaScript keep all Home content visible", async ({ page, browser, baseURL }) => {
+   await page.goto("/");
+--- a/tests/e2e/store-motion.spec.ts
++++ b/tests/e2e/store-motion.spec.ts
+@@ -16,7 +16,7 @@
+     const noJS = await context.newPage();
+     for (const route of ["/san-pham", "/ve-hoe", "/dich-vu/hoa-thoi"]) {
+       await noJS.goto(route);
+-      const groups = noJS.locator("[data-store-reveal]");
++      const groups = noJS.locator("[data-store-text] > [data-text-layer]");
+       expect(await groups.count()).toBeGreaterThan(0);
+       for (const group of await groups.all()) {
+         await expect(group).toHaveCSS("opacity", "1");
+--- a/tests/e2e/store-text-harness.tsx
++++ b/tests/e2e/store-text-harness.tsx
+@@ -0,0 +1,29 @@
++import { createRoot } from "react-dom/client";
++import { useRef, useState } from "react";
++import { StoreScope } from "@/components/StoreScope";
++import { StoreTextReveal, StoreTextExemption, StoreTextRoot } from "@/components/ui/StoreTextReveal";
++import { textRevealPoolCount } from "@/lib/store-text-reveal";
++
++function Harness() {
++  const root = useRef<HTMLDivElement>(null);
++  const [mounted, setMounted] = useState(true);
++  const [rerenders, setRerenders] = useState(0);
++  return <>
++    <button id="unmount" onClick={() => setMounted(false)}>Unmount</button>
++    <button id="rerender" onClick={() => setRerenders(count => count + 1)}>Rerender {rerenders}</button>
++    <button id="diagnostics" onClick={event => { event.currentTarget.textContent = String(textRevealPoolCount()); }}>Pools</button>
++    {mounted && <StoreScope className="hoe-store-scope">
++      <div id="scroll-root" ref={root} style={{ height: 240, overflow: "auto", marginTop: 40 }}>
++        <StoreTextRoot root={root}>
++          <div style={{ height: 500 }} />
++          <StoreTextReveal as="h2" role="heading" id="root-heading">Tiếng Việt có dấu: đều đặn, dịu dàng.</StoreTextReveal>
++          <StoreTextReveal as="p" id="linked-copy">Một đoạn có <a id="inline-link" href="#local">liên kết nội tuyến dài</a> và chữ còn lại.</StoreTextReveal>
++          <StoreTextReveal as="p" id="tall-copy">{Array(120).fill("Một đoạn dài hơn viewport để kiểm tra giao nhau dương.").join(" ")}</StoreTextReveal>
++          <div style={{ height: 500 }} />
++        </StoreTextRoot>
++      </div>
++      <StoreTextExemption><StoreTextReveal as="h2" id="exempt">Protected copy</StoreTextReveal></StoreTextExemption>
++    </StoreScope>}
++  </>;
++}
++createRoot(document.getElementById("root")!).render(<Harness />);
+--- a/tests/e2e/store-text.spec.ts
++++ b/tests/e2e/store-text.spec.ts
+@@ -0,0 +1,319 @@
++import { test, expect, type Page } from "./fixtures";
++import { build } from "esbuild";
++import { readFile } from "node:fs/promises";
++import path from "node:path";
++
++async function move(page: Page, top: number) {
++  await page.evaluate(top => { document.dispatchEvent(new WheelEvent("wheel", { deltaY: 1 })); scrollTo({ top, behavior: "instant" }); }, top);
++}
++async function position(page: Page, selector: string, viewportFraction: number) {
++  // Wait for layout before measuring a streamed/container-query descendant;
++  // a node existing in the DOM alone does not guarantee a usable rectangle.
++  await expect(page.locator(selector)).toBeVisible().catch(async error => {
++    const ancestors = await page.locator(selector).evaluate(node => {
++      const result = [];
++      for (let owner: Element | null = node; owner; owner = owner.parentElement) {
++        const style = getComputedStyle(owner);
++        result.push({ tag: owner.tagName, class: owner.className, rect: owner.getBoundingClientRect().toJSON(), display: style.display, visibility: style.visibility, contentVisibility: style.contentVisibility, height: style.height, attributes: owner.getAttributeNames().map(name => [name, owner!.getAttribute(name)]) });
++      }
++      return result;
++    });
++    await test.info().attach("unavailable-text-layout", { body: JSON.stringify(ancestors, null, 2), contentType: "application/json" });
++    throw error;
++  });
++  await page.evaluate(() => document.fonts.ready);
++  const y = await page.locator(selector).evaluate((node, fraction) => node.getBoundingClientRect().top + scrollY - innerHeight * fraction, viewportFraction);
++  await move(page, y);
++}
++async function openHarness(page: Page) {
++  const bundle = await build({ entryPoints: ["tests/e2e/store-text-harness.tsx"], bundle: true, write: false, format: "iife", platform: "browser", jsx: "automatic", alias: { "@": path.resolve("src") } });
++  const css = await readFile("src/styles/store-text-reveal.css", "utf8");
++  await page.route("**/store-text-harness", route => route.fulfill({ contentType: "text/html", body: `<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>body{margin:0;padding:12px}h2,p{margin:0 0 20px}#scroll-root{width:330px}${css}</style></head><body><div id="root"></div><script>${bundle.outputFiles[0].text}</script></body></html>` }));
++  await page.goto("/store-text-harness");
++  await page.locator("#root-heading").waitFor();
++}
++
++test("fresh heading has one finite entrance with the desktop/mobile preset and capped group delays", async ({ page }) => {
++  await page.addInitScript(() => {
++    const animate = Element.prototype.animate;
++    const records: object[] = [];
++    (window as unknown as { textAnimations: object[] }).textAnimations = records;
++    Element.prototype.animate = function(frames, options) {
++      const owner = this.closest("[data-store-text]");
++      if (owner && Array.isArray(frames) && frames.length === 2) records.push({ id: owner.id, role: owner.getAttribute("data-store-text"), frames, options });
++      return animate.call(this, frames, options);
++    };
++  });
++  await page.goto("/dich-vu/hoa-thoi");
++  const heading = page.locator(".page-heading h1");
++  const id = await heading.getAttribute("id");
++  const records = await page.evaluate(() => (window as unknown as { textAnimations: { id: string; role: string; frames: { transform: string; opacity: number }[]; options: { duration: number; delay: number; easing: string } }[] }).textAnimations);
++  const entrance = records.filter(row => row.id === id);
++  expect(entrance).toHaveLength(1);
++  const mobile = page.viewportSize()!.width < 768;
++  expect(entrance[0].frames[0]).toMatchObject({ opacity: 0, transform: `translateY(${mobile ? 40 : 56}px)` });
++  expect(Object.keys(entrance[0].frames[0]).sort()).toEqual(["opacity", "transform"]);
++  expect(entrance[0].options).toMatchObject({ duration: mobile ? 900 : 1000, delay: 90, easing: "cubic-bezier(0.22, 0.61, 0.36, 1)" });
++  await expect(page.locator(".page-heading")).toHaveCSS("animation-name", "none");
++  await expect(heading.locator("[data-text-layer]")).toHaveCSS("transform", "none");
++  const groupIds = await page.locator(".page-heading [data-store-text]").evaluateAll(nodes => nodes.map(node => node.id));
++  expect(records.filter(record => groupIds.includes(record.id)).map(record => record.options.delay)).toEqual([0, 90, 180]);
++});
++
++test("below-fold text waits for 85%, completes without scrolling, and stays visible outside the trigger band", async ({ page }) => {
++  await page.goto("/dich-vu/hoa-thoi");
++  const selector = ".ht-form-heading h2";
++  const target = page.locator(selector), layer = target.locator("[data-text-layer]");
++  await expect(target).toHaveAttribute("data-text-state", "ARMED_OFFSCREEN");
++  expect(await layer.evaluate(node => node.getAnimations().length)).toBe(0);
++  await position(page, selector, .9);
++  await expect(target).toHaveAttribute("data-text-state", "ARMED_OFFSCREEN");
++  await position(page, selector, .84);
++  await expect(target).toHaveAttribute("data-text-state", "ENTERING");
++  const keyframes = await layer.evaluate(node => (node.getAnimations()[0].effect as KeyframeEffect).getKeyframes());
++  expect(keyframes[0].transform).toBe(`translateY(${page.viewportSize()!.width < 768 ? 32 : 48}px)`);
++  expect(keyframes[0]).not.toHaveProperty("--store-text-y");
++  await expect(target).toHaveAttribute("data-text-state", "VISIBLE");
++  await expect(layer).toHaveCSS("opacity", "1");
++  await expect(layer).toHaveCSS("transform", "none");
++  await position(page, selector, .02);
++  await expect(target).toHaveAttribute("data-text-state", "VISIBLE");
++});
++
++test("replay needs the extra 120px in both directions and edge jitter does not rearm", async ({ page }) => {
++  await page.goto("/dich-vu/hoa-thoi");
++  const selector = ".ht-form-heading h2", target = page.locator(selector);
++  await position(page, selector, .5);
++  await expect(target).toHaveAttribute("data-text-state", "VISIBLE");
++  for (const outside of ["above", "below"]) {
++    const y = await target.evaluate((node, direction) => direction === "above" ? node.getBoundingClientRect().bottom + scrollY + 125 : node.getBoundingClientRect().top + scrollY - innerHeight - 125, outside);
++    await move(page, y);
++    await expect(target).toHaveAttribute("data-text-state", "ARMED_OFFSCREEN");
++    await position(page, selector, .5);
++    await expect(target).toHaveAttribute("data-text-state", "ENTERING");
++    await expect(target).toHaveAttribute("data-text-state", "VISIBLE");
++    for (const fraction of [.02, .09, .02, .5]) await position(page, selector, fraction);
++    await expect(target).toHaveAttribute("data-text-state", "VISIBLE");
++  }
++});
++
++test("native wheel momentum does not cancel a time-based text entrance", async ({ page }, testInfo) => {
++  test.skip(testInfo.project.name !== "desktop", "Wheel momentum belongs to desktop input.");
++  await page.goto("/dich-vu/hoa-thoi");
++  await position(page, ".ht-form-heading h2", .9);
++  const target = page.locator(".ht-form-heading h2");
++  await expect(target).toHaveAttribute("data-text-state", "ARMED_OFFSCREEN");
++  await page.mouse.wheel(0, 220);
++  await expect(target).toHaveAttribute("data-text-state", "ENTERING");
++  await expect(target).toHaveAttribute("data-text-state", "VISIBLE");
++});
++
++test("small scroll reversals keep one continuous entrance without jumping backwards", async ({ page }) => {
++  await openHarness(page);
++  const samples = await page.locator("#scroll-root").evaluate(async root => {
++    document.dispatchEvent(new WheelEvent("wheel"));
++    root.scrollTop = 440;
++    const target = document.getElementById("root-heading")!;
++    const layer = target.querySelector<HTMLElement>("[data-text-layer]")!;
++    while (target.dataset.textState !== "ENTERING") await new Promise(requestAnimationFrame);
++    const animation = layer.getAnimations()[0];
++    const values = [];
++    for (const offset of [2, -2, 3, -3, 1, -1]) {
++      root.scrollTop += offset;
++      await new Promise(resolve => setTimeout(resolve, 65));
++      const style = getComputedStyle(layer);
++      values.push({ sameAnimation: layer.getAnimations()[0] === animation, opacity: Number(style.opacity), y: new DOMMatrixReadOnly(style.transform).m42 });
++    }
++    return values;
++  });
++  for (let i = 0; i < samples.length; i++) {
++    expect(samples[i].sameAnimation).toBe(true);
++    if (i) {
++      expect(samples[i].opacity).toBeGreaterThanOrEqual(samples[i - 1].opacity);
++      expect(samples[i].y).toBeLessThanOrEqual(samples[i - 1].y);
++    }
++  }
++});
++
++test("interaction settles static copy and leaves calendar feedback, prices and controls immediate", async ({ page }) => {
++  await page.goto("/dich-vu/hoa-thoi");
++  await position(page, ".ht-form-heading h2", .6);
++  const target = page.locator(".ht-form-heading h2");
++  await expect(target).toHaveAttribute("data-text-state", "ENTERING");
++  await page.getByRole("button", { name: "Tăng số bó mỗi tuần", exact: true }).focus();
++  await expect(target).toHaveAttribute("data-text-state", "BYPASS_VISIBLE");
++  await expect(target.locator("[data-text-layer]")).toHaveCSS("opacity", "1");
++  await page.getByRole("button", { name: "Tăng số bó mỗi tuần", exact: true }).click();
++  for (const selector of [".ht-calendar-total", ".ht-progress-total", ".ht-card-price", ".ht-package-button", ".ht-calendar-day-button"]) {
++    expect(await page.locator(`${selector} [data-store-text]`).count()).toBe(0);
++    await expect(page.locator(selector).first()).toHaveCSS("opacity", "1");
++  }
++  for (const selector of [".ht-fields", ".ht-layout", ".ht-inquiry", ".ht-calendar-summary"]) await expect(page.locator(selector)).toHaveCSS("transform", "none");
++});
++
++test("a touch starting a scroll does not snap text to visible, but touching controls still settles it", async ({ page }) => {
++  await page.goto("/dich-vu/hoa-thoi");
++  await position(page, ".ht-form-heading h2", .6);
++  const target = page.locator(".ht-form-heading h2");
++  await expect(target).toHaveAttribute("data-text-state", "ENTERING");
++  const continued = await target.evaluate(node => {
++    const layer = node.querySelector("[data-text-layer]")!;
++    const animation = layer.getAnimations()[0];
++    layer.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true, pointerType: "touch" }));
++    layer.dispatchEvent(new PointerEvent("pointercancel", { bubbles: true, pointerType: "touch" }));
++    return layer.getAnimations()[0] === animation && (node as HTMLElement).dataset.textState === "ENTERING";
++  });
++  expect(continued).toBe(true);
++  await page.locator(".ht-package-controls button").first().dispatchEvent("pointerdown", { pointerType: "touch" });
++  await expect(target).toHaveAttribute("data-text-state", "BYPASS_VISIBLE");
++});
++
++test("focused static anchors protect their animated copy even beyond the reset boundary", async ({ page }) => {
++  await page.goto("/san-pham");
++  const link = page.locator(".product-card h3 a").first();
++  const copy = link.locator("[data-store-text]");
++  await link.focus();
++  await expect(copy).toHaveAttribute("data-text-state", "BYPASS_VISIBLE");
++  const beyond = await copy.evaluate(node => node.getBoundingClientRect().top + scrollY - innerHeight - 125);
++  await move(page, beyond);
++  await expect(link).toBeFocused();
++  await expect(copy).toHaveAttribute("data-text-state", "BYPASS_VISIBLE");
++  await link.evaluate(node => (node as HTMLElement).blur());
++  await expect(copy).toHaveAttribute("data-text-state", "ARMED_OFFSCREEN");
++});
++
++test("root observers use the clipped container, handle tall text, keep inline link hit areas fixed and clean up", async ({ page }) => {
++  await openHarness(page);
++  const heading = page.locator("#root-heading"), linked = page.locator("#linked-copy");
++  await expect(heading).toHaveAttribute("data-text-state", "ARMED_OFFSCREEN");
++  await page.locator("#scroll-root").evaluate(node => { document.dispatchEvent(new WheelEvent("wheel")); node.scrollTop = 440; });
++  await expect(heading).toHaveAttribute("data-text-state", "ENTERING");
++  await expect(linked).toHaveAttribute("data-text-state", "ENTERING");
++  const during = await page.locator("#inline-link").boundingBox();
++  await expect(linked).toHaveAttribute("data-text-state", "VISIBLE");
++  const after = await page.locator("#inline-link").boundingBox();
++  expect(Math.abs(during!.y - after!.y)).toBeLessThan(1);
++  await page.locator("#scroll-root").evaluate(node => { document.dispatchEvent(new WheelEvent("wheel")); node.scrollTop = 600; });
++  await expect(page.locator("#tall-copy")).toHaveAttribute("data-text-state", /ENTERING|VISIBLE/);
++  expect(await page.locator("#exempt").getAttribute("data-store-text")).toBeNull();
++  await page.locator("#rerender").click();
++  await expect(heading).toHaveAttribute("data-text-state", /VISIBLE|BYPASS_VISIBLE/);
++  await page.locator("#unmount").click();
++  await page.locator("#diagnostics").click();
++  await expect(page.locator("#diagnostics")).toHaveText("0");
++});
++
++test("live accessibility preferences settle animations and leave newly scrolled text visible", async ({ page }) => {
++  await page.goto("/dich-vu/hoa-thoi");
++  await position(page, ".ht-form-heading h2", .6);
++  await expect(page.locator(".ht-form-heading h2")).toHaveAttribute("data-text-state", "ENTERING");
++  await page.emulateMedia({ reducedMotion: "reduce" });
++  await expect(page.locator(".ht-form-heading h2")).toHaveAttribute("data-text-state", "BYPASS_VISIBLE");
++  await page.emulateMedia({ reducedMotion: "no-preference", forcedColors: "active" });
++  await expect(page.locator(".page-heading h1 [data-text-layer]")).toHaveCSS("transform", "none");
++  await expect(page.locator(".ht-form-heading h2 [data-text-layer]")).toHaveCSS("opacity", "1");
++});
++
++test("late initialization and missing APIs keep SSR text visible without forcing an entrance", async ({ page }) => {
++  await page.addInitScript(() => {
++    const original = performance.getEntriesByType.bind(performance);
++    performance.getEntriesByType = type => type === "paint" ? [{ name: "first-contentful-paint" } as PerformanceEntry] : original(type);
++    Object.defineProperty(window, "IntersectionObserver", { value: undefined });
++  });
++  await page.goto("/dich-vu/hoa-thoi");
++  for (const selector of [".page-heading h1", ".ht-form-heading h2"]) {
++    await expect(page.locator(`${selector} [data-text-layer]`)).toHaveCSS("opacity", "1");
++    await expect(page.locator(`${selector} [data-text-layer]`)).toHaveCSS("transform", "none");
++  }
++});
++
++test("slow hydration adopts a completed parser entrance without hiding the heading again", async ({ page }) => {
++  await page.addInitScript(() => {
++    const samples: number[] = [];
++    (window as unknown as { lateSamples: number[] }).lateSamples = samples;
++    const sample = () => {
++      const layer = document.querySelector(".page-heading h1 [data-text-layer]");
++      if (layer && performance.now() > 1800) samples.push(Number(getComputedStyle(layer).opacity));
++      if (performance.now() < 5000) requestAnimationFrame(sample);
++    };
++    requestAnimationFrame(sample);
++  });
++  await page.route("**/_next/static/chunks/**", async route => { await new Promise(resolve => setTimeout(resolve, 2500)); await route.continue(); });
++  await page.goto("/dich-vu/hoa-thoi");
++  await expect(page.locator(".page-heading h1")).toHaveAttribute("data-text-state", /VISIBLE|BYPASS_VISIBLE/);
++  const samples = await page.evaluate(() => (window as unknown as { lateSamples: number[] }).lateSamples);
++  expect(samples.length).toBeGreaterThan(0);
++  expect(samples.every(opacity => opacity === 1)).toBe(true);
++});
++
++test("late parser, observer errors and BFCache lifecycle choose visible fallback", async ({ page }) => {
++  await page.addInitScript(() => {
++    const original = performance.getEntriesByType.bind(performance);
++    performance.getEntriesByType = type => type === "paint" ? [{ name: "first-contentful-paint" } as PerformanceEntry] : original(type);
++  });
++  await page.goto("/dich-vu/hoa-thoi");
++  await expect(page.locator(".page-heading h1")).toHaveAttribute("data-text-state", "BYPASS_VISIBLE");
++  await position(page, ".ht-form-heading h2", .6);
++  await expect(page.locator(".ht-form-heading h2")).toHaveAttribute("data-text-state", "ENTERING");
++  const scroll = await page.evaluate(() => scrollY);
++  await page.evaluate(() => dispatchEvent(new PageTransitionEvent("pageshow", { persisted: true })));
++  await expect(page.locator(".ht-form-heading h2")).toHaveAttribute("data-text-state", "BYPASS_VISIBLE");
++  expect(await page.evaluate(() => scrollY)).toBe(scroll);
++  await page.addInitScript(() => { Object.defineProperty(window, "IntersectionObserver", { value: class { constructor() { throw new Error("Unavailable observer"); } } }); });
++  await page.reload();
++  await expect(page.locator(".ht-form-heading h2 [data-text-layer]")).toHaveCSS("opacity", "1");
++  await expect(page.locator(".ht-form-heading h2 [data-text-layer]")).toHaveCSS("transform", "none");
++});
++
++test("hash, find, native disclosure and restored history bypass delayed readability", async ({ page }) => {
++  await page.goto("/dich-vu/hoa-thoi#tu-van");
++  await expect(page.locator(".ht-form-heading h2 [data-text-layer]")).toHaveCSS("opacity", "1");
++  await page.goto("/ve-hoe");
++  await page.locator(".faq summary").first().focus();
++  await page.keyboard.press("Enter");
++  await expect(page.locator(".faq details").first()).toHaveAttribute("open", "");
++  await expect(page.locator(".faq p").first().locator("[data-text-layer]")).toHaveCSS("opacity", "1");
++  await page.keyboard.press("Control+f");
++  await expect.poll(() => page.locator("[data-text-layer]").evaluateAll(nodes => nodes.every(node => getComputedStyle(node).opacity === "1"))).toBe(true);
++  await page.keyboard.press("Escape");
++  const before = await page.evaluate(() => scrollY);
++  await page.locator(".hoe-store-header .nav a[href='/blog']").first().evaluate(node => (node as HTMLElement).click());
++  await expect(page).toHaveURL(/\/blog$/);
++  await page.goBack();
++  await expect.poll(() => page.evaluate(() => scrollY)).toBeCloseTo(before, 0);
++  await expect(page.locator(".faq h2 [data-text-layer], .faq p [data-text-layer]").first()).toHaveCSS("opacity", "1");
++});
++
++test("all Store route families opt in; protected sections and functional text do not", async ({ page }) => {
++  await page.emulateMedia({ reducedMotion: "reduce" });
++  for (const route of ["/", "/san-pham", "/san-pham/mau-test-diu-dang", "/san-pham/mau-test-hoa-thoi", "/san-pham/mau-test-nang", "/dich-vu/hoa-tam", "/dich-vu/hoa-thoi", "/dich-vu/hoa-y", "/gio-hang", "/dat-hoa", "/ve-hoe", "/blog", "/blog/chuyen-cua-hoe", "/chinh-sach/ban-hang", "/lien-he", "/khong-co-trang-nay"]) {
++    await page.goto(route);
++    await expect(page.locator("[data-store-text]").first(), route).toBeAttached();
++    expect(await page.locator("[data-store-text]").count(), route).toBeGreaterThan(0);
++    expect(await page.locator(".olf-hero [data-store-text], .olf-featured-carousel [data-store-text], .hoe-store-header [data-store-text], button [data-store-text], label [data-store-text], [role='status'] [data-store-text], .product-price [data-store-text]").count(), route).toBe(0);
++    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), route).toBe(true);
++  }
++  for (const route of ["/admin", "/dang-nhap", "/xem-thu/widgets", "/xem-thu/absent"]) {
++    await page.goto(route);
++    expect(await page.locator("[data-store-text]").count()).toBe(0);
++  }
++});
++
++test("responsive layout, short viewport and zoom-equivalent layout keep static shells and usable controls", async ({ page }, testInfo) => {
++  test.skip(testInfo.project.name !== "desktop", "Explicit widths cover both mobile and desktop layout.");
++  await page.emulateMedia({ reducedMotion: "reduce" });
++  const measurements: object[] = [];
++  for (const viewport of [{ width: 360, height: 800 }, { width: 390, height: 844 }, { width: 768, height: 900 }, { width: 1024, height: 900 }, { width: 1440, height: 900 }, { width: 390, height: 420 }, { width: 720, height: 450 }]) {
++    await page.setViewportSize(viewport);
++    for (const route of ["/", "/san-pham", "/dich-vu/hoa-thoi", "/san-pham/mau-test-hoa-thoi", "/blog/chuyen-cua-hoe", "/lien-he"]) {
++      await page.goto(route);
++      await expect(page.locator("[data-store-text]").first()).toBeAttached();
++      const result = await page.evaluate(() => ({ overflow: document.documentElement.scrollWidth > innerWidth + 1, shellsStatic: [...document.querySelectorAll('.store-heading-section, .store-detail-section, form, .ht-layout, .ht-calendar-summary')].every(node => getComputedStyle(node).transform === "none"), textVisible: [...document.querySelectorAll('[data-text-layer]')].every(node => getComputedStyle(node).opacity === "1") }));
++      expect(result.overflow, `${route} ${viewport.width}`).toBe(false);
++      expect(result.shellsStatic).toBe(true);
++      expect(result.textVisible).toBe(true);
++      measurements.push({ route, viewport, ...result });
++    }
++  }
++  await testInfo.attach("responsive-layout", { body: JSON.stringify(measurements, null, 2), contentType: "application/json" });
++});
+--- a/tests/unit/store-text-reveal.test.ts
++++ b/tests/unit/store-text-reveal.test.ts
+@@ -0,0 +1,41 @@
++import { describe, expect, it } from "vitest";
++import { createElement as h } from "react";
++import { renderToStaticMarkup } from "react-dom/server";
++import { StoreScope } from "@/components/StoreScope";
++import { StoreTextReveal, StoreTextRevealGroup, StoreTextExemption } from "@/components/ui/StoreTextReveal";
++import { StoreProse } from "@/components/StoreProse";
++
++const render = (child: React.ReactNode) => renderToStaticMarkup(h(StoreScope, { className: "hoe-store-scope", children: child }));
++
++describe("Store text progressive enhancement", () => {
++  it("keeps the semantic heading, emphasis, Vietnamese text and a single static inline anchor", () => {
++    const html = render(h(StoreTextReveal, { as: "h1", role: "page", id: "story" }, "Hòe: ", h("em", null, "đều đặn"), " và ", h("a", { href: "/lien-he" }, "dịu dàng")));
++    expect(html).toContain('<h1 id="story"');
++    expect(html).toContain("<em>đều đặn</em>");
++    expect(html.match(/href="\/lien-he"/g)).toHaveLength(1);
++    expect(html).toContain('data-text-link-copy');
++    const heading = html.slice(html.indexOf("<h1"), html.indexOf("</h1>") + 5);
++    for (const hidden of ['aria-hidden=', 'inert=', 'style="', '<div']) expect(heading).not.toContain(hidden);
++  });
++  it("exempt and outside-Store copy has no layers, scripts or observer targets", () => {
++    const child = h(StoreTextReveal, { as: "h2", role: "heading", initial: true }, "Protected");
++    expect(render(h(StoreTextExemption, null, child))).toContain("<h2>Protected</h2>");
++    const outside = renderToStaticMarkup(child);
++    expect(outside).toBe("<h2>Protected</h2>");
++  });
++  it("groups retain heading structure and leave controls and live updates outside motion", () => {
++    const html = render(h(StoreTextRevealGroup, { className: "page-heading", initial: true }, h("span", { className: "eyebrow" }, "Hòe"), h("h1", null, "Những đóa hoa"), h("p", null, "Mô tả"), h("button", null, "Tiếp tục"), h("p", { role: "status" }, "Đã cập nhật")));
++    expect(html).toContain('class="page-heading" data-text-group');
++    expect(html).toContain('<button>Tiếp tục</button>');
++    expect(html).toContain('<p role="status">Đã cập nhật</p>');
++    expect(html.match(/data-store-text=/g)).toHaveLength(3);
++    expect(html.match(/<script /g)).toHaveLength(3);
++  });
++  it("long Markdown observes paragraphs individually and preserves lists, links and selection text", () => {
++    const html = render(h(StoreProse, { children: "## Chính sách mẫu kiểm thử\n\nĐoạn một với **chữ đậm**.\n\nĐoạn hai có [liên hệ](/lien-he).\n\n- Mục thứ nhất\n\n- Mục thứ hai" }));
++    expect(html.match(/<p[^>]*data-store-text=/g)).toHaveLength(2);
++    expect(html).toContain("<strong>chữ đậm</strong>");
++    expect(html).toContain('<a href="/lien-he"><span data-text-link-copy');
++    expect(html).toContain("<p>Mục thứ nhất</p>");
++  });
++});

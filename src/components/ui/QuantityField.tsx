@@ -1,6 +1,7 @@
 "use client";
-import { useId, useState } from "react";
+import { useId, useRef, useState } from "react";
 import { Minus, Plus } from "lucide-react";
+import { useStoreValueFeedback } from "./StoreMotion";
 export function QuantityField({
   name,
   label = "Số lượng",
@@ -17,6 +18,8 @@ export function QuantityField({
   const id = useId(),
     [draft, setDraft] = useState(String(defaultValue));
   const current = value ?? Number(draft);
+  const count = useRef<HTMLSpanElement>(null);
+  useStoreValueFeedback(count, current);
   function update(next: number) {
     if (!Number.isInteger(next) || next < 1 || next > 99) return;
     setDraft(String(next));
@@ -24,8 +27,8 @@ export function QuantityField({
   }
   return (
     <div className="field hoe-widget">
-      <label htmlFor={id}>{label}</label>
-      <div className="hoe-quantity">
+      <label id={`${id}-label`}>{label}</label>
+      <div className="hoe-quantity" role="group" aria-labelledby={`${id}-label`}>
         <button
           type="button"
           aria-label="Giảm số lượng"
@@ -34,7 +37,8 @@ export function QuantityField({
         >
           <Minus size={16} />
         </button>
-        <div><span>{value ?? draft}</span></div>
+        <div><span ref={count}>{value ?? draft}</span></div>
+        {name ? <input type="hidden" name={name} value={current} /> : null}
         {/* <input
           id={id}
           name={name}

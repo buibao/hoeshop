@@ -30,28 +30,28 @@ describe("carousel reading clock", () => {
     vi.advanceTimersByTime(1); expect(step).toHaveBeenCalledTimes(1);
     vi.advanceTimersByTime(60000); expect(step).toHaveBeenCalledTimes(1);
     autoplay.settle();
-    vi.advanceTimersByTime(2999); expect(step).toHaveBeenCalledTimes(1);
+    vi.advanceTimersByTime(AUTOPLAY_WAIT_MS - 1); expect(step).toHaveBeenCalledTimes(1);
     vi.advanceTimersByTime(1); expect(step).toHaveBeenCalledTimes(2);
     autoplay.destroy(); expect(vi.getTimerCount()).toBe(0);
   });
   it.each(["hover", "focus", "pointer", "hidden", "viewport", "overlay", "manual", "reduced", "unavailable"] as PauseReason[])("keeps %s independent of other blockers", (reason) => {
     const { step, autoplay } = setup();
-    vi.advanceTimersByTime(2500);
+    vi.advanceTimersByTime(AUTOPLAY_WAIT_MS - 1);
     autoplay.pause(reason, true); autoplay.pause("focus", true); autoplay.pause("hover", true);
     autoplay.pause("hover", false); autoplay.pause("focus", false);
     if (reason === "hover" || reason === "focus") autoplay.pause(reason, true);
     vi.advanceTimersByTime(60000); expect(step).not.toHaveBeenCalled();
     autoplay.pause(reason, false);
-    vi.advanceTimersByTime(2999); expect(step).not.toHaveBeenCalled();
+    vi.advanceTimersByTime(AUTOPLAY_WAIT_MS - 1); expect(step).not.toHaveBeenCalled();
     vi.advanceTimersByTime(1); expect(step).toHaveBeenCalledTimes(1);
     autoplay.destroy();
   });
   it("manual transition clears a pending tick and reInit never duplicates clocks", () => {
     const { step, autoplay } = setup();
-    vi.advanceTimersByTime(2900); autoplay.startTransition();
+    vi.advanceTimersByTime(AUTOPLAY_WAIT_MS - 1); autoplay.startTransition();
     vi.advanceTimersByTime(10000); expect(step).not.toHaveBeenCalled();
     autoplay.settle(); autoplay.settle(); expect(vi.getTimerCount()).toBe(1);
-    vi.advanceTimersByTime(3000); expect(step).toHaveBeenCalledTimes(1);
+    vi.advanceTimersByTime(AUTOPLAY_WAIT_MS); expect(step).toHaveBeenCalledTimes(1);
     autoplay.destroy();
   });
   it("stops at a finite boundary and cleans up on unmount", () => {

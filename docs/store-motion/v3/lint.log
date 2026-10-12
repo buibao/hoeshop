@@ -1,0 +1,21 @@
+
+> hoeshop@1.0.0 lint
+> eslint .
+
+
+D:\hoeshop\src\app\(shop)\layout.tsx
+  42:9  warning  'test' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+D:\hoeshop\src\features\checkout\RecurrenceFields.tsx
+  14:31  warning  'name' is defined but never used                 @typescript-eslint/no-unused-vars
+  17:19  warning  'setTouched' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+D:\hoeshop\src\features\storefront\FeaturedProductCarousel.tsx
+   4:37  warning  'Pause' is defined but never used                    @typescript-eslint/no-unused-vars
+   4:44  warning  'Play' is defined but never used                     @typescript-eslint/no-unused-vars
+  15:23  warning  'setManualPause' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+D:\hoeshop\src\features\storefront\LandingBenefitsMotion.tsx
+  19:9  warning  'desktop' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+✖ 7 problems (0 errors, 7 warnings)

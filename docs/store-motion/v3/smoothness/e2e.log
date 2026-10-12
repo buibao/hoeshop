@@ -1,0 +1,160 @@
+node.exe : [WebServer] (node:5044) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+At C:\Program Files\nodejs\npx.ps1:29 char:3
++   & $NODE_EXE $NPX_CLI_JS $args
++   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([WebServer] (no... env being set.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 78 tests using 1 worker
+
+(node:33932) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  1 [desktop] › tests\e2e\shop.spec.ts:135:1 › checkout saves mixed services and clears cart only after receipt (2.5s)
+  ok  2 [desktop] › tests\e2e\shop.spec.ts:163:1 › lost response retries same request ID without duplicate and retains input (1.6s)
+  ok  3 [desktop] › tests\e2e\shop.spec.ts:204:1 › failed submissions keep cart and edits get a fresh request ID (1.6s)
+  ok  4 [desktop] › tests\e2e\shop.spec.ts:235:1 › Hoa Thời no-sample and general consultation stay separate from orders (1.9s)
+  ok  5 [desktop] › tests\e2e\shop.spec.ts:265:1 › comments publish immediately as escaped text and survive a reload (1.1s)
+  ok  6 [desktop] › tests\e2e\shop.spec.ts:289:1 › draft routes remain hidden and forms show readable validation (1.7s)
+  ok  7 [desktop] › tests\e2e\store-gradients.spec.ts:3:1 › Store roles keep reading surfaces and primary/secondary actions distinct (1.7s)
+  ok  8 [desktop] › tests\e2e\store-gradients.spec.ts:22:1 › full-width owners preserve copy measures and submenu retains current and interactive highlights (2.8s)
+  ok  9 [desktop] › tests\e2e\store-gradients.spec.ts:74:1 › Store picker portal keeps strong selection, cancel, focus and disabled reset (3.3s)
+  ok 10 [desktop] › tests\e2e\store-gradients.spec.ts:111:1 › soft calendar selection clears, disabled actions lose gradient and forced colours retain cues (1.9s)
+  ok 11 [desktop] › tests\e2e\store-gradients.spec.ts:132:1 › root fallback and client navigation preserve Store isolation (3.1s)
+  ok 12 [desktop] › tests\e2e\store-motion.spec.ts:13:1 › decorative reveal keeps SSR copy visible without JavaScript (2.7s)
+  ok 13 [desktop] › tests\e2e\store-motion.spec.ts:31:1 › live reduced motion stops presentation effects while values and drafts persist (1.7s)
+  ok 14 [desktop] › tests\e2e\store-motion.spec.ts:58:1 › weekly selection and rapid month navigation preserve state, focus and readable summary (3.7s)
+  ok 15 [desktop] › tests\e2e\store-motion.spec.ts:92:1 › cart edit and remove restore focus to a surviving control (2.4s)
+  ok 16 [desktop] › tests\e2e\store-motion.spec.ts:110:1 › monthly and weekly cycles crossing month boundaries count each date once (4.6s)
+  ok 17 [desktop] › tests\e2e\store-motion.spec.ts:136:1 › long FAQ answers stay readable and native disclosure reacts immediately (1.1s)
+  ok 18 [desktop] › tests\e2e\store-motion.spec.ts:152:1 › internal previews and internal fallbacks stay outside Store motion (1.3s)
+  ok 19 [desktop] › tests\e2e\store-motion.spec.ts:160:1 › carousel autoplay still pauses for focus and overlays without changing slide geometry (15.2s)
+  ok 20 [desktop] › tests\e2e\store-motion.spec.ts:184:1 › carousel fitting and empty states keep existing controls and reduced motion behavior (2.3s)
+  ok 21 [desktop] › tests\e2e\store-select.spec.ts:3:1 › time dropdowns preserve the calendar summary position and page scroll (2.6s)
+  ok 22 [desktop] › tests\e2e\store-select.spec.ts:38:1 › store selects persist shape and exact 24-hour time through cart edits (3.8s)
+  ok 23 [desktop] › tests\e2e\store-select.spec.ts:111:1 › contact service select reaches the inquiry API and respects disabled fieldsets (1.1s)
+  ok 24 [desktop] › tests\e2e\store-text.spec.ts:25:1 › fresh heading has one finite entrance with the desktop/mobile preset and capped group delays (1.9s)
+  ok 25 [desktop] › tests\e2e\store-text.spec.ts:52:1 › below-fold text waits for 85%, completes without scrolling, and stays visible outside the trigger band (3.1s)
+  ok 26 [desktop] › tests\e2e\store-text.spec.ts:71:1 › replay needs the extra 120px in both directions and edge jitter does not rearm (6.1s)
+  ok 27 [desktop] › tests\e2e\store-text.spec.ts:88:1 › native wheel momentum does not cancel a time-based text entrance (2.5s)
+  ok 28 [desktop] › tests\e2e\store-text.spec.ts:99:1 › small scroll reversals keep one continuous entrance without jumping backwards (871ms)
+  ok 29 [desktop] › tests\e2e\store-text.spec.ts:126:1 › interaction settles static copy and leaves calendar feedback, prices and controls immediate (1.3s)
+  x  30 [desktop] › tests\e2e\store-text.spec.ts:142:1 › a touch starting a scroll does not snap text to visible, but touching controls still settles it (5.8s)
+(node:23464) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 31 [desktop] › tests\e2e\store-text.spec.ts:159:1 › focused static anchors protect their animated copy even beyond the reset boundary (1.1s)
+  ok 32 [desktop] › tests\e2e\store-text.spec.ts:173:1 › root observers use the clipped container, handle tall text, keep inline link hit areas fixed and clean up (2.2s)
+  ok 33 [desktop] › tests\e2e\store-text.spec.ts:194:1 › live accessibility preferences settle animations and leave newly scrolled text visible (1.3s)
+  ok 34 [desktop] › tests\e2e\store-text.spec.ts:205:1 › late initialization and missing APIs keep SSR text visible without forcing an entrance (978ms)
+  ok 35 [desktop] › tests\e2e\store-text.spec.ts:218:1 › slow hydration adopts a completed parser entrance without hiding the heading again (3.2s)
+  ok 36 [desktop] › tests\e2e\store-text.spec.ts:237:1 › late parser, observer errors and BFCache lifecycle choose visible fallback (1.4s)
+  ok 37 [desktop] › tests\e2e\store-text.spec.ts:256:1 › hash, find, native disclosure and restored history bypass delayed readability (2.8s)
+  ok 38 [desktop] › tests\e2e\store-text.spec.ts:275:1 › all Store route families opt in; protected sections and functional text do not (5.2s)
+  ok 39 [desktop] › tests\e2e\store-text.spec.ts:290:1 › responsive layout, short viewport and zoom-equivalent layout keep static shells and usable controls (11.7s)
+(node:2152) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 40 [mobile] › tests\e2e\shop.spec.ts:135:1 › checkout saves mixed services and clears cart only after receipt (2.4s)
+  ok 41 [mobile] › tests\e2e\shop.spec.ts:163:1 › lost response retries same request ID without duplicate and retains input (1.5s)
+  ok 42 [mobile] › tests\e2e\shop.spec.ts:204:1 › failed submissions keep cart and edits get a fresh request ID (1.4s)
+  ok 43 [mobile] › tests\e2e\shop.spec.ts:235:1 › Hoa Thời no-sample and general consultation stay separate from orders (2.0s)
+  ok 44 [mobile] › tests\e2e\shop.spec.ts:265:1 › comments publish immediately as escaped text and survive a reload (975ms)
+  ok 45 [mobile] › tests\e2e\shop.spec.ts:289:1 › draft routes remain hidden and forms show readable validation (1.7s)
+  ok 46 [mobile] › tests\e2e\store-gradients.spec.ts:3:1 › Store roles keep reading surfaces and primary/secondary actions distinct (1.4s)
+  ok 47 [mobile] › tests\e2e\store-gradients.spec.ts:22:1 › full-width owners preserve copy measures and submenu retains current and interactive highlights (2.6s)
+  ok 48 [mobile] › tests\e2e\store-gradients.spec.ts:74:1 › Store picker portal keeps strong selection, cancel, focus and disabled reset (3.2s)
+  ok 49 [mobile] › tests\e2e\store-gradients.spec.ts:111:1 › soft calendar selection clears, disabled actions lose gradient and forced colours retain cues (1.7s)
+  ok 50 [mobile] › tests\e2e\store-gradients.spec.ts:132:1 › root fallback and client navigation preserve Store isolation (3.0s)
+  ok 51 [mobile] › tests\e2e\store-motion.spec.ts:13:1 › decorative reveal keeps SSR copy visible without JavaScript (2.5s)
+  ok 52 [mobile] › tests\e2e\store-motion.spec.ts:31:1 › live reduced motion stops presentation effects while values and drafts persist (1.3s)
+  ok 53 [mobile] › tests\e2e\store-motion.spec.ts:58:1 › weekly selection and rapid month navigation preserve state, focus and readable summary (2.5s)
+  ok 54 [mobile] › tests\e2e\store-motion.spec.ts:92:1 › cart edit and remove restore focus to a surviving control (1.7s)
+  ok 55 [mobile] › tests\e2e\store-motion.spec.ts:110:1 › monthly and weekly cycles crossing month boundaries count each date once (3.5s)
+  ok 56 [mobile] › tests\e2e\store-motion.spec.ts:136:1 › long FAQ answers stay readable and native disclosure reacts immediately (1.0s)
+  ok 57 [mobile] › tests\e2e\store-motion.spec.ts:152:1 › internal previews and internal fallbacks stay outside Store motion (1.4s)
+  ok 58 [mobile] › tests\e2e\store-motion.spec.ts:160:1 › carousel autoplay still pauses for focus and overlays without changing slide geometry (15.3s)
+  ok 59 [mobile] › tests\e2e\store-motion.spec.ts:184:1 › carousel fitting and empty states keep existing controls and reduced motion behavior (2.4s)
+  ok 60 [mobile] › tests\e2e\store-select.spec.ts:3:1 › time dropdowns preserve the calendar summary position and page scroll (2.2s)
+  ok 61 [mobile] › tests\e2e\store-select.spec.ts:38:1 › store selects persist shape and exact 24-hour time through cart edits (3.9s)
+  ok 62 [mobile] › tests\e2e\store-select.spec.ts:111:1 › contact service select reaches the inquiry API and respects disabled fieldsets (964ms)
+  ok 63 [mobile] › tests\e2e\store-text.spec.ts:25:1 › fresh heading has one finite entrance with the desktop/mobile preset and capped group delays (1.6s)
+  ok 64 [mobile] › tests\e2e\store-text.spec.ts:52:1 › below-fold text waits for 85%, completes without scrolling, and stays visible outside the trigger band (2.6s)
+  ok 65 [mobile] › tests\e2e\store-text.spec.ts:71:1 › replay needs the extra 120px in both directions and edge jitter does not rearm (5.6s)
+  -  66 [mobile] › tests\e2e\store-text.spec.ts:88:1 › native wheel momentum does not cancel a time-based text entrance
+  ok 67 [mobile] › tests\e2e\store-text.spec.ts:99:1 › small scroll reversals keep one continuous entrance without jumping backwards (1.1s)
+  ok 68 [mobile] › tests\e2e\store-text.spec.ts:126:1 › interaction settles static copy and leaves calendar feedback, prices and controls immediate (1.7s)
+  x  69 [mobile] › tests\e2e\store-text.spec.ts:142:1 › a touch starting a scroll does not snap text to visible, but touching controls still settles it (1.7s)
+Testing stopped early after 2 maximum allowed failures.
+
+
+  1) [desktop] › tests\e2e\store-text.spec.ts:142:1 › a touch starting a scroll does not snap text to visible, but touching controls still settles it
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator:  locator('.ht-form-heading h2')
+    Expected: visible
+    Received: hidden
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toBeVisible" locator('.ht-form-heading h2') with timeout 5000ms
+      - waiting for locator('.ht-form-heading h2')
+        2 × locator resolved to <h2 id="_R_ih9apbsnpfebtb_" data-store-text="heading">…</h2>
+          - unexpected value "hidden"
+        11 × locator resolved to <h2 id="_R_ih9apbsnpfebtb_" data-store-text="heading" data-text-state="ARMED_OFFSCREEN">…</h2>
+           - unexpected value "hidden"
+
+
+      10 |   // Streamed server nodes may exist inside Next's hidden staging container
+      11 |   // before the segment is inserted into the page. Their rect is still zero.
+    > 12 |   await expect(page.locator(selector)).toBeVisible();
+         |                                        ^
+      13 |   await page.evaluate(() => document.fonts.ready);
+      14 |   const y = await page.locator(selector).evaluate((node, fraction) => node.getBoundingClientRect().top + scrollY - innerHeight * fraction, viewportFraction);
+      15 |   await move(page, y);
+        at position (D:\hoeshop\tests\e2e\store-text.spec.ts:12:40)
+        at D:\hoeshop\tests\e2e\store-text.spec.ts:144:9
+
+    Error Context: test-results\store-motion\store-text-a-touch-startin-405a4-g-controls-still-settles-it-desktop\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\store-motion\store-text-a-touch-startin-405a4-g-controls-still-settles-it-desktop\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\store-motion\store-text-a-touch-startin-405a4-g-controls-still-settles-it-desktop\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [mobile] › tests\e2e\store-text.spec.ts:142:1 › a touch starting a scroll does not snap text to visible, but touching controls still settles it
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      152 |
+      153 | test("a touch starting a scroll does not snap text to visible, but touching controls still settles it", async ({ page }) => {
+    > 154 |   await page.goto("/dich-vu/hoa-thoi");
+          |                     ^
+      155 |   await position(page, ".ht-form-heading h2", .6);
+      156 |   const target = page.locator(".ht-form-heading h2");
+      157 |   await expect(target).toHaveAttribute("data-text-state", "ENTERING");
+        at D:\hoeshop\tests\e2e\store-text.spec.ts:154:21
+
+    Error Context: test-results\store-motion\store-text-a-touch-startin-405a4-g-controls-still-settles-it-mobile\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\store-motion\store-text-a-touch-startin-405a4-g-controls-still-settles-it-mobile\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\store-motion\store-text-a-touch-startin-405a4-g-controls-still-settles-it-mobile\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    [desktop] › tests\e2e\store-text.spec.ts:142:1 › a touch starting a scroll does not snap text to visible, but touching controls still settles it
+    [mobile] › tests\e2e\store-text.spec.ts:142:1 › a touch starting a scroll does not snap text to visible, but touching controls still settles it
+  1 skipped
+  9 did not run
+  66 passed (3.3m)
+  1 error was not a part of any test, see above for details

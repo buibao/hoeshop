@@ -1,0 +1,50 @@
+node.exe : [WebServer] (node:20540) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+At C:\Program Files\nodejs\npx.ps1:29 char:3
++   & $NODE_EXE $NPX_CLI_JS $args
++   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([WebServer] (no... env being set.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 32 tests using 1 worker
+
+(node:4716) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  1 [desktop] › tests\e2e\store-text.spec.ts:36:1 › fresh heading has one finite entrance with the desktop/mobile preset and capped group delays (1.7s)
+  ok  2 [desktop] › tests\e2e\store-text.spec.ts:63:1 › below-fold text waits for 85%, completes without scrolling, and stays visible outside the trigger band (2.3s)
+  ok  3 [desktop] › tests\e2e\store-text.spec.ts:83:1 › replay needs the extra 120px in both directions and edge jitter does not rearm (5.2s)
+  ok  4 [desktop] › tests\e2e\store-text.spec.ts:100:1 › native wheel momentum does not cancel a time-based text entrance (2.1s)
+  ok  5 [desktop] › tests\e2e\store-text.spec.ts:111:1 › small scroll reversals keep one continuous entrance without jumping backwards (960ms)
+  ok  6 [desktop] › tests\e2e\store-text.spec.ts:138:1 › interaction settles static copy and leaves calendar feedback, prices and controls immediate (896ms)
+  ok  7 [desktop] › tests\e2e\store-text.spec.ts:154:1 › a touch starting a scroll does not snap text to visible, but touching controls still settles it (829ms)
+  ok  8 [desktop] › tests\e2e\store-text.spec.ts:171:1 › focused static anchors protect their animated copy even beyond the reset boundary (613ms)
+  ok  9 [desktop] › tests\e2e\store-text.spec.ts:185:1 › root observers use the clipped container, handle tall text, keep inline link hit areas fixed and clean up (2.0s)
+  ok 10 [desktop] › tests\e2e\store-text.spec.ts:206:1 › live accessibility preferences settle animations and leave newly scrolled text visible (842ms)
+  ok 11 [desktop] › tests\e2e\store-text.spec.ts:217:1 › late initialization and missing APIs keep SSR text visible without forcing an entrance (628ms)
+  ok 12 [desktop] › tests\e2e\store-text.spec.ts:230:1 › slow hydration adopts a completed parser entrance without hiding the heading again (3.0s)
+  ok 13 [desktop] › tests\e2e\store-text.spec.ts:249:1 › late parser, observer errors and BFCache lifecycle choose visible fallback (871ms)
+  ok 14 [desktop] › tests\e2e\store-text.spec.ts:268:1 › hash, find, native disclosure and restored history bypass delayed readability (3.7s)
+  ok 15 [desktop] › tests\e2e\store-text.spec.ts:287:1 › all Store route families opt in; protected sections and functional text do not (4.4s)
+  ok 16 [desktop] › tests\e2e\store-text.spec.ts:302:1 › responsive layout, short viewport and zoom-equivalent layout keep static shells and usable controls (9.7s)
+(node:33960) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 17 [mobile] › tests\e2e\store-text.spec.ts:36:1 › fresh heading has one finite entrance with the desktop/mobile preset and capped group delays (2.0s)
+  ok 18 [mobile] › tests\e2e\store-text.spec.ts:63:1 › below-fold text waits for 85%, completes without scrolling, and stays visible outside the trigger band (2.6s)
+  ok 19 [mobile] › tests\e2e\store-text.spec.ts:83:1 › replay needs the extra 120px in both directions and edge jitter does not rearm (5.4s)
+  -  20 [mobile] › tests\e2e\store-text.spec.ts:100:1 › native wheel momentum does not cancel a time-based text entrance
+  ok 21 [mobile] › tests\e2e\store-text.spec.ts:111:1 › small scroll reversals keep one continuous entrance without jumping backwards (899ms)
+  ok 22 [mobile] › tests\e2e\store-text.spec.ts:138:1 › interaction settles static copy and leaves calendar feedback, prices and controls immediate (899ms)
+  ok 23 [mobile] › tests\e2e\store-text.spec.ts:154:1 › a touch starting a scroll does not snap text to visible, but touching controls still settles it (772ms)
+  ok 24 [mobile] › tests\e2e\store-text.spec.ts:171:1 › focused static anchors protect their animated copy even beyond the reset boundary (597ms)
+  ok 25 [mobile] › tests\e2e\store-text.spec.ts:185:1 › root observers use the clipped container, handle tall text, keep inline link hit areas fixed and clean up (1.5s)
+  ok 26 [mobile] › tests\e2e\store-text.spec.ts:206:1 › live accessibility preferences settle animations and leave newly scrolled text visible (738ms)
+  ok 27 [mobile] › tests\e2e\store-text.spec.ts:217:1 › late initialization and missing APIs keep SSR text visible without forcing an entrance (605ms)
+  ok 28 [mobile] › tests\e2e\store-text.spec.ts:230:1 › slow hydration adopts a completed parser entrance without hiding the heading again (2.9s)
+  ok 29 [mobile] › tests\e2e\store-text.spec.ts:249:1 › late parser, observer errors and BFCache lifecycle choose visible fallback (867ms)
+  ok 30 [mobile] › tests\e2e\store-text.spec.ts:268:1 › hash, find, native disclosure and restored history bypass delayed readability (2.5s)
+  ok 31 [mobile] › tests\e2e\store-text.spec.ts:287:1 › all Store route families opt in; protected sections and functional text do not (3.2s)
+  -  32 [mobile] › tests\e2e\store-text.spec.ts:302:1 › responsive layout, short viewport and zoom-equivalent layout keep static shells and usable controls
+
+  2 skipped
+  30 passed (1.2m)

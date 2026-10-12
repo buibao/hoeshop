@@ -18,7 +18,8 @@ import {
   parseDisplayDate,
 } from "@/domain/date-time";
 import { vietnamToday } from "@/domain/schemas";
-import { useStoreOverlay } from "@/components/StoreScope";
+import { useStoreOverlay, useStoreScope } from "@/components/StoreScope";
+import { StoreTimeField } from "./StoreTimeField";
 type Props = {
   name: string;
   label: string;
@@ -30,7 +31,13 @@ type Props = {
   disabled?: boolean;
   onValueChange?: (value: string) => void;
 };
-export function DateTimeField({
+export function DateTimeField(props: Props) {
+  const { portalClassName } = useStoreScope();
+  if (props.type === "time" && portalClassName) return <StoreTimeField {...props} />;
+  return <OriginalDateTimeField {...props} />;
+}
+
+function OriginalDateTimeField({
   name,
   label,
   type,
@@ -202,6 +209,11 @@ export function DateTimeField({
         </span>
       ) : null}
       <Modal
+        onTransitionEndCapture={portalClassName ? (event: React.TransitionEvent<HTMLDivElement>) => {
+          // Bootstrap forwards this to the dialog panel. Its own and selected-
+          // cell transitions must not consume the modal root's fallback event.
+          event.stopPropagation();
+        } : undefined}
         show={show}
         onHide={close}
         onEntered={() => {
@@ -236,7 +248,7 @@ export function DateTimeField({
         onExited={() => returnFocus.current?.focus()}
         className={`hoe-widget hoe-picker ${portalClassName}`}
         dialogClassName="hoe-picker-dialog"
-        backdropClassName="hoe-picker-backdrop"
+        backdropClassName={`hoe-picker-backdrop ${portalClassName}`}
         aria-labelledby={id + "-title"}
         style={
           {

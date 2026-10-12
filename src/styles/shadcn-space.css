@@ -1,0 +1,74 @@
+@import "tw-animate-css";
+
+@theme inline {
+  --color-card: var(--sc-card);
+  --color-card-foreground: var(--sc-foreground);
+  --color-popover: var(--sc-popover);
+  --color-popover-foreground: var(--sc-foreground);
+  --color-primary: var(--sc-primary);
+  --color-primary-foreground: var(--sc-primary-foreground);
+  --color-secondary: var(--sc-muted);
+  --color-secondary-foreground: var(--sc-foreground);
+  --color-muted: var(--sc-muted);
+  --color-muted-foreground: var(--sc-muted-foreground);
+  --color-accent: var(--sc-muted);
+  --color-accent-foreground: var(--sc-foreground);
+  --color-destructive: var(--sc-destructive);
+  --color-border: var(--sc-border);
+  --color-input: var(--sc-border);
+  --color-ring: var(--sc-ring);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+}
+
+/* Shadcn's neutral palette stays inside the two form components and portals. */
+.hoe-store-scope .shadcn-space-control,
+.hoe-store-scope.shadcn-space-overlay {
+  --sc-card: #fff;
+  --sc-popover: #fff;
+  --sc-foreground: #171717;
+  --sc-primary: #171717;
+  --sc-primary-foreground: #fafafa;
+  --sc-muted: #f5f5f5;
+  --sc-muted-foreground: #737373;
+  --sc-border: #e5e5e5;
+  --sc-ring: #a3a3a3;
+  --sc-destructive: #dc2626;
+  --radius: .625rem;
+  --background: #fff;
+  color: var(--sc-foreground);
+}
+
+/* The site's unlayered button font reset would override the registry utilities. */
+.shadcn-space-control [data-slot="select-trigger"] {
+  font-size: 1rem;
+  line-height: 1.5rem;
+}
+.shadcn-space-control[data-component="select-10"] [data-slot="select-trigger"] {
+  height: 42px;
+}
+.shadcn-space-control[data-component="select-10"]:focus-visible{ outline: 1px solid var(--accent); outline-offset: 0px; }
+.shadcn-space-control[data-component="select-10"][data-invalid] {
+  border-color: var(--sc-destructive);
+}
+.shadcn-space-control .time-clear {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 20px;
+  height: 42px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--sc-muted-foreground);
+}
+.hoe-store-scope.shadcn-space-overlay [data-highlighted] {
+  background: var(--sc-muted);
+  color: var(--sc-foreground);
+}
+.hoe-store-scope.shadcn-space-overlay {
+  max-width: calc(100vw - 24px);
+}
+@media (prefers-reduced-motion: reduce) {
+  .shadcn-space-overlay { animation: none !important; }
+}

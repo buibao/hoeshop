@@ -1,0 +1,1872 @@
+diff --git a/src/app/(shop)/blog/[slug]/page.tsx b/src/app/(shop)/blog/[slug]/page.tsx
+index 9c5d693..ba98f1c 100644
+--- a/src/app/(shop)/blog/[slug]/page.tsx
++++ b/src/app/(shop)/blog/[slug]/page.tsx
+@@ -1,3 +1,4 @@
++import { StoreHeading } from "@/components/StoreHeading";
+ import type { Metadata } from "next";
+ import Link from "next/link";
+ import { notFound } from "next/navigation";
+@@ -28,29 +29,33 @@ export default async function BlogDetail({ params }: Props) {
+     p = (await getArticles()).find((p) => p.slug === slug);
+   if (!p) notFound();
+   return (
+-    <div className="container">
+-      <div className="breadcrumb">
+-        <Link href="/">Trang chủ</Link>
+-        <span>/</span>
+-        <Link href="/blog">Chuyện hoa</Link>
+-      </div>
+-      <div className="article-title">
+-        <span className="eyebrow">{p.category}</span>
+-        <h1>{p.title}</h1>
+-        <div className="article-meta">
+-          <span>Hòe</span>
+-          <time dateTime={p.date}>
+-            {new Intl.DateTimeFormat("vi-VN", {
+-              dateStyle: "long",
+-              timeZone: "Asia/Ho_Chi_Minh",
+-            }).format(new Date(p.date + "T00:00:00+07:00"))}
+-          </time>
++    <>
++      <StoreHeading>
++        <div className="breadcrumb">
++          <Link href="/">Trang chủ</Link>
++          <span>/</span>
++          <Link href="/blog">Chuyện hoa</Link>
++        </div>
++        <div className="article-title">
++          <span className="eyebrow">{p.category}</span>
++          <h1>{p.title}</h1>
++          <div className="article-meta">
++            <span>Hòe</span>
++            <time dateTime={p.date}>
++              {new Intl.DateTimeFormat("vi-VN", {
++                dateStyle: "long",
++                timeZone: "Asia/Ho_Chi_Minh",
++              }).format(new Date(p.date + "T00:00:00+07:00"))}
++            </time>
++          </div>
+         </div>
++      </StoreHeading>
++      <div className="container">
++        <article className="prose">
++          <Markdown skipHtml>{p.body}</Markdown>
++        </article>
++        {features.commentsEnabled ? <Comments postId={p.id} /> : null}
+       </div>
+-      <article className="prose">
+-        <Markdown skipHtml>{p.body}</Markdown>
+-      </article>
+-      {features.commentsEnabled ? <Comments postId={p.id} /> : null}
+-    </div>
++    </>
+   );
+ }
+diff --git a/src/app/(shop)/blog/page.tsx b/src/app/(shop)/blog/page.tsx
+index ccb2a59..276b748 100644
+--- a/src/app/(shop)/blog/page.tsx
++++ b/src/app/(shop)/blog/page.tsx
+@@ -1,3 +1,4 @@
++import { StoreHeading } from "@/components/StoreHeading";
+ import type { Metadata } from "next";
+ import Link from "next/link";
+ import { ArrowRight } from "lucide-react";
+@@ -10,40 +11,44 @@ export const metadata: Metadata = {
+ export default async function BlogPage() {
+   const posts = await getArticles();
+   return (
+-    <div className="container">
+-      <div className="page-heading">
+-        <span className="eyebrow">NHỮNG CÂU CHUYỆN MUỐN ĐƯỢC KỂ</span>
+-        <h1>
+-          Chuyện hoa,
+-          <br />
+-          chuyện chúng mình.
+-        </h1>
+-        <p>
+-          Đôi khi, một chút sắc màu và hương thơm cũng đủ để một ngày bình
+-          thường trở nên đáng yêu hơn.
+-        </p>
+-      </div>
+-      {posts.length ? (
+-        <div className="blog-grid">
+-          {posts.map((p) => (
+-            <article key={p.id} className="blog-card">
+-              <span className="eyebrow">{p.category}</span>
+-              <h2>
+-                <Link href={`/blog/${p.slug}`}>{p.title}</Link>
+-              </h2>
+-              <p>{p.excerpt}</p>
+-              <Link href={`/blog/${p.slug}`} className="text-link">
+-                Đọc câu chuyện <ArrowRight size={15} />
+-              </Link>
+-            </article>
+-          ))}
++    <>
++      <StoreHeading>
++        <div className="page-heading">
++          <span className="eyebrow">NHỮNG CÂU CHUYỆN MUỐN ĐƯỢC KỂ</span>
++          <h1>
++            Chuyện hoa,
++            <br />
++            chuyện chúng mình.
++          </h1>
++          <p>
++            Đôi khi, một chút sắc màu và hương thơm cũng đủ để một ngày bình
++            thường trở nên đáng yêu hơn.
++          </p>
+         </div>
+-      ) : (
+-        <Empty
+-          title="Câu chuyện đang được chuẩn bị"
+-          body="Hòe sẽ gửi bạn những câu chuyện mới khi nội dung đã sẵn sàng."
+-        />
+-      )}
+-    </div>
++      </StoreHeading>
++      <div className="container">
++        {posts.length ? (
++          <div className="blog-grid">
++            {posts.map((p) => (
++              <article key={p.id} className="blog-card">
++                <span className="eyebrow">{p.category}</span>
++                <h2>
++                  <Link href={`/blog/${p.slug}`}>{p.title}</Link>
++                </h2>
++                <p>{p.excerpt}</p>
++                <Link href={`/blog/${p.slug}`} className="text-link">
++                  Đọc câu chuyện <ArrowRight size={15} />
++                </Link>
++              </article>
++            ))}
++          </div>
++        ) : (
++          <Empty
++            title="Câu chuyện đang được chuẩn bị"
++            body="Hòe sẽ gửi bạn những câu chuyện mới khi nội dung đã sẵn sàng."
++          />
++        )}
++      </div>
++    </>
+   );
+ }
+diff --git a/src/app/(shop)/chinh-sach/[slug]/page.tsx b/src/app/(shop)/chinh-sach/[slug]/page.tsx
+index 90c6d4d..f524d1a 100644
+--- a/src/app/(shop)/chinh-sach/[slug]/page.tsx
++++ b/src/app/(shop)/chinh-sach/[slug]/page.tsx
+@@ -1,3 +1,4 @@
++import { StoreHeading } from "@/components/StoreHeading";
+ import type { Metadata } from "next";
+ import { notFound } from "next/navigation";
+ import Markdown from "react-markdown";
+@@ -15,14 +16,18 @@ export default async function PolicyPage({ params }: Props) {
+     p = (await getArticles("policies")).find((p) => p.slug === slug);
+   if (!p) notFound();
+   return (
+-    <div className="container section">
+-      <div className="article-title">
+-        <span className="eyebrow">CHÍNH SÁCH CỦA HÒE</span>
+-        <h1>{p.title}</h1>
++    <>
++      <StoreHeading containerClassName="section store-policy-heading">
++        <div className="article-title">
++          <span className="eyebrow">CHÍNH SÁCH CỦA HÒE</span>
++          <h1>{p.title}</h1>
++        </div>
++      </StoreHeading>
++      <div className="container section store-policy-body">
++        <article className="prose">
++          <Markdown skipHtml>{p.body}</Markdown>
++        </article>
+       </div>
+-      <article className="prose">
+-        <Markdown skipHtml>{p.body}</Markdown>
+-      </article>
+-    </div>
++    </>
+   );
+ }
+diff --git a/src/app/(shop)/dat-hoa/page.tsx b/src/app/(shop)/dat-hoa/page.tsx
+index ce2530b..07cdd02 100644
+--- a/src/app/(shop)/dat-hoa/page.tsx
++++ b/src/app/(shop)/dat-hoa/page.tsx
+@@ -1,3 +1,4 @@
++import { StoreHeading } from "@/components/StoreHeading";
+ import type { Metadata } from "next";
+ import { getProducts } from "@/server/content";
+ import { CheckoutForm } from "@/features/checkout/CheckoutForm";
+@@ -7,18 +8,22 @@ export const metadata: Metadata = {
+ };
+ export default async function CheckoutPage() {
+   return (
+-    <div className="container">
+-      <div className="page-heading">
+-        <span className="eyebrow">HÒE LẮNG NGHE ĐIỀU BẠN MUỐN GỬI</span>
+-        <h1>Gửi yêu cầu đặt hoa</h1>
+-        <p>
+-          Thông tin nhận hoa dùng chung cho giỏ này. Shop sẽ liên hệ xác nhận
+-          giá, phí giao và lịch nhận.
+-        </p>
++    <>
++      <StoreHeading>
++        <div className="page-heading">
++          <span className="eyebrow">HÒE LẮNG NGHE ĐIỀU BẠN MUỐN GỬI</span>
++          <h1>Gửi yêu cầu đặt hoa</h1>
++          <p>
++            Thông tin nhận hoa dùng chung cho giỏ này. Shop sẽ liên hệ xác nhận
++            giá, phí giao và lịch nhận.
++          </p>
++        </div>
++      </StoreHeading>
++      <div className="container">
++        <div style={{ paddingBottom: 70 }}>
++          <CheckoutForm products={await getProducts()} />
++        </div>
+       </div>
+-      <div style={{ paddingBottom: 70 }}>
+-        <CheckoutForm products={await getProducts()} />
+-      </div>
+-    </div>
++    </>
+   );
+ }
+diff --git a/src/app/(shop)/dich-vu/[service]/page.tsx b/src/app/(shop)/dich-vu/[service]/page.tsx
+index 489cff5..64f4f81 100644
+--- a/src/app/(shop)/dich-vu/[service]/page.tsx
++++ b/src/app/(shop)/dich-vu/[service]/page.tsx
+@@ -1,3 +1,4 @@
++import { StoreHeading } from "@/components/StoreHeading";
+ import type { Metadata } from "next";
+ import Link from "next/link";
+ import Image from "next/image";
+@@ -29,18 +30,34 @@ export default async function ServicePage({ params }: Props) {
+   const products = (await getProducts()).filter((p) => p.serviceType === s.id),
+     test = isTestContent();
+   const samples = (
+-    <section id="mau-hoa" tabIndex={s.id === "hoa-thoi" ? -1 : undefined} className={s.id === "hoa-thoi" ? "ht-service-section" : undefined}>
++    <section
++      id="mau-hoa"
++      tabIndex={s.id === "hoa-thoi" ? -1 : undefined}
++      className={s.id === "hoa-thoi" ? "ht-service-section" : undefined}
++    >
+       <div className="section-heading">
+         <h2>Mẫu hoa tham khảo</h2>
+-        {s.id === "hoa-thoi" ? <HoaThoiAnchor href="#tu-van" className="text-link">Chưa chọn mẫu? Kể Hòe nghe</HoaThoiAnchor> : <ScrollAnchor href="#tu-van" className="text-link">
+-          Chưa chọn mẫu? Kể Hòe nghe
+-        </ScrollAnchor>}
++        {s.id === "hoa-thoi" ? (
++          <HoaThoiAnchor href="#tu-van" className="text-link">
++            Chưa chọn mẫu? Kể Hòe nghe
++          </HoaThoiAnchor>
++        ) : (
++          <ScrollAnchor href="#tu-van" className="text-link">
++            Chưa chọn mẫu? Kể Hòe nghe
++          </ScrollAnchor>
++        )}
+       </div>
+       {products.length ? (
+         <div className="product-grid">
+-          {products.map((p, index) => (
+-            s.id === "hoa-thoi" ? <HoaThoiReveal key={p.id} delay={index * 0.05}><ProductCard product={p} /></HoaThoiReveal> : <ProductCard key={p.id} product={p} />
+-          ))}
++          {products.map((p, index) =>
++            s.id === "hoa-thoi" ? (
++              <HoaThoiReveal key={p.id} delay={index * 0.05}>
++                <ProductCard product={p} />
++              </HoaThoiReveal>
++            ) : (
++              <ProductCard key={p.id} product={p} />
++            ),
++          )}
+         </div>
+       ) : (
+         <Empty
+@@ -51,51 +68,61 @@ export default async function ServicePage({ params }: Props) {
+     </section>
+   );
+   return (
+-    <div className={`container${s.id === "hoa-thoi" ? " ht-service-page" : ""}`}>
+-      <div className="breadcrumb">
+-        <Link href="/">Trang chủ</Link>
+-        <span>/</span>
+-        <Link href="/san-pham">Dịch vụ</Link>
+-        <span>/</span>
+-        <span>{s.name}</span>
+-      </div>
+-      <div className="service-page-top">
+-        <div className="page-heading">
+-          <span className="eyebrow">
+-            / {s.number} — {s.name}
+-          </span>
+-          <h1>{s.subtitle}</h1>
+-          <p>{s.description}</p>
++    <div className={s.id === "hoa-thoi" ? "ht-service-page" : undefined}>
++      <StoreHeading>
++        <div className="breadcrumb">
++          <Link href="/">Trang chủ</Link>
++          <span>/</span>
++          <Link href="/san-pham">Dịch vụ</Link>
++          <span>/</span>
++          <span>{s.name}</span>
+         </div>
+-        <div className="service-art">
+-          <Image
+-            src={
+-              s.image ||
+-              (test
+-                ? "/images/preview/" +
+-                  (s.id === "hoa-thoi"
+-                    ? "peonies.jpg"
+-                    : s.id === "hoa-tam"
+-                      ? "bouquet.jpg"
+-                      : "roses.jpg")
+-                : "/images/floral-mark.svg")
+-            }
+-            alt={test ? "Ảnh minh họa dịch vụ trên bản test" : s.name}
+-            fill
+-            sizes="(max-width: 700px) 90vw, 45vw"
+-            preload
+-          />
++        <div className="service-page-top">
++          <div className="page-heading">
++            <span className="eyebrow">
++              / {s.number} — {s.name}
++            </span>
++            <h1>{s.subtitle}</h1>
++            <p>{s.description}</p>
++          </div>
++          <div className="service-art">
++            <Image
++              src={
++                s.image ||
++                (test
++                  ? "/images/preview/" +
++                    (s.id === "hoa-thoi"
++                      ? "peonies.jpg"
++                      : s.id === "hoa-tam"
++                        ? "bouquet.jpg"
++                        : "roses.jpg")
++                  : "/images/floral-mark.svg")
++              }
++              alt={test ? "Ảnh minh họa dịch vụ trên bản test" : s.name}
++              fill
++              sizes="(max-width: 700px) 90vw, 45vw"
++              preload
++            />
++          </div>
+         </div>
++      </StoreHeading>
++      <div className="container">
++        {s.id === "hoa-thoi" ? (
++          <HoaThoiServiceFlow guidance={s}>{samples}</HoaThoiServiceFlow>
++        ) : (
++          samples
++        )}
++        {s.id !== "hoa-thoi" ? (
++          <section className="inquiry-section" id="tu-van">
++            <h2>Một ý tưởng bắt đầu từ bạn</h2>
++            <p>
++              Chưa chọn mẫu? Hãy gửi nhu cầu để shop tư vấn. Nếu chọn một mẫu ở
++              trên, bạn sẽ cấu hình mẫu và gửi qua giỏ hoa.
++            </p>
++            <InquiryForm serviceType={s.id} guidance={s} />
++          </section>
++        ) : null}
+       </div>
+-      {s.id === "hoa-thoi" ? <HoaThoiServiceFlow guidance={s}>{samples}</HoaThoiServiceFlow> : samples}
+-      {s.id !== "hoa-thoi" ? <section className="inquiry-section" id="tu-van">
+-        <h2>Một ý tưởng bắt đầu từ bạn</h2>
+-        <p>
+-          Chưa chọn mẫu? Hãy gửi nhu cầu để shop tư vấn.{" "}
+-          Nếu chọn một mẫu ở trên, bạn sẽ cấu hình mẫu và gửi qua giỏ hoa.
+-        </p>
+-        <InquiryForm serviceType={s.id} guidance={s} />
+-      </section> : null}
+     </div>
+   );
+ }
+diff --git a/src/app/(shop)/gio-hang/page.tsx b/src/app/(shop)/gio-hang/page.tsx
+index 16ad866..72594a0 100644
+--- a/src/app/(shop)/gio-hang/page.tsx
++++ b/src/app/(shop)/gio-hang/page.tsx
+@@ -1,3 +1,4 @@
++import { StoreHeading } from "@/components/StoreHeading";
+ import type { Metadata } from "next";
+ import { getProducts, getServices } from "@/server/content";
+ import { CartView } from "@/features/cart/CartView";
+@@ -11,16 +12,20 @@ export default async function CartPage() {
+     getServices(),
+   ]);
+   return (
+-    <div className="container">
+-      <div className="page-heading">
+-        <span className="eyebrow">MỘT CHÚT DỊU DÀNG SẮP ĐƯỢC GỬI ĐI</span>
+-        <h1>Giỏ hoa của bạn</h1>
+-        <p>
+-          Xem lại từng mẫu, lời nhắn và ngày nhận mong muốn trước khi gửi yêu
+-          cầu.
+-        </p>
++    <>
++      <StoreHeading>
++        <div className="page-heading">
++          <span className="eyebrow">MỘT CHÚT DỊU DÀNG SẮP ĐƯỢC GỬI ĐI</span>
++          <h1>Giỏ hoa của bạn</h1>
++          <p>
++            Xem lại từng mẫu, lời nhắn và ngày nhận mong muốn trước khi gửi yêu
++            cầu.
++          </p>
++        </div>
++      </StoreHeading>
++      <div className="container">
++        <CartView products={products} services={services} />
+       </div>
+-      <CartView products={products} services={services} />
+-    </div>
++    </>
+   );
+ }
+diff --git a/src/app/(shop)/layout.tsx b/src/app/(shop)/layout.tsx
+index fd3c90e..d266dce 100644
+--- a/src/app/(shop)/layout.tsx
++++ b/src/app/(shop)/layout.tsx
+@@ -4,6 +4,7 @@ import { Footer } from "@/components/Footer";
+ import { StoreScope } from "@/components/StoreScope";
+ import { termes, cormorant } from "@/fonts/store-fonts";
+ import "@/styles/store-typography.css";
++import "@/styles/store-gradients.css";
+ import {
+   getSite,
+   getAssets,
+diff --git a/src/app/(shop)/lien-he/page.tsx b/src/app/(shop)/lien-he/page.tsx
+index 85717b5..69afe17 100644
+--- a/src/app/(shop)/lien-he/page.tsx
++++ b/src/app/(shop)/lien-he/page.tsx
+@@ -1,3 +1,4 @@
++import { StoreHeading } from "@/components/StoreHeading";
+ import type { Metadata } from "next";
+ import { getSite } from "@/server/content";
+ import { InquiryForm } from "@/features/checkout/InquiryForm";
+@@ -10,49 +11,57 @@ export const metadata: Metadata = {
+ export default async function ContactPage() {
+   const site = await getSite();
+   return (
+-    <div className="container">
+-      <div className="page-heading">
+-        <span className="eyebrow">BẮT ĐẦU BẰNG MỘT LỜI KỂ</span>
+-        <h1>
+-          Hòe ở đây,
+-          <br />
+-          để nghe bạn.
+-        </h1>
+-      </div>
+-      <div className="contact-layout">
+-        <div>
+-          <h2>
+-            Một chút hoa,
++    <>
++      <StoreHeading>
++        <div className="page-heading">
++          <span className="eyebrow">BẮT ĐẦU BẰNG MỘT LỜI KỂ</span>
++          <h1>
++            Hòe ở đây,
+             <br />
+-            một chút dịu dàng.
+-          </h2>
+-          <p className="muted" style={{ marginTop: 25 }}>
+-            Bạn đang nghĩ đến một người, một cảm xúc hay một thiết kế riêng? Hãy
+-            kể để Hòe cùng bạn tìm cách gửi.
+-          </p>
+-          <div className="footer-links" style={{ marginTop: 30 }}>
+-            {site.contact.phone && phoneHref(site.contact.phone) ? (
+-              <a href={phoneHref(site.contact.phone)!}>{site.contact.phone}</a>
+-            ) : null}
+-            {site.contact.email ? (
+-              <a href={`mailto:${site.contact.email}`}>{site.contact.email}</a>
+-            ) : null}
+-            {site.contact.address ? <p>{site.contact.address}</p> : null}
+-            {site.contact.hours ? <p>{site.contact.hours}</p> : null}
+-            {site.social.map((s) => (
+-              <a
+-                href={s.url}
+-                key={s.url}
+-                target="_blank"
+-                rel="noopener noreferrer"
+-              >
+-                {s.label}
+-              </a>
+-            ))}
++            để nghe bạn.
++          </h1>
++        </div>
++      </StoreHeading>
++      <div className="container">
++        <div className="contact-layout">
++          <div>
++            <h2>
++              Một chút hoa,
++              <br />
++              một chút dịu dàng.
++            </h2>
++            <p className="muted" style={{ marginTop: 25 }}>
++              Bạn đang nghĩ đến một người, một cảm xúc hay một thiết kế riêng?
++              Hãy kể để Hòe cùng bạn tìm cách gửi.
++            </p>
++            <div className="footer-links" style={{ marginTop: 30 }}>
++              {site.contact.phone && phoneHref(site.contact.phone) ? (
++                <a href={phoneHref(site.contact.phone)!}>
++                  {site.contact.phone}
++                </a>
++              ) : null}
++              {site.contact.email ? (
++                <a href={`mailto:${site.contact.email}`}>
++                  {site.contact.email}
++                </a>
++              ) : null}
++              {site.contact.address ? <p>{site.contact.address}</p> : null}
++              {site.contact.hours ? <p>{site.contact.hours}</p> : null}
++              {site.social.map((s) => (
++                <a
++                  href={s.url}
++                  key={s.url}
++                  target="_blank"
++                  rel="noopener noreferrer"
++                >
++                  {s.label}
++                </a>
++              ))}
++            </div>
+           </div>
++          <InquiryForm />
+         </div>
+-        <InquiryForm />
+       </div>
+-    </div>
++    </>
+   );
+ }
+diff --git a/src/app/(shop)/san-pham/[slug]/page.tsx b/src/app/(shop)/san-pham/[slug]/page.tsx
+index 623840b..08a7413 100644
+--- a/src/app/(shop)/san-pham/[slug]/page.tsx
++++ b/src/app/(shop)/san-pham/[slug]/page.tsx
+@@ -23,43 +23,45 @@ export default async function ProductDetail({ params }: Props) {
+   if (!product) notFound();
+   const service = (await getService(product.serviceType))!;
+   return (
+-    <div className="container hoe-editorial-detail">
+-      <div className="breadcrumb">
+-        <Link href="/">Trang chủ</Link>
+-        <span>/</span>
+-        <Link href="/san-pham">Sản phẩm</Link>
+-        <span>/</span>
+-        <Link href={`/dich-vu/${service.id}`}>{service.name}</Link>
+-      </div>
+-      <div className="detail-grid">
+-        <div className="detail-image">
+-          <div className="editorial-detail-photo">
+-            <Image
+-              src={product.image || "/images/floral-mark.svg"}
+-              alt={product.imageAlt || product.name}
+-              fill
+-              sizes="(max-width: 700px) 90vw, 45vw"
+-              loading="eager"
+-              fetchPriority="high"
+-              unoptimized={product.fixture}
+-            />
+-          </div>
++    <div className="store-detail-section">
++      <div className="container hoe-editorial-detail">
++        <div className="breadcrumb">
++          <Link href="/">Trang chủ</Link>
++          <span>/</span>
++          <Link href="/san-pham">Sản phẩm</Link>
++          <span>/</span>
++          <Link href={`/dich-vu/${service.id}`}>{service.name}</Link>
+         </div>
+-        <div className="detail-copy">
+-          <span className="eyebrow">{service.name}</span>
+-          <h1>{product.name}</h1>
+-          <p>{product.description}</p>
+-          <div className="detail-price">{priceLabel(product.price)}</div>
+-          <p className="editorial-price-note">
+-            Thiết kế, giá cuối và lịch nhận được Hòe xác nhận khi liên hệ.
+-          </p>
+-          {product.fixture ? (
+-            <p className="form-note">
+-              Mẫu test — không phải sản phẩm đang bán.
++        <div className="detail-grid">
++          <div className="detail-image">
++            <div className="editorial-detail-photo">
++              <Image
++                src={product.image || "/images/floral-mark.svg"}
++                alt={product.imageAlt || product.name}
++                fill
++                sizes="(max-width: 700px) 90vw, 45vw"
++                loading="eager"
++                fetchPriority="high"
++                unoptimized={product.fixture}
++              />
++            </div>
++          </div>
++          <div className="detail-copy">
++            <span className="eyebrow">{service.name}</span>
++            <h1>{product.name}</h1>
++            <p>{product.description}</p>
++            <div className="detail-price">{priceLabel(product.price)}</div>
++            <p className="editorial-price-note">
++              Thiết kế, giá cuối và lịch nhận được Hòe xác nhận khi liên hệ.
+             </p>
+-          ) : null}
+-          <hr className="divider" />
+-          <ProductForm product={product} guidance={service} />
++            {product.fixture ? (
++              <p className="form-note">
++                Mẫu test — không phải sản phẩm đang bán.
++              </p>
++            ) : null}
++            <hr className="divider" />
++            <ProductForm product={product} guidance={service} />
++          </div>
+         </div>
+       </div>
+     </div>
+diff --git a/src/app/(shop)/san-pham/page.tsx b/src/app/(shop)/san-pham/page.tsx
+index 535023b..5a006e4 100644
+--- a/src/app/(shop)/san-pham/page.tsx
++++ b/src/app/(shop)/san-pham/page.tsx
+@@ -1,3 +1,4 @@
++import { StoreHeading } from "@/components/StoreHeading";
+ import type { Metadata } from "next";
+ import { getProducts } from "@/server/content";
+ import { ServiceCards } from "@/components/ServiceCards";
+@@ -10,40 +11,44 @@ export const metadata: Metadata = {
+ export default async function ProductsPage() {
+   const products = await getProducts();
+   return (
+-    <div className="container">
+-      <div className="page-heading">
+-        <span className="eyebrow">CHỌN HOA TỪ ĐIỀU BẠN MUỐN GỬI</span>
+-        <h1>
+-          Những đóa hoa,
+-          <br />
+-          những câu chuyện.
+-        </h1>
+-        <p>
+-          Một chút cảm hứng cho ngày hôm nay. Chọn mẫu hoa, kể mong muốn, Hòe sẽ
+-          liên hệ xác nhận giá và lịch nhận.
+-        </p>
+-      </div>
+-      <ServiceCards />
+-      <section className="section">
+-        <div className="section-heading">
+-          <h2>Các mẫu hoa</h2>
+-          <p>Thay đổi thiết kế ngoài mẫu sẽ cần shop báo giá.</p>
++    <>
++      <StoreHeading>
++        <div className="page-heading">
++          <span className="eyebrow">CHỌN HOA TỪ ĐIỀU BẠN MUỐN GỬI</span>
++          <h1>
++            Những đóa hoa,
++            <br />
++            những câu chuyện.
++          </h1>
++          <p>
++            Một chút cảm hứng cho ngày hôm nay. Chọn mẫu hoa, kể mong muốn, Hòe
++            sẽ liên hệ xác nhận giá và lịch nhận.
++          </p>
+         </div>
+-        {products.length ? (
+-          <div className="product-grid">
+-            {products.map((p) => (
+-              <ProductCard key={p.id} product={p} />
+-            ))}
++      </StoreHeading>
++      <div className="container">
++        <ServiceCards />
++        <section className="section">
++          <div className="section-heading">
++            <h2>Các mẫu hoa</h2>
++            <p>Thay đổi thiết kế ngoài mẫu sẽ cần shop báo giá.</p>
+           </div>
+-        ) : (
+-          <Empty
+-            title="Mẫu hoa đang được chuẩn bị"
+-            body="Hòe sẽ giới thiệu những mẫu hoa khi hình ảnh và thông tin đã sẵn sàng."
+-            href="/lien-he"
+-            action="Đến trang liên hệ"
+-          />
+-        )}
+-      </section>
+-    </div>
++          {products.length ? (
++            <div className="product-grid">
++              {products.map((p) => (
++                <ProductCard key={p.id} product={p} />
++              ))}
++            </div>
++          ) : (
++            <Empty
++              title="Mẫu hoa đang được chuẩn bị"
++              body="Hòe sẽ giới thiệu những mẫu hoa khi hình ảnh và thông tin đã sẵn sàng."
++              href="/lien-he"
++              action="Đến trang liên hệ"
++            />
++          )}
++        </section>
++      </div>
++    </>
+   );
+ }
+diff --git a/src/app/(shop)/ve-hoe/page.tsx b/src/app/(shop)/ve-hoe/page.tsx
+index fc561f6..1626cf0 100644
+--- a/src/app/(shop)/ve-hoe/page.tsx
++++ b/src/app/(shop)/ve-hoe/page.tsx
+@@ -1,3 +1,4 @@
++import { StoreHeading } from "@/components/StoreHeading";
+ import type { Metadata } from "next";
+ import Link from "next/link";
+ import { getSite } from "@/server/content";
+@@ -8,61 +9,65 @@ export const metadata: Metadata = {
+ export default async function AboutPage() {
+   const site = await getSite();
+   return (
+-    <div className="container">
+-      <div className="page-heading">
+-        <span className="eyebrow">HOA & NHỮNG ĐIỀU DỊU DÀNG</span>
+-        <h1>
+-          Hòe bắt đầu từ
+-          <br />
+-          những điều nhỏ bé.
+-        </h1>
+-        <p>
+-          Hòe tin rằng hoa không chỉ dành cho những ngày đặc biệt. Hoa có thể
+-          nói lời yêu thương, cảm ơn, nhớ nhung, hoặc đơn giản là nhắc ta dịu
+-          dàng với chính mình.
+-        </p>
++    <>
++      <StoreHeading>
++        <div className="page-heading">
++          <span className="eyebrow">HOA & NHỮNG ĐIỀU DỊU DÀNG</span>
++          <h1>
++            Hòe bắt đầu từ
++            <br />
++            những điều nhỏ bé.
++          </h1>
++          <p>
++            Hòe tin rằng hoa không chỉ dành cho những ngày đặc biệt. Hoa có thể
++            nói lời yêu thương, cảm ơn, nhớ nhung, hoặc đơn giản là nhắc ta dịu
++            dàng với chính mình.
++          </p>
++        </div>
++      </StoreHeading>
++      <div className="container">
++        <section className="service-grid" style={{ marginBottom: 65 }}>
++          {[
++            [
++              "H - Heartfelt",
++              "Chân thành",
++              "Hoa là ngôn ngữ của cảm xúc. Hòe đặt sự chân thành vào từng nhành hoa, để những điều thương yêu được gửi trọn vẹn.",
++            ],
++            [
++              "O - Originality",
++              "Nguyên bản",
++              "Mỗi mong muốn là một câu chuyện riêng. Hòe cùng bạn tìm một thiết kế mang dấu ấn của người gửi và người nhận.",
++            ],
++            [
++              "E - Elegance",
++              "Thanh lịch",
++              "Vẻ đẹp từ những điều vừa đủ. Hòe chăm chút màu sắc, hình dáng và cảm giác mà những đóa hoa mang đến.",
++            ],
++          ].map(([letter, title, body]) => (
++            <article key={letter} className="service-card">
++              <span className="eyebrow">{letter}</span>
++              <h3 style={{ fontSize: 30 }}>{title}</h3>
++              <p>{body}</p>
++            </article>
++          ))}
++        </section>
++        <h2>Những điều bạn muốn biết</h2>
++        <div className="faq">
++          {site.faq.map((q) => (
++            <details key={q.question}>
++              <summary>{q.question}</summary>
++              <p>{q.answer}</p>
++            </details>
++          ))}
++        </div>
++        <Link
++          href="/blog/chuyen-cua-hoe"
++          className="text-link"
++          style={{ marginBottom: 65 }}
++        >
++          Đọc chuyện của Hòe
++        </Link>
+       </div>
+-      <section className="service-grid" style={{ marginBottom: 65 }}>
+-        {[
+-          [
+-            "H - Heartfelt",
+-            "Chân thành",
+-            "Hoa là ngôn ngữ của cảm xúc. Hòe đặt sự chân thành vào từng nhành hoa, để những điều thương yêu được gửi trọn vẹn.",
+-          ],
+-          [
+-            "O - Originality",
+-            "Nguyên bản",
+-            "Mỗi mong muốn là một câu chuyện riêng. Hòe cùng bạn tìm một thiết kế mang dấu ấn của người gửi và người nhận.",
+-          ],
+-          [
+-            "E - Elegance",
+-            "Thanh lịch",
+-            "Vẻ đẹp từ những điều vừa đủ. Hòe chăm chút màu sắc, hình dáng và cảm giác mà những đóa hoa mang đến.",
+-          ],
+-        ].map(([letter, title, body]) => (
+-          <article key={letter} className="service-card">
+-            <span className="eyebrow">{letter}</span>
+-            <h3 style={{ fontSize: 30 }}>{title}</h3>
+-            <p>{body}</p>
+-          </article>
+-        ))}
+-      </section>
+-      <h2>Những điều bạn muốn biết</h2>
+-      <div className="faq">
+-        {site.faq.map((q) => (
+-          <details key={q.question}>
+-            <summary>{q.question}</summary>
+-            <p>{q.answer}</p>
+-          </details>
+-        ))}
+-      </div>
+-      <Link
+-        href="/blog/chuyen-cua-hoe"
+-        className="text-link"
+-        style={{ marginBottom: 65 }}
+-      >
+-        Đọc chuyện của Hòe
+-      </Link>
+-    </div>
++    </>
+   );
+ }
+diff --git a/src/app/not-found.tsx b/src/app/not-found.tsx
+index d8839f4..ca44da9 100644
+--- a/src/app/not-found.tsx
++++ b/src/app/not-found.tsx
+@@ -1,2 +1,11 @@
+ import Link from "next/link";
+-export default function NotFound() { return <div className="container section empty"><span className="eyebrow">404</span><h1>Chưa tìm thấy đóa hoa này</h1><p>Trang bạn tìm chưa được xuất bản hoặc không còn khả dụng.</p><Link href="/" className="button">Về trang chủ</Link></div>; }
++import { StoreFallbackScope } from "@/components/StoreFallbackScope";
++import { termes, cormorant } from "@/fonts/store-fonts";
++import "@/styles/store-typography.css";
++import "@/styles/store-gradients.css";
++
++export default function NotFound() {
++  return <StoreFallbackScope className={`hoe-store-scope ${termes.variable} ${cormorant.variable}`}>
++    <div className="container section empty"><span className="eyebrow">404</span><h1>Chưa tìm thấy đóa hoa này</h1><p>Trang bạn tìm chưa được xuất bản hoặc không còn khả dụng.</p><Link href="/" className="button">Về trang chủ</Link></div>
++  </StoreFallbackScope>;
++}
+diff --git a/src/components/StoreFallbackScope.tsx b/src/components/StoreFallbackScope.tsx
+new file mode 100644
+--- /dev/null
++++ b/src/components/StoreFallbackScope.tsx
+@@ -0,0 +1,11 @@
++"use client";
++
++import { usePathname } from "next/navigation";
++import type { ReactNode } from "react";
++
++/** Root 404s bypass ShopLayout. Keep internal/auth fallbacks outside Store. */
++export function StoreFallbackScope({ className, children }: { className: string; children: ReactNode }) {
++  const pathname = usePathname();
++  const outsideStore = /^\/(?:admin|dang-nhap|xem-thu)(?:\/|$)/.test(pathname ?? "");
++  return outsideStore ? children : <div className={className}>{children}</div>;
++}
+diff --git a/src/components/StoreHeading.tsx b/src/components/StoreHeading.tsx
+new file mode 100644
+--- /dev/null
++++ b/src/components/StoreHeading.tsx
+@@ -0,0 +1,16 @@
++import type { ReactNode } from "react";
++
++/** Static, full-width background owner; the existing content measure stays inside. */
++export function StoreHeading({
++  children,
++  containerClassName = "",
++}: {
++  children: ReactNode;
++  containerClassName?: string;
++}) {
++  return (
++    <div className="store-heading-section">
++      <div className={`container ${containerClassName}`.trim()}>{children}</div>
++    </div>
++  );
++}
+diff --git a/src/styles/store-gradients.css b/src/styles/store-gradients.css
+new file mode 100644
+--- /dev/null
++++ b/src/styles/store-gradients.css
+@@ -0,0 +1,358 @@
++/* Store Gradient v2.1. One palette, scoped to the shell and labelled portal roots.
++   Colour only: geometry, fonts, motion and business states belong to their owners. */
++.hoe-store-scope {
++  --store-surface-reading: var(--background);
++  --store-surface-input: var(--background);
++  --store-fg: var(--ink);
++  --store-fg-muted: var(--muted);
++  --store-fg-on-action: var(--surface);
++  --store-border-control: var(--muted);
++  --store-tint-cycle: var(--background);
++  --store-shell-logo-end: 14%;
++  --store-shell-blush-position: 34%;
++  --store-header-ivory-position: 58%;
++  --store-footer-warm-position: 64%;
++
++  /* Valid single-colour fallbacks, including browsers without color-mix. */
++  --store-gradient-ambient: linear-gradient(var(--background), var(--background));
++  --store-gradient-header: linear-gradient(90deg, var(--background) var(--store-shell-logo-end), var(--brand-blush) var(--store-shell-blush-position), var(--background) var(--store-header-ivory-position));
++  --store-gradient-footer: linear-gradient(90deg, var(--background) var(--store-shell-logo-end), var(--brand-blush) var(--store-shell-blush-position), var(--background));
++  --store-gradient-form: linear-gradient(var(--background), var(--background));
++  --store-gradient-calendar: linear-gradient(var(--background), var(--background));
++  --store-gradient-submenu-hover: linear-gradient(var(--brand-blush), var(--brand-blush));
++  --store-gradient-blush: linear-gradient(var(--brand-blush), var(--brand-blush));
++  --store-gradient-warm: linear-gradient(var(--background), var(--background));
++  --store-gradient-card: linear-gradient(var(--background), var(--background));
++  --store-gradient-summary: linear-gradient(var(--brand-blush), var(--brand-blush));
++  --store-gradient-selected: linear-gradient(var(--brand-blush), var(--brand-blush));
++  --store-gradient-action: linear-gradient(var(--accent), var(--accent));
++  --store-gradient-action-hover: linear-gradient(var(--accent-hover), var(--accent));
++  --store-gradient-selected-strong: var(--store-gradient-action);
++  color: var(--store-fg);
++}
++
++@supports (color: color-mix(in srgb, white, transparent)) {
++  .hoe-store-scope {
++    /* Ivory at the logo's left endpoint, without a separate tile behind the image. */
++    --store-gradient-header: linear-gradient(90deg, var(--background) var(--store-shell-logo-end),
++      color-mix(in srgb, var(--brand-blush) 62%, var(--background)) var(--store-shell-blush-position),
++      var(--background) var(--store-header-ivory-position),
++      color-mix(in srgb, var(--brand-jasmine) 22%, var(--background)) 100%);
++    --store-gradient-footer: linear-gradient(90deg, var(--background) var(--store-shell-logo-end),
++      color-mix(in srgb, var(--brand-blush) 72%, var(--background)) var(--store-shell-blush-position),
++      color-mix(in srgb, var(--brand-jasmine) 25%, var(--background)) var(--store-footer-warm-position),
++      color-mix(in srgb, var(--brand-caramel) 20%, var(--background)) 100%);
++    --store-gradient-ambient: linear-gradient(110deg, var(--background) 0%,
++      color-mix(in srgb, var(--brand-blush) 65%, var(--background)) 58%,
++      color-mix(in srgb, var(--brand-jasmine) 18%, var(--background)) 100%);
++    --store-gradient-form: linear-gradient(135deg,
++      color-mix(in srgb, var(--brand-blush) 30%, var(--background)) 0%,
++      var(--background) 52%,
++      color-mix(in srgb, var(--brand-jasmine) 12%, var(--background)) 100%);
++    --store-gradient-calendar: linear-gradient(145deg, var(--background),
++      color-mix(in srgb, var(--brand-blush) 20%, var(--background)));
++    --store-gradient-submenu-hover: linear-gradient(110deg,
++      color-mix(in srgb, var(--brand-blush) 78%, var(--background)) 0%,
++      color-mix(in srgb, var(--brand-pink) 16%, var(--background)) 64%,
++      color-mix(in srgb, var(--brand-jasmine) 12%, var(--background)) 100%);
++    --store-gradient-blush: linear-gradient(145deg,
++      color-mix(in srgb, var(--brand-blush) 60%, var(--background)),
++      color-mix(in srgb, var(--brand-pink) 12%, var(--background)));
++    --store-gradient-warm: linear-gradient(135deg, var(--background),
++      color-mix(in srgb, var(--brand-jasmine) 12%, var(--background)) 50%,
++      color-mix(in srgb, var(--brand-caramel) 14%, var(--background)));
++    --store-gradient-card: linear-gradient(145deg, var(--background),
++      color-mix(in srgb, var(--surface-soft) 70%, var(--background)));
++    --store-gradient-summary: linear-gradient(145deg,
++      color-mix(in srgb, var(--brand-blush) 65%, var(--background)),
++      color-mix(in srgb, var(--brand-caramel) 12%, var(--background)));
++    --store-gradient-selected: linear-gradient(135deg,
++      color-mix(in srgb, var(--brand-blush) 80%, var(--background)),
++      color-mix(in srgb, var(--brand-pink) 18%, var(--background)));
++    --store-gradient-action: linear-gradient(120deg, var(--accent),
++      color-mix(in srgb, var(--brand-berry) 45%, var(--accent)));
++    --store-gradient-action-hover: linear-gradient(120deg, var(--accent-hover), var(--accent));
++    --store-border-control: color-mix(in srgb, var(--muted) 80%, var(--background));
++    --store-tint-cycle: color-mix(in srgb, var(--brand-blush) 35%, var(--background));
++  }
++}
++
++/* Reserve the existing 130px logo area in the shell's ivory endpoint on phones. */
++@media (max-width: 767px) {
++  .hoe-store-scope {
++    --store-shell-logo-end: 42%;
++    --store-shell-blush-position: 62%;
++    --store-header-ivory-position: 80%;
++    --store-footer-warm-position: 82%;
++  }
++}
++
++/* Primary actions only. Secondary, text, icon and destructive actions keep rank. */
++.hoe-store-scope :is(.button:not(.secondary), .olf-button) {
++  background-color: var(--accent);
++  background-image: var(--store-gradient-action);
++  color: var(--store-fg-on-action);
++}
++.hoe-store-scope :is(.button:not(.secondary), .olf-button):is(:hover, :active):not(:disabled):not([aria-disabled="true"]) {
++  background-color: var(--accent-hover);
++  background-image: var(--store-gradient-action-hover);
++}
++.hoe-store-scope .button.secondary {
++  background-color: transparent;
++  background-image: none;
++  color: var(--accent);
++}
++.hoe-store-scope .button.secondary:is(:hover, :active):not(:disabled):not([aria-disabled="true"]) {
++  background-color: var(--brand-blush);
++  background-image: var(--store-gradient-selected);
++}
++.hoe-store-scope :is(.button, .olf-button):is(:disabled, [aria-disabled="true"]) {
++  background-color: var(--surface-soft);
++  background-image: none;
++  color: var(--muted);
++  border-color: var(--store-border-control);
++  opacity: 1;
++}
++.hoe-store-scope :is(.hoe-quantity button, .ht-number-stepper button, .ht-calendar-controls button,
++  .olf-carousel-controls button, .ht-reset-calendar):disabled {
++  background-image: none;
++  color: var(--muted);
++  opacity: 1;
++}
++.hoe-store-scope :is(a, button, input, select, textarea, summary):focus-visible {
++  outline: 2px solid var(--focus);
++  outline-offset: 3px;
++}
++.hoe-store-scope :is(.ht-inquiry, .ht-product-form) :is(button, input, textarea, select, summary):focus-visible,
++.hoe-store-scope .ht-period-option:has(input:focus-visible) {
++  outline: 2px solid var(--focus);
++  outline-offset: 3px;
++}
++
++/* Reading surfaces, photos and semantic alerts never acquire a tint overlay. */
++.hoe-store-scope :is(.prose, .comments, .cart-row, .faq, .olf-faq, .hoe-faq) {
++  background-color: var(--store-surface-reading);
++  background-image: none;
++}
++.hoe-store-scope :is(form.card, .hoe-editorial-detail .detail-copy form, .ht-inquiry, .comments form, .edit-form) {
++  background-color: var(--background);
++  background-image: var(--store-gradient-form);
++}
++.hoe-store-scope .ht-delivery-calendar {
++  background-color: var(--background);
++  background-image: var(--store-gradient-calendar);
++}
++.hoe-store-scope :is(.ht-calendar-grid, .ht-calendar-key) {
++  background-color: var(--store-surface-input);
++  background-image: none;
++}
++.hoe-store-scope .field :is(input:not([type="hidden"]):not([type="radio"]):not([type="checkbox"]), select, textarea) {
++  background-color: var(--store-surface-input);
++  background-image: none;
++}
++.hoe-store-scope .field :is(input, select, textarea):not([aria-invalid="true"]),
++.hoe-store-scope :is(.hoe-quantity, .ht-number-stepper, .ht-period-option, .ht-package-button,
++  .ht-calendar-controls button, .ht-duration-input button, .ht-duration-input input,
++  .ht-shortcuts button, .hoe-presets button, .icon-button, .olf-carousel-play, .time-list) {
++  border-color: var(--store-border-control);
++}
++.hoe-store-scope .field :is(input, select, textarea)[aria-invalid="true"] {
++  border-color: var(--ui-error);
++}
++.hoe-store-scope :is(.hoe-quantity, .ht-number-stepper, .time-list) :is(button, input):focus-visible {
++  outline-offset: -3px;
++}
++
++/* Background belongs to the static full-width owner, never a narrow copy node. */
++.hoe-store-scope :is(.olf-hero, .store-heading-section, .store-detail-section) {
++  background-color: var(--background);
++  background-image: var(--store-gradient-ambient);
++}
++.hoe-store-scope :is(.page-heading, .article-title, .detail-copy) {
++  background-color: transparent;
++  background-image: none;
++}
++.hoe-store-scope .store-policy-heading { padding-bottom: 0; }
++.hoe-store-scope .store-policy-body { padding-top: 0; }
++.hoe-store-scope :is(.service-card, .olf-service-card, .blog-card, .olf-journal-card, .empty, .hoe-process > div) {
++  background-color: var(--background);
++  background-image: var(--store-gradient-card);
++}
++.hoe-store-scope .service-card .number { color: var(--store-fg-muted); }
++.hoe-store-scope :is(.hoe-product-card .product-image, .olf-home .olf-product-card .product-image) {
++  background-color: var(--background);
++  background-image: var(--store-gradient-card);
++}
++.hoe-store-scope :is(.cart-summary, .ht-summary) {
++  background-color: var(--brand-blush);
++  background-image: var(--store-gradient-summary);
++}
++/* Nested schedule summaries on an already coloured cart keep a single layer. */
++.hoe-store-scope .cart-summary .ht-summary {
++  background-color: var(--store-surface-reading);
++  background-image: none;
++}
++
++/* Home keeps ivory pauses between blush, champagne and the berry benefit. */
++.hoe-store-scope :is(.olf-services, .soft-section) {
++  background-color: var(--brand-blush);
++  background-image: var(--store-gradient-blush);
++}
++.hoe-store-scope :is(.olf-story, .olf-process) {
++  background-color: var(--background);
++  background-image: var(--store-gradient-warm);
++}
++.hoe-store-scope .olf-benefit-card {
++  background-color: var(--brand-blush);
++  background-image: var(--store-gradient-blush);
++}
++.hoe-store-scope .olf-benefit-grid > :nth-child(3n + 2) .olf-benefit-card {
++  background-color: var(--background);
++  background-image: var(--store-gradient-warm);
++}
++.hoe-store-scope .olf-benefit-grid > :nth-child(3n) .olf-benefit-card {
++  background-color: var(--accent);
++  background-image: var(--store-gradient-action);
++  color: var(--store-fg-on-action);
++}
++.hoe-store-scope .olf-benefit-grid > :nth-child(3n) .olf-benefit-card :is(p, h3, .olf-step-number, .olf-benefit-art) {
++  color: var(--store-fg-on-action);
++  border-color: currentColor;
++}
++.hoe-store-scope :is(.olf-cta, .cta-section) {
++  background-color: var(--brand-blush);
++  background-image: var(--store-gradient-summary);
++}
++.hoe-store-scope .olf-back-to-top { color: var(--store-fg-on-action); }
++
++/* Shell gradients remain visible across the full width, with transparent content. */
++.hoe-store-scope .hoe-store-header {
++  background-color: var(--background);
++  background-image: var(--store-gradient-header);
++}
++.hoe-store-scope .hoe-store-footer {
++  background-color: var(--background);
++  background-image: var(--store-gradient-footer);
++}
++.hoe-store-scope :is(.hoe-store-header .container, .hoe-store-footer .olf-shell,
++  .hoe-store-header .brand, .hoe-store-footer .brand) { background: transparent; }
++.hoe-store-scope .hoe-store-submenu,
++.hoe-store-scope.hoe-store-menu {
++  background-color: var(--background);
++  background-image: var(--store-gradient-form);
++}
++.hoe-store-scope .hoe-store-header .hoe-store-submenu a,
++.hoe-store-scope.hoe-store-menu nav .hoe-store-submenu a {
++  background-color: transparent;
++  background-image: none;
++  color: var(--ink);
++  text-decoration: none;
++}
++.hoe-store-scope .hoe-store-header .hoe-store-submenu a:is(:hover, :focus-visible),
++.hoe-store-scope.hoe-store-menu nav .hoe-store-submenu a:is(:hover, :focus-visible) {
++  background-color: var(--brand-blush);
++  background-image: var(--store-gradient-submenu-hover);
++  color: var(--accent);
++  text-decoration: none;
++}
++.hoe-store-scope .hoe-store-submenu a[aria-current="page"] strong { color: var(--accent); }
++
++/* Feature aliases inherit the Store formulas; preview/Admin still use old tokens. */
++.hoe-store-scope :is(.ht-service-page, .ht-fields, .ht-recommendations, .ht-inquiry, .ht-product-form, .ht-summary, .ht-receipt) {
++  --ht-blush: var(--store-tint-cycle);
++  --ht-gradient-card: var(--store-gradient-card);
++  --ht-gradient-selected: var(--store-gradient-selected);
++  --ht-gradient-summary: var(--store-gradient-summary);
++}
++.hoe-store-scope :is(.ht-recommendation, .ht-package) {
++  background-color: var(--background);
++  background-image: var(--ht-gradient-card);
++}
++.hoe-store-scope :is(.ht-recommendation.is-selected, .ht-package.is-selected, .ht-period-option.is-selected,
++  .ht-package-button[aria-pressed="true"], .ht-shortcuts button[aria-pressed="true"], .ht-quota.is-complete,
++  .ht-day:has(input:checked)) {
++  background-color: var(--brand-blush);
++  background-image: var(--ht-gradient-selected);
++  border-color: var(--accent);
++  color: var(--store-fg);
++}
++.hoe-store-scope .ht-calendar-selected .ht-calendar-day-button {
++  background-color: var(--brand-blush);
++  background-image: var(--ht-gradient-selected);
++  border-color: var(--accent);
++  color: var(--store-fg);
++}
++.hoe-store-scope .ht-calendar-region { background: var(--store-tint-cycle); }
++.hoe-store-scope .ht-key-region { background: var(--store-tint-cycle); border: 1px solid var(--store-border-control); }
++.hoe-store-scope .ht-summary { background-image: var(--ht-gradient-summary); }
++.hoe-store-scope .cart-summary .ht-summary { background-image: none; }
++.hoe-store-scope :is(.ht-calendar-day-button, .ht-package-button, .ht-shortcuts button):disabled,
++.hoe-store-scope .ht-day:has(input:disabled) {
++  background-image: none;
++  color: var(--muted);
++  opacity: 1;
++}
++
++/* Picker scope lives ON the portalled root, not on an ancestor. Backdrop untouched. */
++.hoe-store-scope.hoe-picker .modal-content {
++  background-color: var(--background);
++  background-image: var(--store-gradient-calendar);
++}
++.hoe-store-scope.hoe-picker .modal-body {
++  background-color: transparent;
++  background-image: none;
++}
++.hoe-store-scope.hoe-picker :is(.modal-header, .modal-footer) {
++  background-color: var(--background);
++  background-image: var(--store-gradient-form);
++}
++.hoe-store-scope.hoe-picker :is(.hoe-month-grid, .time-list) {
++  background-color: var(--store-surface-input);
++  background-image: none;
++}
++.hoe-store-scope.hoe-picker .hoe-day-selected .hoe-day-button,
++.hoe-store-scope.hoe-picker .time-list button[aria-selected="true"] {
++  background-color: var(--accent);
++  background-image: var(--store-gradient-selected-strong);
++  color: var(--store-fg-on-action);
++}
++.hoe-store-scope.hoe-picker .hoe-day-disabled .hoe-day-button,
++.hoe-store-scope.hoe-picker .time-list button:disabled {
++  background-color: transparent;
++  background-image: none;
++  color: var(--muted);
++  opacity: 1;
++  text-decoration: line-through;
++}
++.hoe-store-scope :is(.hoe-month-button, .hoe-day-button):focus-visible { outline-offset: -3px; }
++.hoe-store-scope.hoe-picker .hoe-day-selected .hoe-day-button:focus-visible,
++.hoe-store-scope.hoe-picker .time-list button[aria-selected="true"]:focus-visible {
++  outline-color: var(--store-fg-on-action);
++  outline-offset: -3px;
++}
++
++/* System colours expose selection and focus when decorative gradients disappear. */
++@media (forced-colors: active) {
++  .hoe-store-scope { --store-border-control: ButtonText; }
++  .hoe-store-scope :is(.button, .olf-button, .ht-period-option, .ht-package-button,
++    .ht-calendar-day-button, .hoe-day-button, .time-list button) {
++    background-image: none;
++    forced-color-adjust: auto;
++  }
++  .hoe-store-scope :is(.ht-period-option.is-selected, .ht-package-button[aria-pressed="true"],
++    .ht-calendar-selected .ht-calendar-day-button, .hoe-day-selected .hoe-day-button,
++    .time-list button[aria-selected="true"]) {
++    outline: 2px solid Highlight;
++    outline-offset: -3px;
++    border-color: Highlight;
++  }
++  .hoe-store-scope :is(a, button, input, select, textarea, summary):focus-visible { outline-color: Highlight; }
++  .hoe-store-scope.hoe-picker .hoe-day-selected .hoe-day-button:focus-visible,
++  .hoe-store-scope.hoe-picker .time-list button[aria-selected="true"]:focus-visible { outline-color: Highlight; }
++  .hoe-store-scope .olf-benefit-grid > :nth-child(3n) .olf-benefit-card {
++    background-image: none;
++    background-color: Canvas;
++    color: CanvasText;
++  }
++  .hoe-store-scope .olf-benefit-grid > :nth-child(3n) .olf-benefit-card :is(p, h3, .olf-step-number, .olf-benefit-art) { color: CanvasText; }
++}
+diff --git a/playwright.gradients.config.ts b/playwright.gradients.config.ts
+new file mode 100644
+--- /dev/null
++++ b/playwright.gradients.config.ts
+@@ -0,0 +1,21 @@
++import { defineConfig, devices } from "@playwright/test";
++
++// Build first with the isolated fixture launcher. No operator DB/auth profile.
++export default defineConfig({
++  testDir: "./tests/e2e",
++  fullyParallel: false,
++  workers: 1,
++  timeout: 60000,
++  reporter: [["line"], ["json", { outputFile: process.env.STORE_GRADIENT_REPORT_PATH || "docs/store-gradients/verification/playwright.json" }]],
++  use: { baseURL: "http://localhost:3101", trace: "retain-on-failure" },
++  projects: [
++    { name: "desktop", use: { ...devices["Desktop Chrome"] } },
++    { name: "mobile", use: { ...devices["iPhone 13"], defaultBrowserType: "chromium" } },
++  ],
++  webServer: {
++    command: "node scripts/local-hoa-thoi.mjs --serve --port 3101",
++    url: "http://localhost:3101",
++    reuseExistingServer: true,
++    timeout: 60000,
++  },
++});
+diff --git a/tests/e2e/store-gradients.spec.ts b/tests/e2e/store-gradients.spec.ts
+new file mode 100644
+--- /dev/null
++++ b/tests/e2e/store-gradients.spec.ts
+@@ -0,0 +1,148 @@
++import { test, expect } from "./fixtures";
++
++test("Store roles keep reading surfaces and primary/secondary actions distinct", async ({ page }) => {
++  await page.emulateMedia({ reducedMotion: "reduce" });
++  await page.goto("/");
++  for (const selector of [".olf-hero", ".olf-services", ".olf-story", ".olf-process", ".olf-cta", ".hoe-store-header", ".hoe-store-footer"]) {
++    expect(await page.locator(selector).first().evaluate(el => getComputedStyle(el).backgroundImage)).toContain("gradient");
++  }
++  const berry = page.locator(".olf-benefit-card").nth(2);
++  for (const selector of ["h3", "p", ".olf-step-number", ".olf-benefit-art"]) {
++    expect(await berry.locator(selector).evaluate(el => getComputedStyle(el).color)).toBe("rgb(255, 255, 255)");
++  }
++  expect(await page.locator(".olf-carousel-controls .icon-button").first().evaluate(el => getComputedStyle(el).backgroundImage)).toBe("none");
++  await page.goto("/blog/chuyen-cua-hoe");
++  expect(await page.locator(".store-heading-section").evaluate(el => getComputedStyle(el).backgroundImage)).toContain("gradient");
++  expect(await page.locator(".article-title").evaluate(el => getComputedStyle(el).backgroundImage)).toBe("none");
++  expect(await page.locator(".comments form").evaluate(el => getComputedStyle(el).backgroundImage)).toContain("gradient");
++  expect(await page.locator(".prose").evaluate(el => getComputedStyle(el).backgroundImage)).toBe("none");
++  expect(await page.getByLabel("Tên hiển thị", { exact: true }).evaluate(el => getComputedStyle(el).backgroundImage)).toBe("none");
++});
++
++test("full-width owners preserve copy measures and submenu highlights only interactive items", async ({ page }) => {
++  await page.emulateMedia({ reducedMotion: "reduce" });
++  await page.goto("/dich-vu/hoa-thoi");
++  const heading = await page.locator(".store-heading-section").boundingBox();
++  expect(heading?.x).toBe(0);
++  expect(heading?.width).toBe(page.viewportSize()!.width);
++  expect(await page.locator(".page-heading").evaluate(el => getComputedStyle(el).backgroundImage)).toBe("none");
++  for (const selector of [".ht-inquiry", ".ht-delivery-calendar"]) {
++    expect(await page.locator(selector).evaluate(el => getComputedStyle(el).backgroundImage)).toContain("gradient");
++  }
++  const mobile = page.viewportSize()!.width < 1024;
++  if (mobile) await page.getByRole("button", { name: "Mở menu", exact: true }).click();
++  const trigger = page.getByRole("button", { name: "Các loại hoa", exact: true }).last();
++  await trigger.click();
++  const submenu = page.locator(mobile ? ".hoe-store-menu .hoe-store-submenu" : ".hoe-store-header .hoe-store-submenu");
++  const links = submenu.locator("li a");
++  await page.mouse.move(page.viewportSize()!.width - 4, 4);
++  const current = submenu.locator('a[aria-current="page"]');
++  expect(await current.evaluate(el => getComputedStyle(el).backgroundImage)).toBe("none");
++  for (let index = 0; index < 3; index++) {
++    const link = links.nth(index);
++    await trigger.focus();
++    await link.hover();
++    expect(await link.evaluate(el => getComputedStyle(el).backgroundImage)).toContain("gradient");
++    for (let other = 0; other < 3; other++) {
++      if (other !== index) expect(await links.nth(other).evaluate(el => getComputedStyle(el).backgroundImage)).toBe("none");
++    }
++    for (const owner of [link, link.locator("strong"), link.locator("small")]) {
++      expect(await owner.evaluate(el => getComputedStyle(el).textDecorationLine)).toBe("none");
++    }
++    await page.keyboard.press("Tab");
++    await link.focus();
++    await page.mouse.move(page.viewportSize()!.width - 4, 4);
++    expect(await link.evaluate(el => el.matches(":focus-visible"))).toBe(true);
++    expect(await link.evaluate(el => getComputedStyle(el).backgroundImage)).toContain("gradient");
++    expect(await link.evaluate(el => getComputedStyle(el).outlineStyle)).toBe("solid");
++    expect(await trigger.evaluate(el => getComputedStyle(el).backgroundImage)).toBe("none");
++  }
++  await page.keyboard.press("Escape");
++  await expect(trigger).toBeFocused();
++  if (mobile) await page.keyboard.press("Escape");
++  await page.goto("/san-pham/mau-test-diu-dang");
++  expect((await page.locator(".store-detail-section").boundingBox())?.width).toBe(page.viewportSize()!.width);
++  expect(await page.locator(".detail-copy").evaluate(el => getComputedStyle(el).backgroundImage)).toBe("none");
++  expect(await page.locator(".detail-copy form").evaluate(el => getComputedStyle(el).backgroundImage)).toContain("gradient");
++});
++
++test("Store picker portal keeps strong selection, cancel, focus and disabled reset", async ({ page }) => {
++  await page.goto("/san-pham/mau-test-diu-dang");
++  const trigger = page.getByRole("button", { name: /Mở lịch:/ }).first();
++  await trigger.click();
++  await expect(page.locator(".hoe-store-scope.hoe-picker")).toBeVisible();
++  await page.getByRole("button", { name: "Chọn hôm nay", exact: true }).click();
++  const selected = page.locator(".hoe-day-selected .hoe-day-button");
++  await expect(selected).toHaveCSS("color", "rgb(255, 255, 255)");
++  await page.keyboard.press("Tab");
++  await selected.focus();
++  await expect(selected).toHaveCSS("outline-color", "rgb(255, 255, 255)");
++  expect(await selected.evaluate(el => getComputedStyle(el).backgroundImage)).toContain("gradient");
++  await page.getByRole("button", { name: "Hủy", exact: true }).click();
++  await expect(page.locator(".hoe-picker")).toHaveCount(0);
++  await expect(trigger).toBeFocused();
++  await trigger.click();
++  await page.getByRole("button", { name: "Chọn hôm nay", exact: true }).click();
++  await expect(selected).toHaveCSS("color", "rgb(255, 255, 255)");
++  await page.getByRole("button", { name: "Xác nhận", exact: true }).focus();
++  await expect(page.getByRole("button", { name: "Xác nhận", exact: true })).toBeFocused();
++  await page.keyboard.press("Enter");
++  await expect(page.locator(".hoe-picker")).toHaveCount(0);
++  await expect(trigger).toBeFocused();
++  await page.getByRole("button", { name: /Chọn giờ:/ }).first().click();
++  const option = page.getByRole("listbox", { name: "Giờ", exact: true }).getByRole("option", { name: "23", exact: true });
++  await option.click();
++  await expect(option).toHaveCSS("color", "rgb(255, 255, 255)");
++  await page.keyboard.press("Tab");
++  await option.focus();
++  await expect(option).toHaveCSS("outline-color", "rgb(255, 255, 255)");
++  expect(await option.evaluate(el => getComputedStyle(el).backgroundImage)).toContain("gradient");
++  await page.keyboard.press("Escape");
++});
++
++test("soft calendar selection clears, disabled actions lose gradient and forced colours retain cues", async ({ page }) => {
++  await page.clock.setFixedTime(new Date("2026-10-11T10:00:00Z"));
++  await page.goto("/dich-vu/hoa-thoi");
++  const day = page.locator(".ht-calendar-day-button:not([disabled])").first();
++  await day.click();
++  await expect(day).toHaveCSS("color", "rgb(51, 44, 42)");
++  expect(await day.evaluate(el => getComputedStyle(el).backgroundImage)).toContain("gradient");
++  await day.click();
++  expect(await day.evaluate(el => getComputedStyle(el).backgroundImage)).toBe("none");
++  const submit = page.getByRole("button", { name: "Gửi mong muốn đến Hòe", exact: true });
++  // Exercise CSS transition into disabled without changing the application handlers.
++  await submit.evaluate(el => { (el as HTMLButtonElement).disabled = true; });
++  await submit.hover({ force: true });
++  expect(await submit.evaluate(el => getComputedStyle(el).backgroundImage)).toBe("none");
++  await submit.evaluate(el => { (el as HTMLButtonElement).disabled = false; });
++  await day.click();
++  await page.emulateMedia({ forcedColors: "active" });
++  expect(await day.evaluate(el => getComputedStyle(el).backgroundImage)).toBe("none");
++  expect(await day.evaluate(el => getComputedStyle(el).outlineStyle)).toBe("solid");
++});
++
++test("root fallback and client navigation preserve Store isolation", async ({ page }) => {
++  await page.goto("/khong-co-trang-nay");
++  await expect(page.locator(".hoe-store-scope .empty")).toBeVisible();
++  await page.getByRole("link", { name: "Về trang chủ", exact: true }).click();
++  // Use the mounted AppRouter context so retained CSS is tested without reloads.
++  for (const route of ["/admin", "/dang-nhap", "/xem-thu/widgets", "/admin/khong-co", "/xem-thu/khong-co"]) {
++    await expect(page.locator(".hoe-store-header .brand")).toBeVisible();
++    await page.evaluate(async destination => {
++      const link = document.querySelector('.hoe-store-header .brand')!;
++      const key = Object.keys(link).find(key => key.startsWith("__reactFiber$"))!;
++      type Fiber = { return: Fiber | null; memoizedProps?: { value?: { push?: (path: string) => void; refresh?: () => void } } };
++      let fiber = (link as unknown as Record<string, Fiber>)[key] as Fiber | null;
++      while (fiber) {
++        const router = fiber.memoizedProps?.value;
++        if (router?.push && router.refresh) { router.push(destination); return; }
++        fiber = fiber.return;
++      }
++      throw new Error("Mounted AppRouter context not found");
++    }, route);
++    await expect(page).toHaveURL(new RegExp(route.replaceAll("/", "\\/")));
++    await expect(page.locator(".hoe-store-scope")).toHaveCount(0);
++    expect(await page.locator("body").evaluate(el => getComputedStyle(el).getPropertyValue("--store-gradient-action"))).toBe("");
++    await page.goto("/");
++  }
++});
+diff --git a/scripts/review-store-gradients.mjs b/scripts/review-store-gradients.mjs
+new file mode 100644
+--- /dev/null
++++ b/scripts/review-store-gradients.mjs
+@@ -0,0 +1,75 @@
++import { chromium } from '@playwright/test';
++import { mkdir, writeFile } from 'node:fs/promises';
++import { randomUUID } from 'node:crypto';
++
++// Run only against the isolated local fixture launcher, never Preview/production.
++const phase = process.argv[2] || 'after';
++if (!['before', 'after'].includes(phase)) throw new Error('Expected before or after');
++const baseURL = 'http://localhost:3101';
++const revision = process.argv[3];
++if (revision && revision !== 'v2.1') throw new Error('Unknown revision');
++const directory = `docs/store-gradients/${revision ? `${revision}/` : ''}${phase}`;
++await mkdir(directory, { recursive: true });
++const browser = await chromium.launch();
++const report = [];
++const routes = [
++  ['home', '/'], ['catalogue', '/san-pham'],
++  ['product-tam', '/san-pham/mau-test-diu-dang'],
++  ['product-thoi', '/san-pham/mau-test-hoa-thoi'],
++  ['product-y', '/san-pham/mau-test-nang'],
++  ['service-tam', '/dich-vu/hoa-tam'], ['service-thoi', '/dich-vu/hoa-thoi'],
++  ['service-y', '/dich-vu/hoa-y'], ['cart-empty', '/gio-hang'],
++  ['checkout-empty', '/dat-hoa'], ['about', '/ve-hoe'], ['blog', '/blog'],
++  ['article', '/blog/chuyen-cua-hoe'], ['policy-unpublished', '/chinh-sach/ban-hang'],
++  ['contact', '/lien-he'], ['404', '/khong-co-trang-nay'],
++  ['product-404', '/san-pham/khong-co-mau'], ['admin', '/admin'],
++  ['auth', '/dang-nhap'], ['preview', '/xem-thu/widgets'],
++];
++try {
++  for (const width of [390, 1440]) {
++    const context = await browser.newContext({ baseURL, viewport: { width, height: 900 }, reducedMotion: 'reduce', extraHTTPHeaders: { 'x-hoe-test-identity': randomUUID() } });
++    const page = await context.newPage();
++    page.setDefaultNavigationTimeout(120000);
++    await page.clock.setFixedTime(new Date('2026-10-11T10:00:00Z'));
++    for (const [name, route] of routes) {
++      const errors = [];
++      const onError = error => errors.push(error.message);
++      page.on('pageerror', onError);
++      const response = await page.goto(route, { waitUntil: 'domcontentloaded' });
++      await page.evaluate(() => document.fonts.ready);
++      await page.locator('h1').first().waitFor();
++      await page.evaluate(() => document.querySelectorAll('img').forEach(img => { img.loading = 'eager'; }));
++      await page.waitForFunction(() => [...document.images].every(img => img.complete && img.naturalWidth > 0), undefined, { timeout: 30000 });
++      if (phase === 'before' && !revision) {
++        // Re-capture HEAD colours without changing source or interrupting the dev
++        // server. This file is the last import in each of its owning CSS chunks.
++        await page.evaluate(() => {
++          for (const sheet of document.styleSheets) {
++            let rules;
++            try { rules = [...sheet.cssRules]; } catch { continue; }
++            const start = rules.findIndex(rule => rule.cssText.includes('--store-gradient-ambient:'));
++            if (start >= 0) for (let index = rules.length - 1; index >= start; index--) sheet.deleteRule(index);
++          }
++          // Root fallback's new wrapper has no counterpart in HEAD.
++          const wrapper = document.querySelector('.hoe-store-scope:has(> .empty)');
++          if (wrapper) wrapper.replaceWith(...wrapper.childNodes);
++        });
++      }
++      await page.screenshot({ path: `${directory}/${width}-${name}.png`, fullPage: true });
++      report.push({ width, name, route, status: response.status(), errors, ...await page.evaluate(() => {
++        const geometry = {};
++        for (const selector of ['h1', '.page-heading', '.article-title', '.detail-grid', '.detail-image', '.detail-copy', '.service-page-top', '.service-art', '.service-grid', '.product-grid', '.contact-layout', '.cart-layout', '.prose', '.ht-service-flow', '.ht-inquiry', '.hoe-store-footer']) {
++          const element = document.querySelector(selector);
++          if (element) { const box = element.getBoundingClientRect(); geometry[selector] = { x: box.x, y: box.y + scrollY, width: box.width, height: box.height }; }
++        }
++        return { overflow: document.documentElement.scrollWidth > innerWidth + 1, scope: !!document.querySelector('.hoe-store-scope'), body: getComputedStyle(document.body).backgroundColor, heading: getComputedStyle(document.querySelector('.store-heading-section, .store-detail-section, .page-heading, .article-title, .olf-hero, .detail-copy, .empty, h1')).backgroundImage, geometry };
++      }) });
++      page.off('pageerror', onError);
++      console.log(`${phase} ${width} ${name}: ${response.status()}`);
++    }
++    await context.close();
++  }
++} finally {
++  await writeFile(`${directory}/routes.json`, JSON.stringify(report, null, 2));
++  await browser.close();
++}
+diff --git a/scripts/review-gradient-priority.mjs b/scripts/review-gradient-priority.mjs
+new file mode 100644
+--- /dev/null
++++ b/scripts/review-gradient-priority.mjs
+@@ -0,0 +1,82 @@
++import { chromium, expect } from '@playwright/test';
++import { mkdir, writeFile } from 'node:fs/promises';
++import { randomUUID } from 'node:crypto';
++
++const phase = process.argv[2];
++if (!['before', 'after'].includes(phase)) throw new Error('Expected before or after');
++const directory = `docs/store-gradients/v2.1/${phase}/states`;
++await mkdir(directory, { recursive: true });
++const browser = await chromium.launch();
++const report = [];
++try {
++  for (const width of [1440, 390]) {
++    const context = await browser.newContext({ baseURL: 'http://localhost:3101', viewport: { width, height: 900 }, reducedMotion: 'reduce', extraHTTPHeaders: { 'x-hoe-test-identity': randomUUID() } });
++    const page = await context.newPage();
++    await page.clock.setFixedTime(new Date('2026-10-11T10:00:00Z'));
++    const shot = async (name, selector) => {
++      await page.evaluate(() => document.fonts.ready);
++      await page.evaluate(() => document.querySelectorAll('img').forEach(img => { img.loading = 'eager'; }));
++      await page.waitForFunction(() => [...document.images].every(img => img.complete && img.naturalWidth > 0));
++      await (selector ? page.locator(selector).first() : page).screenshot({ path: `${directory}/${width}-${name}.png`, style: '.skip-link:not(:focus) { visibility: hidden; }', ...(selector ? {} : { fullPage: true }) });
++    };
++    await page.goto('/san-pham/mau-test-diu-dang');
++    await page.getByRole('button', { name: 'Thêm vào giỏ hoa', exact: true }).click();
++    await expect(page.locator('.error[role=alert]')).toBeVisible();
++    await shot('product-error');
++    await page.getByLabel('Cảm xúc muốn gửi', { exact: true }).fill('Review bề mặt gradient local');
++    // Existing quantity input is commented out in HEAD. A browser-only fixture
++    // enables visual review of cart/checkout without changing application logic.
++    await page.locator('.detail-copy form').evaluate(form => {
++      const input = document.createElement('input');
++      input.type = 'hidden'; input.name = 'quantity'; input.value = '1'; form.append(input);
++    });
++    await page.getByRole('button', { name: 'Thêm vào giỏ hoa', exact: true }).click();
++    await expect(page.getByText('Đã thêm vào giỏ hoa.', { exact: true })).toBeVisible();
++    await shot('product');
++    await page.goto('/gio-hang');
++    await shot('cart-populated');
++    await page.getByRole('button', { name: 'Sửa cấu hình', exact: true }).click();
++    await shot('cart-edit');
++    await page.goto('/dat-hoa');
++    await page.getByLabel('Họ tên người đặt', { exact: true }).focus();
++    await shot('checkout');
++    await page.goto('/dich-vu/hoa-thoi');
++    await page.getByRole('button', { name: 'Tăng số bó mỗi tuần', exact: true }).click();
++    await page.getByRole('button', { name: 'Tăng số combo', exact: true }).click();
++    const day = iso => page.locator('[data-delivery-calendar]').getByRole('button', { name: new RegExp(` · ${iso}`) });
++    for (const iso of ['2026-10-14', '2026-10-17', '2026-10-20']) await day(iso).click();
++    await shot('calendar-three-of-four', '.ht-fields');
++    await shot('service-configured');
++    await day('2026-10-23').click();
++    await shot('calendar-complete', '.ht-fields');
++    if (width < 1024) await page.getByRole('button', { name: 'Mở menu', exact: true }).click();
++    const trigger = page.getByRole('button', { name: 'Các loại hoa', exact: true }).last();
++    await trigger.click();
++    const root = width < 1024 ? '.hoe-store-menu .hoe-store-submenu' : '.hoe-store-header .hoe-store-submenu';
++    await page.mouse.move(width - 4, 4);
++    await shot('submenu-current-default', root);
++    const links = page.locator(`${root} li a`);
++    for (let index = 0; index < 3; index++) {
++      const link = links.nth(index);
++      await trigger.focus();
++      await link.hover();
++      await shot(`submenu-${index}-hover`, root);
++      await page.keyboard.press('Tab');
++      await link.focus();
++      await page.mouse.move(width - 4, 4);
++      await shot(`submenu-${index}-focus`, root);
++      report.push({ width, index, ...await link.evaluate(el => ({ focusVisible: el.matches(':focus-visible'), image: getComputedStyle(el).backgroundImage, decoration: getComputedStyle(el).textDecorationLine, titleDecoration: getComputedStyle(el.querySelector('strong')).textDecorationLine, descriptionDecoration: getComputedStyle(el.querySelector('small')).textDecorationLine })) });
++    }
++    await page.keyboard.press('Escape');
++    if (width < 1024) await page.keyboard.press('Escape');
++    await page.goto('/blog/chuyen-cua-hoe');
++    await page.getByRole('button', { name: 'Gửi bình luận', exact: true }).click();
++    await expect(page.locator('.comments .error[role=alert]')).toBeVisible();
++    await page.getByLabel('Tên hiển thị', { exact: true }).focus();
++    await shot('comment-error-focus');
++    await context.close();
++  }
++} finally {
++  await writeFile(`${directory}/report.json`, JSON.stringify({ fixture: 'local mock; quantity=1 injected into browser only; no API submission', menu: report }, null, 2));
++  await browser.close();
++}
+diff --git a/scripts/verify-store-gradients.mjs b/scripts/verify-store-gradients.mjs
+new file mode 100644
+--- /dev/null
++++ b/scripts/verify-store-gradients.mjs
+@@ -0,0 +1,255 @@
++import { chromium, expect } from '@playwright/test';
++import { mkdir, readFile, writeFile } from 'node:fs/promises';
++import sharp from 'sharp';
++import assert from 'node:assert/strict';
++import { randomUUID } from 'node:crypto';
++
++const revision = process.argv.includes('--v2.1') ? 'v2.1/' : '';
++const directory = `docs/store-gradients/${revision}verification`;
++await mkdir(directory, { recursive: true });
++const browser = await chromium.launch();
++const baseURL = 'http://localhost:3101';
++const context = await browser.newContext({ baseURL, viewport: { width: 1440, height: 900 }, reducedMotion: 'reduce', extraHTTPHeaders: { 'x-hoe-test-identity': randomUUID() } });
++const page = await context.newPage();
++page.setDefaultNavigationTimeout(120000);
++await page.clock.setFixedTime(new Date('2026-10-11T10:00:00Z'));
++const report = { responsive: [], contrast: [], states: [], flow: [] };
++if (process.argv.includes('--states-only')) report.responsive = JSON.parse(await readFile(`${directory}/report.json`, 'utf8')).responsive;
++const luminance = channels => channels.map(n => n / 255).map(n => n <= .04045 ? n / 12.92 : ((n + .055) / 1.055) ** 2.4).reduce((sum, n, i) => sum + n * [.2126, .7152, .0722][i], 0);
++const ratio = (a, b) => (Math.max(a, b) + .05) / (Math.min(a, b) + .05);
++async function contrast(name, background, foreground = background, threshold = 4.5, property = 'color') {
++  const target = page.locator(background).first();
++  const fg = await page.locator(foreground).first().evaluate((el, property) => getComputedStyle(el)[property], property);
++  const rgba = await page.evaluate(color => {
++    const canvas = document.createElement('canvas');
++    canvas.width = canvas.height = 1;
++    const painter = canvas.getContext('2d'); painter.fillStyle = color; painter.fillRect(0, 0, 1, 1);
++    return [...painter.getImageData(0, 0, 1, 1).data];
++  }, fg);
++  assert.equal(rgba[3], 255, `${name}: foreground must be opaque (${fg})`);
++  const rgb = rgba.slice(0, 3);
++  await target.evaluate(el => el.setAttribute('data-contrast-target', 'true'));
++  // Sample the actual browser raster of every role, with its alpha layers and
++  // ancestor background intact. Hide copy temporarily, preserving its geometry.
++  const png = await target.screenshot({ style: '[data-contrast-target] { color: transparent !important; text-shadow: none !important; } [data-contrast-target] * { visibility: hidden !important; } .olf-back-to-top, nextjs-portal, .skip-link { visibility: hidden !important; }', animations: 'disabled' });
++  await writeFile(`${directory}/background-${name.replaceAll(' ', '-')}.png`, png);
++  await target.evaluate(el => el.removeAttribute('data-contrast-target'));
++  const { data, info } = await sharp(png).removeAlpha().raw().toBuffer({ resolveWithObject: true });
++  let minimum = Infinity, worst = [];
++  const pad = Math.min(16, Math.floor(Math.min(info.width, info.height) / 4));
++  for (let y = pad; y < info.height - pad; y += 2) for (let x = pad; x < info.width - pad; x += 2) {
++    const offset = (y * info.width + x) * info.channels;
++    const pixel = [...data.subarray(offset, offset + 3)];
++    const value = ratio(luminance(rgb), luminance(pixel));
++    if (value < minimum) { minimum = value; worst = pixel; }
++  }
++  const result = { name, foreground: fg, worstBackground: worst, minimum: +minimum.toFixed(3), threshold, pass: minimum >= threshold };
++  report.contrast.push(result);
++  console.log('contrast', name, result.minimum);
++  assert.ok(result.pass, `${name}: ${minimum} < ${threshold}`);
++}
++async function shot(name, locator) {
++  const target = locator ? page.locator(locator).first() : page;
++  await target.screenshot({ path: `${directory}/${page.viewportSize().width}-${name}.png`, ...(locator ? {} : { fullPage: true }) });
++}
++try {
++  const inventory = JSON.parse(await readFile(`docs/store-gradients/${revision}after/routes.json`, 'utf8')).filter(row => row.width === 390);
++  for (const { name, route } of process.argv.includes('--states-only') ? [] : inventory) {
++    await page.goto(route, { waitUntil: 'domcontentloaded' });
++    for (const width of [360, 390, 768, 1024, 1440]) {
++      await page.setViewportSize({ width, height: 900 });
++      // Let ResizeObserver and layout-dependent calendar/carousel effects settle.
++      await page.waitForTimeout(150);
++      const overflow = await page.evaluate(() => document.documentElement.scrollWidth > innerWidth + 1);
++      report.responsive.push({ name, route, width, overflow });
++      assert.equal(overflow, false, `${route}: overflow at ${width}`);
++    }
++    console.log('responsive', name);
++  }
++  await page.goto('/');
++  await contrast('header navigation', '.hoe-store-header', '.hoe-store-header .nav > a');
++  await contrast('header icon', '.hoe-store-header', '.hoe-store-header .cart-link', 3);
++  await contrast('footer helper', '.hoe-store-footer', '.hoe-store-footer .footer-brand p');
++  await contrast('footer links', '.hoe-store-footer', '.hoe-store-footer .footer-links a');
++  await contrast('ambient helper', '.olf-hero', '.olf-hero-description > p');
++  await contrast('blush helper', '.olf-services', '.olf-services .olf-section-heading p');
++  await contrast('warm helper', '.olf-story', '.olf-benefits-intro p');
++  await contrast('card helper', '.olf-service-card', '.olf-service-card p');
++  // The third grid item owns the berry role (article is nested in reveal nodes).
++  await contrast('berry benefit copy', '.olf-benefit-grid > :nth-child(3) .olf-benefit-card', '.olf-benefit-grid > :nth-child(3) .olf-benefit-card p');
++  await contrast('berry benefit icon', '.olf-benefit-grid > :nth-child(3) .olf-benefit-card', '.olf-benefit-grid > :nth-child(3) .olf-benefit-art', 3);
++  await contrast('primary action', '.olf-hero .olf-button');
++  await page.locator('.olf-hero .olf-button').hover();
++  await page.waitForTimeout(200);
++  await contrast('primary hover', '.olf-hero .olf-button');
++  await page.goto('/san-pham/mau-test-diu-dang');
++  await contrast('detail ambient helper', '.store-detail-section', '.detail-copy .editorial-price-note');
++  await contrast('product form helper', '.detail-copy form', '.detail-copy form .form-note');
++  await contrast('form adjacent boundary', '.detail-copy form', 'textarea[name=emotion]', 3, 'borderTopColor');
++  await contrast('input boundary', 'textarea[name=emotion]', 'textarea[name=emotion]', 3, 'borderTopColor');
++  await page.locator('textarea[name=emotion]').focus();
++  await contrast('input focus', 'textarea[name=emotion]', 'textarea[name=emotion]', 3, 'outlineColor');
++  await contrast('form adjacent focus', '.detail-copy form', 'textarea[name=emotion]', 3, 'outlineColor');
++  await page.getByRole('button', { name: 'Thêm vào giỏ hoa', exact: true }).click();
++  await expect(page.locator('.error[role=alert]')).toBeVisible();
++  await contrast('invalid input boundary', 'textarea[name=emotion]', 'textarea[name=emotion]', 3, 'borderTopColor');
++  await shot('product-error');
++  await page.getByLabel('Cảm xúc muốn gửi', { exact: true }).fill('Review gradient local');
++  // HEAD comments out QuantityField's input. Supply a local browser fixture only;
++  // preserve that unrelated business bug in source and record the limitation.
++  await page.locator('.detail-copy form').evaluate(form => {
++    const quantity = document.createElement('input');
++    quantity.type = 'hidden'; quantity.name = 'quantity'; quantity.value = '1';
++    form.append(quantity);
++  });
++  report.flow.push({ name: 'fixture prerequisite', limitation: 'HEAD QuantityField omits quantity input; injected quantity=1 in browser only' });
++  await page.getByRole('button', { name: 'Thêm vào giỏ hoa', exact: true }).click();
++  await expect(page.getByText('Đã thêm vào giỏ hoa.', { exact: true })).toBeVisible();
++  await page.goto('/gio-hang');
++  await contrast('cart summary helper', '.cart-summary', '.cart-summary .form-note');
++  await shot('cart-populated');
++  await page.getByRole('button', { name: 'Sửa cấu hình', exact: true }).click();
++  await shot('cart-edit');
++  await page.getByRole('button', { name: 'Lưu cấu hình', exact: true }).click();
++  await page.goto('/dat-hoa');
++  await contrast('checkout heading helper', '.store-heading-section', '.page-heading p');
++  await contrast('checkout form text', 'form.card', 'form.card label');
++  await contrast('checkout form helper', 'form.card', 'form.card .form-note');
++  await shot('checkout');
++  await page.goto('/san-pham/mau-test-diu-dang');
++  const dateTrigger = page.getByRole('button', { name: /Mở lịch:/ }).first();
++  await dateTrigger.click();
++  await page.getByRole('button', { name: 'Chọn hôm nay', exact: true }).click();
++  await expect(page.locator('.hoe-day-selected .hoe-day-button')).toHaveCSS('color', 'rgb(255, 255, 255)');
++  await contrast('picker calendar text', '.hoe-picker .modal-content', '.hoe-picker .modal-title');
++  await contrast('picker form helper', '.hoe-picker .modal-header', '.hoe-picker .eyebrow');
++  await contrast('picker selected day', '.hoe-day-selected .hoe-day-button');
++  await page.keyboard.press('Tab');
++  await page.locator('.hoe-day-selected .hoe-day-button').focus();
++  await expect(page.locator('.hoe-day-selected .hoe-day-button')).toHaveCSS('outline-color', 'rgb(255, 255, 255)');
++  await contrast('picker day focus', '.hoe-day-selected .hoe-day-button', '.hoe-day-selected .hoe-day-button', 3, 'outlineColor');
++  await shot('picker-date', '.hoe-picker .modal-dialog');
++  await page.getByRole('button', { name: 'Xác nhận', exact: true }).click();
++  await expect(dateTrigger).toBeFocused();
++  await page.getByRole('button', { name: /Chọn giờ:/ }).first().click();
++  await page.getByRole('listbox', { name: 'Giờ', exact: true }).getByRole('option', { name: '23', exact: true }).click();
++  await page.getByRole('listbox', { name: 'Phút', exact: true }).getByRole('option', { name: '59', exact: true }).click();
++  await expect(page.locator('.time-list button[aria-selected=true]').first()).toHaveCSS('color', 'rgb(255, 255, 255)');
++  await contrast('picker selected time', '.time-list button[aria-selected=true]');
++  await page.keyboard.press('Tab');
++  await page.locator('.time-list button[aria-selected=true]').first().focus();
++  await contrast('picker time focus', '.time-list button[aria-selected=true]', '.time-list button[aria-selected=true]', 3, 'outlineColor');
++  await shot('picker-time', '.hoe-picker .modal-dialog');
++  await page.getByRole('button', { name: 'Xác nhận', exact: true }).click();
++  await page.goto('/dat-hoa');
++  for (const [name, value] of [['Họ tên người đặt', 'Khách review local'], ['Số điện thoại', '0901234567'], ['Tên người nhận', 'Người nhận mock'], ['Địa chỉ nhận hoa', 'Địa chỉ mock local']]) await page.getByLabel(name, { exact: true }).fill(value);
++  const order = page.waitForResponse(response => response.url().endsWith('/api/orders') && response.request().method() === 'POST');
++  await page.getByRole('button', { name: 'Gửi yêu cầu đặt hoa', exact: true }).click();
++  const response = await order;
++  assert.equal(response.status(), 201);
++  await expect(page.getByRole('status')).toContainText('Hòe đã nhận yêu cầu');
++  report.flow.push({ name: 'product → cart/edit → checkout → mock receipt', status: response.status(), cartCleared: await page.evaluate(() => JSON.parse(localStorage.getItem('hoe.cart.v1')).items.length === 0) });
++  await shot('receipt');
++  await page.goto('/lien-he');
++  await contrast('inquiry form text', 'form.card', 'form.card label');
++  await page.getByLabel('Họ tên', { exact: true }).fill('Khách mock gradient');
++  await page.getByLabel('Số điện thoại', { exact: true }).fill('0901234567');
++  await page.getByLabel('Nội dung yêu cầu', { exact: true }).fill('Kiểm tra inquiry local và trạng thái thử lại');
++  let failInquiry = true;
++  await page.route('**/api/inquiries', async route => {
++    if (failInquiry) { failInquiry = false; await route.fulfill({ status: 503, contentType: 'application/json', body: JSON.stringify({ error: { message: 'Lỗi mock local, thử lại.' } }) }); }
++    else await route.continue();
++  });
++  await page.getByRole('button', { name: 'Gửi yêu cầu tư vấn', exact: true }).click();
++  await expect(page.locator('.error[role=alert]')).toBeVisible();
++  await shot('inquiry-error');
++  const inquiry = page.waitForResponse(response => response.url().endsWith('/api/inquiries') && response.request().method() === 'POST');
++  await page.getByRole('button', { name: 'Gửi yêu cầu tư vấn', exact: true }).click();
++  assert.equal((await inquiry).status(), 201);
++  await expect(page.getByRole('status')).toContainText('Đây là yêu cầu tư vấn');
++  await shot('inquiry-success');
++  report.flow.push({ name: 'inquiry error → retry → mock receipt', status: 201 });
++  await page.goto('/dich-vu/hoa-thoi');
++  await contrast('schedule form helper', '.ht-inquiry', '.ht-inquiry .ht-helper');
++  await contrast('calendar helper', '.ht-delivery-calendar', '.ht-delivery-calendar .ht-helper');
++  await contrast('calendar icon', '.ht-delivery-calendar', '.ht-calendar-controls button', 3);
++  await page.getByRole('button', { name: 'Tăng số bó mỗi tuần', exact: true }).click();
++  await page.getByRole('button', { name: 'Tăng số combo', exact: true }).click();
++  const day = iso => page.locator('[data-delivery-calendar]').getByRole('button', { name: new RegExp(` · ${iso}`) });
++  for (const iso of ['2026-10-14', '2026-10-17', '2026-10-20']) await day(iso).click();
++  await contrast('selected soft day', '.ht-calendar-selected .ht-calendar-day-button');
++  await contrast('schedule summary helper', '.ht-summary', '.ht-summary .ht-helper');
++  await contrast('selected soft package', '.ht-period-option.is-selected');
++  await shot('calendar-three-of-four', '.ht-fields');
++  await day('2026-10-23').click();
++  await shot('calendar-complete', '.ht-fields');
++  await day('2026-10-23').click();
++  assert.equal(await day('2026-10-23').evaluate(el => getComputedStyle(el).backgroundImage), 'none');
++  report.states.push({ name: 'soft selected → unselected clears image', pass: true });
++  await page.setViewportSize({ width: 390, height: 900 });
++  await shot('calendar-three-of-four', '.ht-fields');
++  await contrast('mobile header icon', '.hoe-store-header', '.hoe-store-header .cart-link', 3);
++  await contrast('mobile footer helper', '.hoe-store-footer', '.hoe-store-footer .footer-brand p');
++  await page.getByRole('button', { name: 'Mở menu', exact: true }).click();
++  await page.getByRole('button', { name: 'Các loại hoa', exact: true }).last().click();
++  await shot('mobile-menu', '.hoe-store-menu');
++  const menuItem = page.locator('.hoe-store-menu .hoe-store-submenu a').nth(1);
++  await menuItem.hover();
++  await contrast('submenu hover helper', '.hoe-store-menu .hoe-store-submenu a:nth-of-type(1):hover', '.hoe-store-menu .hoe-store-submenu a:hover small');
++  await page.keyboard.press('Tab');
++  await menuItem.focus();
++  await page.mouse.move(386, 4);
++  await contrast('submenu focus helper', '.hoe-store-menu .hoe-store-submenu a:focus-visible', '.hoe-store-menu .hoe-store-submenu a:focus-visible small');
++  await contrast('submenu focus outline', '.hoe-store-menu .hoe-store-submenu a:focus-visible', '.hoe-store-menu .hoe-store-submenu a:focus-visible', 3, 'outlineColor');
++  await page.keyboard.press('Escape');
++  await page.goto('/san-pham/mau-test-diu-dang');
++  await page.getByRole('button', { name: /Mở lịch:/ }).first().click();
++  await page.getByRole('button', { name: 'Chọn hôm nay', exact: true }).click();
++  await shot('picker-date', '.hoe-picker .modal-dialog');
++  await page.getByRole('button', { name: 'Hủy', exact: true }).click();
++  await page.getByRole('button', { name: /Chọn giờ:/ }).first().click();
++  await page.getByRole('listbox', { name: 'Giờ', exact: true }).getByRole('option', { name: '23', exact: true }).click();
++  await shot('picker-time', '.hoe-picker .modal-dialog');
++  await page.keyboard.press('Escape');
++  await page.keyboard.press('Escape');
++  await page.setViewportSize({ width: 1440, height: 900 });
++  await page.goto('/');
++  await page.getByRole('button', { name: 'Các loại hoa', exact: true }).click();
++  await page.locator('.hoe-store-header .hoe-store-submenu a').nth(2).hover();
++  await contrast('desktop submenu hover helper', '.hoe-store-header .hoe-store-submenu a:hover', '.hoe-store-header .hoe-store-submenu a:hover small');
++  await contrast('desktop submenu icon', '.hoe-store-header .hoe-store-submenu a:hover', '.hoe-store-header .hoe-store-submenu a:hover svg', 3);
++  await shot('submenu', '.hoe-store-submenu');
++  await page.keyboard.press('Escape');
++  await page.goto('/blog/chuyen-cua-hoe');
++  await contrast('article heading', '.store-heading-section', '.article-title h1');
++  await contrast('comment form text', '.comments form', '.comments form label');
++  await shot('article-comment');
++  await page.goto('/');
++  await page.emulateMedia({ forcedColors: 'active' });
++  await shot('forced-colors');
++  await page.emulateMedia({ forcedColors: 'none' });
++  await page.evaluate(() => {
++    for (const sheet of document.styleSheets) {
++      let rules; try { rules = [...sheet.cssRules]; } catch { continue; }
++      for (let i = rules.length - 1; i >= 0; i--) {
++        if (rules[i] instanceof CSSSupportsRule && rules[i].conditionText.includes('color-mix') && rules[i].cssText.includes('--store-gradient-ambient')) sheet.deleteRule(i);
++      }
++    }
++  });
++  await contrast('fallback blush helper', '.olf-services', '.olf-services .olf-section-heading p');
++  await contrast('fallback action', '.olf-hero .olf-button');
++  await shot('without-color-mix');
++  report.states.push({ name: 'color-mix @supports removed: valid solid fallback roles', pass: true });
++  const noJS = await browser.newContext({ baseURL, javaScriptEnabled: false, viewport: { width: 390, height: 900 } });
++  const staticPage = await noJS.newPage();
++  for (const route of ['/', '/dich-vu/hoa-thoi', '/khong-co-trang-nay']) {
++    await staticPage.goto(route);
++    await expect(staticPage.locator('h1')).toBeVisible();
++    await staticPage.screenshot({ path: `${directory}/390-no-js-${route === '/' ? 'home' : route.includes('dich-vu') ? 'service' : '404'}.png`, fullPage: true });
++    report.states.push({ name: `no-JS ${route}`, pass: true });
++  }
++  await noJS.close();
++} finally {
++  await writeFile(`${directory}/report.json`, JSON.stringify(report, null, 2));
++  await browser.close();
++}

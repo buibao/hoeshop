@@ -1,0 +1,13 @@
+/* Visible is the SSR/failure default. WAAPI owns only explicitly opted-in copy. */
+@property --store-text-y { syntax: "<length>"; inherits: true; initial-value: 0px; }
+.hoe-store-scope [data-text-layer] { display: block; }
+.hoe-store-scope [data-text-inline="true"] > [data-text-layer] { display: inline-block; }
+.hoe-store-scope .store-card-title-copy[data-text-inline="true"],
+.hoe-store-scope .store-card-title-copy > [data-text-layer] { display: block; }
+/* Counter the copy's displacement on inline anchors, then restore it on their
+   copy. Relative positioning preserves original line wrapping and hit areas. */
+.hoe-store-scope [data-text-layer] a { position: relative; top: calc(0px - var(--store-text-y)); }
+.hoe-store-scope [data-text-link-copy] { position: relative; top: var(--store-text-y); }
+@media (prefers-reduced-motion: reduce), (forced-colors: active) {
+  .hoe-store-scope [data-text-layer] { opacity: 1 !important; transform: none !important; }
+}

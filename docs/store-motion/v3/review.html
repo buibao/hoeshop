@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="vi">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Hòe — Store text v3 review</title>
+<style>
+body{margin:0;background:#fffcf7;color:#382c28;font:16px/1.6 system-ui,sans-serif}main{max-width:1500px;margin:auto;padding:28px}h1,h2{font-family:Georgia,serif;font-weight:400}a{color:#a62050}.grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}article{background:#fff5f2;border:1px solid #eadbd3;border-radius:12px;padding:16px;min-width:0}video{width:100%;max-height:760px;background:#eee6df}img{width:100%;height:auto}nav{display:flex;gap:20px;flex-wrap:wrap}p{max-width:900px}.mobile video{max-height:700px}small{display:block;margin:10px 0}@media(max-width:850px){.grid{grid-template-columns:1fr}}
+</style>
+<main>
+<h1>Hòe · Store text animation v3</h1>
+<p>Video có fresh load, cuộn qua text, end state, replay/jitter và focus bypass. Hero/carousel dùng cùng viewport/data và giữ nguyên motion. Kết quả đo nằm trong report; ảnh tĩnh chỉ để xem typography/layout.</p>
+<nav><a href="README.md">Bàn giao &amp; TR-01–18</a><a href="comparison.json">Protected comparison</a><a href="after/report.json">Timing/state trace</a><a href="implementation.diff">Task diff</a></nav>
+<h2>Desktop · 1440 × 900</h2>
+<div class="grid">
+<article><h3>Baseline local</h3><video controls preload="metadata" src="before/1440-load-scroll-protected.webm"></video><small><a href="before/1440-load-scroll-protected.webm">Mở clip gốc</a></small></article>
+<article><h3>Text v3</h3><video controls preload="metadata" src="after/1440-load-scroll-protected.webm"></video><small><a href="after/1440-load-scroll-protected.webm">Mở clip gốc</a></small></article>
+</div>
+<h2>Mobile · 390 × 900</h2>
+<div class="grid mobile">
+<article><h3>Baseline local</h3><video controls preload="metadata" src="before/390-load-scroll-protected.webm"></video><small><a href="before/390-load-scroll-protected.webm">Mở clip gốc</a></small></article>
+<article><h3>Text v3</h3><video controls preload="metadata" src="after/390-load-scroll-protected.webm"></video><small><a href="after/390-load-scroll-protected.webm">Mở clip gốc</a></small></article>
+</div>
+<h2>Layout và copy cuối animation</h2>
+<div class="grid"><article><h3>Carousel được bảo vệ</h3><img src="after/1440-protected.png" alt="Carousel desktop giữ card geometry và controls"></article><article><h3>Form mobile, count immediate</h3><img src="after/390-service.png" alt="Form Hoa Thời mobile, chọn 2 bó mỗi tuần với copy rõ và nền tĩnh"></article></div>
+</main>
+</html>

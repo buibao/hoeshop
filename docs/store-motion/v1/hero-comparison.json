@@ -1,0 +1,26 @@
+[
+  {
+    "width": 1440,
+    "preference": "no-preference",
+    "maxGeometryDrift": 0,
+    "transformsIdentical": true
+  },
+  {
+    "width": 1440,
+    "preference": "reduce",
+    "maxGeometryDrift": 0,
+    "transformsIdentical": true
+  },
+  {
+    "width": 390,
+    "preference": "no-preference",
+    "maxGeometryDrift": 0,
+    "transformsIdentical": true
+  },
+  {
+    "width": 390,
+    "preference": "reduce",
+    "maxGeometryDrift": 0,
+    "transformsIdentical": true
+  }
+]

@@ -1,6 +1,8 @@
 "use client";
 import { useId, useRef } from "react";
 import { DateTimeField } from "./ui/DateTimeField";
+import { StoreSelect } from "./ui/StoreSelect";
+import { useStoreScope } from "./StoreScope";
 type FieldProps = {
   name: string;
   label: string;
@@ -38,6 +40,7 @@ export function Field({
   const id = useId(),
     input = useRef<HTMLInputElement>(null);
   const error = errors?.[name];
+  const { portalClassName } = useStoreScope();
   const hintId = id + "-hint";
   const errorId = id + "-error";
   if (type === "date" || type === "time")
@@ -71,13 +74,17 @@ export function Field({
         ) : null}
       </label>
       {options ? (
-        <select {...props}>
-          {options.map((o) => (
-            <option key={o.value} value={o.value}>
-              {o.label}
-            </option>
-          ))}
-        </select>
+        portalClassName ? (
+          <StoreSelect {...props} label={label} options={options} />
+        ) : (
+          <select {...props}>
+            {options.map((o) => (
+              <option key={o.value} value={o.value}>
+                {o.label}
+              </option>
+            ))}
+          </select>
+        )
       ) : multiline ? (
         <textarea {...props} maxLength={maxLength || 1500} />
       ) : (
@@ -168,9 +175,10 @@ export function focusError(form: HTMLFormElement, path: string) {
   }
   if (
     field instanceof HTMLInputElement &&
-    field.type === "hidden" &&
     field.dataset.focusTarget
   )
     document.getElementById(field.dataset.focusTarget)?.focus();
+  else if (field instanceof HTMLSelectElement && field.getAttribute("aria-hidden") === "true")
+    field.closest(".field")?.querySelector<HTMLElement>('[role="combobox"]')?.focus();
   else if (field instanceof HTMLElement) field.focus();
 }

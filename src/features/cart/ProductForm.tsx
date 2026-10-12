@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import type { Product } from "@/domain/schemas";
@@ -14,6 +14,7 @@ import {
 import { useCart } from "./store";
 import { focusError } from "@/components/Fields";
 import { QuantityField } from "@/components/ui/QuantityField";
+import { useStoreValueFeedback } from "@/components/ui/StoreMotion";
 export function ProductForm({
   product,
   guidance,
@@ -26,6 +27,8 @@ export function ProductForm({
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [added, setAdded] = useState(false);
   const [label, setLabel] = useState(priceLabel(product.price));
+  const price = useRef<HTMLElement>(null);
+  useStoreValueFeedback(price, label);
   const initial = defaultConfiguration(product);
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -100,7 +103,7 @@ export function ProductForm({
         </div>
       </fieldset>
       <p className="form-note">
-        Theo cấu hình hiện tại: <strong>{label}</strong>. Thay đổi thiết kế
+        Theo cấu hình hiện tại: <strong ref={price}>{label}</strong>. Thay đổi thiết kế
         ngoài mẫu cần shop báo giá. Giá cuối, phí giao và lịch nhận được xác
         nhận sau.
       </p>

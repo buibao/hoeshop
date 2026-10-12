@@ -1,0 +1,115 @@
+/* Store only, including scope on portalled roots. Hero has its own motion owner. */
+.hoe-store-scope {
+  --store-motion-feedback: 140ms;
+  --store-motion-tick: 0ms;
+  --store-motion-state-text: 0ms;
+  --store-motion-hover: 180ms;
+  --store-motion-overlay: 240ms;
+  --store-motion-close: 180ms;
+  --store-motion-reveal: 360ms;
+  --store-motion-stagger: 50ms;
+  --store-motion-distance: 8px;
+  --store-motion-lift: -2px;
+  --store-motion-button-lift: -2px;
+  --store-motion-image-scale: 1.02;
+  --store-motion-focus-scale: 1;
+  --store-motion-focus-lift: 0px;
+  --store-motion-arrow-x: 2px;
+  --store-motion-arrow-y: 0px;
+  --store-motion-back-top-y: 4px;
+  --store-motion-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --store-motion-ease-state: cubic-bezier(0.2, 0, 0, 1);
+  --store-motion-highlight: color-mix(in srgb, var(--brand-jasmine) 35%, transparent);
+}
+
+/* Forms, prose, summaries, reading surfaces and footer contacts never reveal. */
+.hoe-store-scope form,
+.hoe-store-scope.hoe-picker {
+  --store-motion-button-lift: 0px;
+}
+.hoe-store-scope .store-motion-reveal > :is(.service-card, .hoe-product-card) { height: 100%; }
+.hoe-store-scope :is(.service-card, .blog-card) {
+  transition: background-color var(--store-motion-hover) var(--store-motion-ease-state), border-color var(--store-motion-hover) var(--store-motion-ease-state), transform var(--store-motion-hover) var(--store-motion-ease-out);
+}
+.hoe-store-scope :is(.text-link, .link-button, .icon-button, .menu-button, .cart-link, .hoe-presets button, .hoe-quantity button) {
+  transition: background-color var(--store-motion-hover) var(--store-motion-ease-state), border-color var(--store-motion-hover) var(--store-motion-ease-state), color var(--store-motion-hover) var(--store-motion-ease-state);
+}
+.hoe-store-scope .hoe-quantity button,
+.hoe-store-scope .ht-number-stepper button { transition: background-color var(--store-motion-feedback) var(--store-motion-ease-state), border-color var(--store-motion-feedback) var(--store-motion-ease-state), color var(--store-motion-state-text); }
+.hoe-store-scope .shadcn-space-control [data-slot="select-trigger"],
+.hoe-store-scope.shadcn-space-overlay [data-slot="select-item"] {
+  transition: background-color var(--store-motion-feedback) var(--store-motion-ease-state), border-color var(--store-motion-feedback) var(--store-motion-ease-state), color var(--store-motion-state-text);
+}
+.hoe-store-scope :is(.service-card, .blog-card):focus-within { border-color: var(--accent); }
+.hoe-store-scope .hoe-store-header .nav a { transition: color var(--store-motion-hover) var(--store-motion-ease-state); }
+.hoe-store-scope .button:disabled,
+.hoe-store-scope .olf-section .olf-button[aria-disabled="true"] { transform: none; }
+.hoe-store-scope .text-link svg { transition: transform var(--store-motion-hover) var(--store-motion-ease-out); }
+.hoe-store-scope .olf-section :is(.olf-button, .olf-link) { transition: background-color var(--store-motion-hover) var(--store-motion-ease-state), color var(--store-motion-hover) var(--store-motion-ease-state), transform var(--store-motion-hover) var(--store-motion-ease-out); }
+.hoe-store-scope .olf-section .olf-link svg { transition: transform var(--store-motion-hover) var(--store-motion-ease-out); }
+.hoe-store-scope .olf-section .olf-link:hover svg { transform: translate(var(--store-motion-arrow-x), var(--store-motion-arrow-y)); }
+.hoe-store-scope .olf-section .olf-button:hover { transform: translateY(var(--store-motion-button-lift)); }
+.hoe-store-scope .olf-section .olf-button:active { transform: none; }
+
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .hoe-store-scope :is(.service-card:has(a), .blog-card):hover { transform: translateY(var(--store-motion-lift)); border-color: var(--accent); }
+  .hoe-store-scope .text-link:hover svg { transform: translate(var(--store-motion-arrow-x), var(--store-motion-arrow-y)); }
+}
+
+/* Native details owns semantics; unsupported browsers keep instant disclosure. */
+@supports (interpolate-size: allow-keywords) {
+  .hoe-store-scope :is(.faq, .olf-faq) details::details-content {
+    interpolate-size: allow-keywords;
+    height: 0;
+    overflow: clip;
+    transition: height var(--store-motion-overlay) var(--store-motion-ease-out), content-visibility var(--store-motion-overlay);
+    transition-behavior: allow-discrete;
+  }
+  .hoe-store-scope :is(.faq, .olf-faq) details[open]::details-content { height: auto; }
+  .hoe-store-scope :is(.faq, .olf-faq) details:not([open])::details-content { transition-duration: var(--store-motion-close); }
+}
+
+/* Bootstrap retains portal, backdrop, focus trap and close lifecycle ownership. */
+.hoe-store-scope.hoe-picker { transition: opacity var(--store-motion-overlay) var(--store-motion-ease-state); }
+.hoe-store-scope.hoe-picker .modal-dialog { transition: transform var(--store-motion-overlay) var(--store-motion-ease-out); }
+.hoe-store-scope.hoe-picker.fade .modal-dialog { transform: translateY(var(--store-motion-distance)); }
+.hoe-store-scope.hoe-picker.show .modal-dialog { transform: none; }
+.hoe-store-scope.hoe-picker:not(.show),
+.hoe-store-scope.hoe-picker:not(.show) .modal-dialog { transition-duration: var(--store-motion-close); }
+/* Strong selection switches foreground and background together; only its
+   decorative border transitions, so deselection never leaves dark on dark. */
+.hoe-store-scope.hoe-picker :is(.hoe-day-button, .time-list button) { transition: border-color var(--store-motion-feedback) var(--store-motion-ease-state); }
+.hoe-store-scope:is(.hoe-picker-backdrop, .offcanvas-backdrop) { transition: opacity var(--store-motion-overlay) var(--store-motion-ease-state); }
+.hoe-store-scope:is(.hoe-picker-backdrop, .offcanvas-backdrop):not(.show) { transition-duration: var(--store-motion-close); }
+.hoe-store-scope.hoe-store-menu { --bs-offcanvas-transition: transform var(--store-motion-overlay) var(--store-motion-ease-out); }
+.hoe-store-scope.hoe-store-menu.hiding { transition-duration: var(--store-motion-close); }
+
+/* Base UI reads these CSS animations for its existing mount/unmount lifecycle. */
+.hoe-store-scope.shadcn-space-overlay[data-open] { animation: store-select-enter var(--store-motion-overlay) var(--store-motion-ease-out); }
+.hoe-store-scope.shadcn-space-overlay[data-closed] { animation: store-select-exit var(--store-motion-close) var(--store-motion-ease-state); }
+@keyframes store-select-enter { from { opacity: .85; } to { opacity: 1; } }
+@keyframes store-select-exit { from { opacity: 1; } to { opacity: 0; } }
+
+@media (max-width: 767px), (hover: none), (pointer: coarse) {
+  .hoe-store-scope { --store-motion-distance: 4px; --store-motion-stagger: 0ms; }
+}
+@media (hover: none), (pointer: coarse) {
+  .hoe-store-scope { --store-motion-lift: 0px; --store-motion-button-lift: 0px; --store-motion-image-scale: 1; --store-motion-arrow-x: 0px; --store-motion-arrow-y: 0px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hoe-store-scope {
+    --store-motion-feedback: 0ms;
+    --store-motion-hover: 0ms;
+    --store-motion-overlay: 0ms;
+    --store-motion-close: 0ms;
+    --store-motion-reveal: 0ms;
+    --store-motion-stagger: 0ms;
+    --store-motion-distance: 0px;
+    --store-motion-lift: 0px;
+    --store-motion-button-lift: 0px;
+    --store-motion-image-scale: 1;
+    --store-motion-arrow-x: 0px;
+    --store-motion-arrow-y: 0px;
+    --store-motion-back-top-y: 0px;
+  }
+}

@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Trash2 } from "lucide-react";
 import { useCart } from "./store";
 import type { CartItem, Product } from "@/domain/schemas";
@@ -23,6 +23,8 @@ import { displayDate } from "@/domain/date-time";
 import { QuantityField } from "@/components/ui/QuantityField";
 import { RecurrenceSummary } from "@/features/checkout/RecurrenceSummary";
 import { isCalendarRecurrence } from "@/domain/delivery-schedule";
+import { useStoreValueFeedback } from "@/components/ui/StoreMotion";
+import { StoreTextReveal } from "@/components/ui/StoreTextReveal";
 export function CartSummary({
   products,
   checkout = false,
@@ -42,11 +44,13 @@ export function CartSummary({
   });
   const totals = summarize(lines),
     display = totalLabel(totals);
+  const total = useRef<HTMLDivElement>(null);
+  useStoreValueFeedback(total, display.value);
   return (
     <aside className="card cart-summary">
-      <span className="eyebrow">GIỎ HOA CỦA BẠN</span>
+      <StoreTextReveal role="eyebrow" className="eyebrow">GIỎ HOA CỦA BẠN</StoreTextReveal>
       <h3>{display.label}</h3>
-      <div className="total">{display.value}</div>
+      <div className="total" ref={total}>{display.value}</div>
       {totals.quoteCount ? (
         <p className="small muted">
           {totals.quoteCount} dòng cần shop báo giá; phần này chưa nằm trong tạm
@@ -63,11 +67,11 @@ export function CartSummary({
           </div>
         );
       })}
-      <p className="form-note">
+      <StoreTextReveal as="p" className="form-note">
         Phí giao: chờ shop xác nhận.
         <br />
         Gửi yêu cầu chưa phải xác nhận đơn hoặc thanh toán.
-      </p>
+      </StoreTextReveal>
       {!checkout ? (
         <Link href="/dat-hoa" className="button">
           Gửi yêu cầu đặt hoa
@@ -84,15 +88,21 @@ function CartRow({
   item,
   product,
   guidance,
+  remove,
 }: {
   item: CartItem;
   product?: Product;
   guidance?: Guidance;
+  remove: (lineId: string, button: HTMLButtonElement) => void;
 }) {
   const cart = useCart();
   const [editing, setEditing] = useState(false);
   const [error, setError] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const editTrigger = useRef<HTMLButtonElement>(null);
+  const price = useRef<HTMLParagraphElement>(null);
+  const displayPrice = product ? priceLabel(effectivePrice(product, item.configuration)) : "Vui lòng xóa mẫu này khỏi giỏ.";
+  useStoreValueFeedback(price, `${item.quantity}/${displayPrice}`);
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
       if (new URLSearchParams(window.location.search).get("edit") === "hoa-thoi" && item.configuration.serviceType === "hoa-thoi" && !isCalendarRecurrence(item.configuration.recurrence)) setEditing(true);
@@ -119,6 +129,7 @@ function CartRow({
         expectedRevision: product?.revision || item.expectedRevision,
       });
       setEditing(false);
+      editTrigger.current?.focus({ preventScroll: true });
       setError("");
     } catch {
       setError("Chưa lưu được cấu hình. Vui lòng kiểm tra lại.");
@@ -144,11 +155,7 @@ function CartRow({
               "Mẫu không còn khả dụng"
             )}
           </h3>
-          <p>
-            {product
-              ? priceLabel(effectivePrice(product, item.configuration))
-              : "Vui lòng xóa mẫu này khỏi giỏ."}
-          </p>
+          <p ref={price}>{displayPrice}</p>
           {item.configuration.serviceType === "hoa-tam" ? (
             <p>Cảm xúc: {item.configuration.emotion}</p>
           ) : null}
@@ -181,6 +188,7 @@ function CartRow({
             />
             {product ? (
               <button
+                ref={editTrigger}
                 className="link-button"
                 onClick={() => setEditing(!editing)}
                 aria-expanded={editing}
@@ -191,7 +199,7 @@ function CartRow({
             <button
               className="icon-button"
               aria-label={`Xóa ${product?.name || "mẫu"}`}
-              onClick={() => cart.remove(item.lineId)}
+              onClick={event => remove(item.lineId, event.currentTarget)}
             >
               <Trash2 size={16} />
             </button>
@@ -227,6 +235,21 @@ export function CartView({
   services?: Array<Guidance & { id: string }>;
 }) {
   const cart = useCart();
+  const focusFrame = useRef<number | null>(null);
+  useEffect(() => () => { if (focusFrame.current !== null) cancelAnimationFrame(focusFrame.current); }, []);
+  function remove(lineId: string, button: HTMLButtonElement) {
+    const row = button.closest(".cart-row");
+    const adjacent = row?.nextElementSibling ?? row?.previousElementSibling;
+    const target = adjacent?.querySelector<HTMLButtonElement>(".cart-row-controls .icon-button");
+    const host = button.closest(".cart-layout")?.parentElement;
+    cart.remove(lineId);
+    if (focusFrame.current !== null) cancelAnimationFrame(focusFrame.current);
+    focusFrame.current = requestAnimationFrame(() => {
+      const next = target?.isConnected ? target : host?.querySelector<HTMLAnchorElement>(".empty a");
+      next?.focus({ preventScroll: true });
+      focusFrame.current = null;
+    });
+  }
   if (!cart.ready)
     return (
       <p role="status" className="section">
@@ -265,6 +288,7 @@ export function CartView({
               guidance={services.find(
                 (s) => s.id === item.configuration.serviceType,
               )}
+              remove={remove}
             />
           ))}
         </div>

@@ -17,8 +17,8 @@
 .olf-title-heart { color: var(--brand-berry); fill: var(--brand-pink); }
 .olf-hero-photos { display: contents; }
 .olf-hero-photo { position: absolute; width: 27%; z-index: 1; pointer-events: none; }
-.olf-photo-frame { position: relative; aspect-ratio: 3/4; overflow: hidden; background: var(--surface-soft); box-shadow: 0 8px 28px #332c2a0a; }
-.olf-photo-frame img { object-fit: cover; }
+.olf-photo-frame { position: relative; aspect-ratio: 3/4; overflow: visible; background: transparent; box-shadow: none; }
+.olf-photo-frame img { object-fit: contain; }
 .olf-hero-photo--one { left: 25%; bottom: 38px; transform: rotate(-18deg); }
 .olf-hero-photo--two { left: 37%; bottom: 70px; transform: rotate(-6deg); z-index: 2; }
 .olf-hero-photo--three { left: 49%; bottom: 46px; transform: rotate(4deg); z-index: 3; }
@@ -40,21 +40,23 @@
 .olf-section-heading > [data-scroll-fade-content] > p { max-width: 560px; margin: 24px auto 0; font-size: 15px; color: var(--muted); }
 .olf-services { background: var(--brand-blush); }
 .olf-service-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
-.olf-service-card { position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: 20px; padding: 36px 32px; background: var(--background); min-width: 0; border-radius: 48px; transition: transform 240ms; }
+.olf-service-card { position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: 20px; padding: 36px 32px; background: var(--background); min-width: 0; border-radius: 48px; transition: transform var(--store-motion-hover, 240ms) var(--store-motion-ease-out, ease); }
 .olf-service-card .number { font-size: 12px; color: var(--muted); }
 .olf-service-card .service-flower { position: absolute; width: 52px; height: 52px; top: 28px; right: 28px; stroke-width: 1.6; color: var(--accent); }
 .olf-service-card h3 { font-size: 38px; line-height: 1.2; margin-top: 24px; }
 .olf-service-card p { color: var(--muted); white-space: pre-line; font-size: 15px; }
 .olf-service-card .text-link { margin-top: auto; font-size: 13px; padding-top: 8px; }
-.olf-service-card:has(a:focus-visible), .olf-service-card:hover { transform: translateY(-8px); }
+.olf-service-card:has(a:focus-visible) { transform: translateY(var(--store-motion-focus-lift, -8px)); }
+.olf-service-card:hover { transform: translateY(var(--store-motion-lift, -8px)); }
 .olf-heading-row { display: flex; justify-content: space-between; align-items: flex-end; gap: 32px; margin-bottom: 48px; }
 .olf-heading-row > .olf-link { flex-shrink: 0; margin-bottom: 8px; }
 .olf-product-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 48px 28px; }
 .olf-product-grid > div { min-width: 0; }
 .olf-product-card { display: flex; flex-direction: column; gap: 10px; height: 100%; min-width: 0; }
 .olf-home .olf-product-card .product-image { position: relative; aspect-ratio: 4/5; border-radius: 4px; overflow: hidden; background: var(--surface-soft); }
-.olf-product-card .product-image img { object-fit: cover; transition: transform 600ms cubic-bezier(.22,1,.36,1); }
-.olf-product-card:hover img, .olf-product-card:focus-within img { transform: scale(1.035); }
+.olf-product-card .product-image img { object-fit: cover; transition: transform var(--store-motion-hover, 600ms) cubic-bezier(.22,1,.36,1); }
+.olf-product-card:focus-within img { transform: scale(var(--store-motion-focus-scale, 1.035)); }
+.olf-product-card:hover img { transform: scale(var(--store-motion-image-scale, 1.035)); }
 .olf-product-card .category { margin-top: 8px; color: var(--muted); font-size: 11px; }
 .olf-product-card h3 { font-size: 28px; line-height: 1.25; overflow-wrap: anywhere; }
 .olf-product-card .product-price { color: var(--accent); font-size: 14px; }
@@ -73,8 +75,8 @@
 .olf-benefits-intro h3 { font-size: 40px; }
 .olf-benefits-intro p { margin-top: 16px; color: var(--muted); font-size: 15px; }
 .olf-benefit-grid, .olf-process-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 40px; }
-.olf-benefit-card { padding: 32px; border-radius: 48px; background: var(--brand-blush); min-width: 0; overflow-wrap: anywhere; transition: transform 0.24s; }
-.olf-benefit-card:hover {transform: translateY(-8px);}
+.olf-benefit-card { padding: 32px; border-radius: 48px; background: var(--brand-blush); min-width: 0; overflow-wrap: anywhere; transition: transform var(--store-motion-hover, .24s) var(--store-motion-ease-out, ease); }
+.olf-benefit-card:hover { transform: translateY(var(--store-motion-lift, -8px)); }
 .olf-benefit-art { width: 52px; height: 52px; stroke-width: 1; margin-bottom: 24px; }
 .olf-benefit-grid > :nth-child(3n + 2) .olf-benefit-card { background: color-mix(in srgb, var(--brand-jasmine) 40%, var(--background)); }
 .olf-benefit-grid > :nth-child(3n) .olf-benefit-card { background: var(--brand-berry); color: var(--background); }
@@ -216,14 +218,14 @@
 .olf-service-grid [data-scroll-fade-content] > .olf-service-card,
 .olf-benefit-grid [data-scroll-fade-content] > .olf-benefit-card { height: 100%; }
 .olf-home [data-scroll-fade-content]:focus-within { opacity: 1 !important; }
-.olf-home a:focus-visible, .olf-home button:focus-visible, #home-title:focus-visible { outline: 2px solid var(--focus); outline-offset: 4px; }
+.olf-home a:focus-visible, .olf-home button:focus-visible, #home-title:focus-visible { outline: 1px solid var(--focus); outline-offset: 0px; }
 .olf-back-to-top {
   position: fixed; right: 24px; bottom: 24px; z-index: 25;
   display: grid; place-items: center; width: 48px; height: 48px;
   border: 0; border-radius: 50%; background: var(--accent); color: var(--background);
   box-shadow: 0 4px 16px #332c2a26; cursor: pointer;
-  opacity: 0; visibility: hidden; pointer-events: none; transform: translateY(6px);
-  transition: opacity 180ms, transform 180ms, background 180ms, box-shadow 180ms, visibility 180ms;
+  opacity: 0; visibility: hidden; pointer-events: none; transform: translateY(var(--store-motion-back-top-y, 6px));
+  transition: opacity var(--store-motion-hover, 180ms), transform var(--store-motion-hover, 180ms), background-color var(--store-motion-hover, 180ms), box-shadow var(--store-motion-hover, 180ms), visibility var(--store-motion-hover, 180ms);
 }
 .olf-back-to-top[data-visible="true"] { opacity: 1; visibility: visible; pointer-events: auto; transform: translateY(0); }
 .olf-back-to-top:hover, .olf-back-to-top:active { background: var(--accent-hover); box-shadow: 0 6px 20px #332c2a33; }

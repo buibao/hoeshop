@@ -1,0 +1,83 @@
+node.exe : [WebServer] (node:23268) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+At C:\Program Files\nodejs\npx.ps1:29 char:3
++   & $NODE_EXE $NPX_CLI_JS $args
++   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([WebServer] (no... env being set.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 78 tests using 1 worker
+
+(node:10640) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  1 [desktop] › tests\e2e\shop.spec.ts:135:1 › checkout saves mixed services and clears cart only after receipt (3.4s)
+  ok  2 [desktop] › tests\e2e\shop.spec.ts:163:1 › lost response retries same request ID without duplicate and retains input (1.6s)
+  ok  3 [desktop] › tests\e2e\shop.spec.ts:204:1 › failed submissions keep cart and edits get a fresh request ID (1.4s)
+  ok  4 [desktop] › tests\e2e\shop.spec.ts:235:1 › Hoa Thời no-sample and general consultation stay separate from orders (2.0s)
+  ok  5 [desktop] › tests\e2e\shop.spec.ts:265:1 › comments publish immediately as escaped text and survive a reload (1.1s)
+  ok  6 [desktop] › tests\e2e\shop.spec.ts:289:1 › draft routes remain hidden and forms show readable validation (1.6s)
+  ok  7 [desktop] › tests\e2e\store-gradients.spec.ts:3:1 › Store roles keep reading surfaces and primary/secondary actions distinct (1.3s)
+  ok  8 [desktop] › tests\e2e\store-gradients.spec.ts:22:1 › full-width owners preserve copy measures and submenu retains current and interactive highlights (2.4s)
+  ok  9 [desktop] › tests\e2e\store-gradients.spec.ts:74:1 › Store picker portal keeps strong selection, cancel, focus and disabled reset (3.7s)
+  ok 10 [desktop] › tests\e2e\store-gradients.spec.ts:111:1 › soft calendar selection clears, disabled actions lose gradient and forced colours retain cues (2.0s)
+  ok 11 [desktop] › tests\e2e\store-gradients.spec.ts:132:1 › root fallback and client navigation preserve Store isolation (3.2s)
+  ok 12 [desktop] › tests\e2e\store-motion.spec.ts:13:1 › decorative reveal keeps SSR copy visible without JavaScript (2.4s)
+  ok 13 [desktop] › tests\e2e\store-motion.spec.ts:31:1 › live reduced motion stops presentation effects while values and drafts persist (1.3s)
+  ok 14 [desktop] › tests\e2e\store-motion.spec.ts:58:1 › weekly selection and rapid month navigation preserve state, focus and readable summary (2.9s)
+  ok 15 [desktop] › tests\e2e\store-motion.spec.ts:92:1 › cart edit and remove restore focus to a surviving control (1.8s)
+  ok 16 [desktop] › tests\e2e\store-motion.spec.ts:110:1 › monthly and weekly cycles crossing month boundaries count each date once (4.0s)
+  ok 17 [desktop] › tests\e2e\store-motion.spec.ts:136:1 › long FAQ answers stay readable and native disclosure reacts immediately (840ms)
+  ok 18 [desktop] › tests\e2e\store-motion.spec.ts:152:1 › internal previews and internal fallbacks stay outside Store motion (1.1s)
+  ok 19 [desktop] › tests\e2e\store-motion.spec.ts:160:1 › carousel autoplay still pauses for focus and overlays without changing slide geometry (15.2s)
+  ok 20 [desktop] › tests\e2e\store-motion.spec.ts:184:1 › carousel fitting and empty states keep existing controls and reduced motion behavior (2.3s)
+  ok 21 [desktop] › tests\e2e\store-select.spec.ts:3:1 › time dropdowns preserve the calendar summary position and page scroll (2.5s)
+  ok 22 [desktop] › tests\e2e\store-select.spec.ts:38:1 › store selects persist shape and exact 24-hour time through cart edits (4.3s)
+  ok 23 [desktop] › tests\e2e\store-select.spec.ts:111:1 › contact service select reaches the inquiry API and respects disabled fieldsets (1.2s)
+  ok 24 [desktop] › tests\e2e\store-text.spec.ts:36:1 › fresh heading has one finite entrance with the desktop/mobile preset and capped group delays (1.8s)
+  x  25 [desktop] › tests\e2e\store-text.spec.ts:63:1 › below-fold text waits for 85%, completes without scrolling, and stays visible outside the trigger band (5.8s)
+Testing stopped early after 1 maximum allowed failures.
+
+
+  1) [desktop] › tests\e2e\store-text.spec.ts:63:1 › below-fold text waits for 85%, completes without scrolling, and stays visible outside the trigger band
+
+    Error: expect(locator).toHaveAttribute(expected) failed
+
+    Locator:  locator('.ht-form-heading h2')
+    Expected: "ARMED_OFFSCREEN"
+    Received: "BYPASS_VISIBLE"
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toHaveAttribute" locator('.ht-form-heading h2') with timeout 5000ms
+      - waiting for locator('.ht-form-heading h2')
+        2 × locator resolved to <h2 id="_R_ih9apbsnpfebtb_" data-store-text="heading">…</h2>
+          - unexpected value "null"
+        11 × locator resolved to <h2 id="_R_ih9apbsnpfebtb_" data-store-text="heading" data-text-state="BYPASS_VISIBLE">…</h2>
+           - unexpected value "BYPASS_VISIBLE"
+
+
+      65 |   const selector = ".ht-form-heading h2";
+      66 |   const target = page.locator(selector), layer = target.locator("[data-text-layer]");
+    > 67 |   await expect(target).toHaveAttribute("data-text-state", "ARMED_OFFSCREEN");
+         |                        ^
+      68 |   expect(await layer.evaluate(node => node.getAnimations().length)).toBe(0);
+      69 |   await position(page, selector, .9);
+      70 |   await expect(target).toHaveAttribute("data-text-state", "ARMED_OFFSCREEN");
+        at D:\hoeshop\tests\e2e\store-text.spec.ts:67:24
+
+    Error Context: test-results\store-motion\store-text-below-fold-text-733cd-le-outside-the-trigger-band-desktop\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\store-motion\store-text-below-fold-text-733cd-le-outside-the-trigger-band-desktop\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\store-motion\store-text-below-fold-text-733cd-le-outside-the-trigger-band-desktop\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [desktop] › tests\e2e\store-text.spec.ts:63:1 › below-fold text waits for 85%, completes without scrolling, and stays visible outside the trigger band
+  53 did not run
+  24 passed (1.3m)
+  1 error was not a part of any test, see above for details

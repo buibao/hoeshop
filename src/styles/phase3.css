@@ -61,7 +61,7 @@
   border-radius: 40px;
   min-height: 50px;
   padding-inline: 26px;
-  transition-duration: var(--ui-duration);
+  transition-duration: var(--store-motion-hover, var(--ui-duration));
 }
 .hoe-product-card .product-image {
   aspect-ratio: 4/5;
@@ -192,19 +192,19 @@
   }
 }
 .hoe-product-card .text-link svg {
-  transition: transform 160ms;
+  transition: transform var(--store-motion-hover, 160ms) var(--store-motion-ease-out, ease);
 }
 .hoe-product-card .text-link:hover svg {
-  transform: translate(3px, -2px);
+  transform: translate(var(--store-motion-arrow-x, 3px), var(--store-motion-arrow-y, -2px));
 }
 .hoe-product-card .product-image {
-  transition: box-shadow 240ms;
+  transition: box-shadow var(--store-motion-hover, 240ms) var(--store-motion-ease-state, ease);
 }
 .hoe-product-card:hover .product-image {
   box-shadow: 0 12px 28px #332c2a12;
 }
 .hoe-product-card:has(a:active) .product-image img {
-  transform: scale(1.015);
+  transform: scale(var(--store-motion-image-scale, 1.015));
 }
 /* @media (prefers-reduced-motion: reduce) {
   .hoe-editorial-detail * {

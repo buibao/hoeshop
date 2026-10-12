@@ -1,4 +1,5 @@
 "use client";
+import { StoreTextRevealGroup } from "@/components/ui/StoreTextReveal";
 import { useContext } from "react";
 import { Field, Honeypot } from "@/components/Fields";
 import {
@@ -84,7 +85,7 @@ export function InquiryForm({
             <hr className="divider" />
           </>
         ) : null}
-        {serviceType === "hoa-thoi" ? <div className="ht-contact-heading"><span className="eyebrow">03 / KỂ HÒE NGHE</span><h3>Để Hòe liên hệ với bạn</h3><p className="ht-helper">Hòe sẽ cùng bạn xác nhận hoa, giá và lịch nhận.</p></div> : null}
+        {serviceType === "hoa-thoi" ? <StoreTextRevealGroup className="ht-contact-heading"><span className="eyebrow">03 / KỂ HÒE NGHE</span><h3>Để Hòe liên hệ với bạn</h3><p className="ht-helper">Hòe sẽ cùng bạn xác nhận hoa, giá và lịch nhận.</p></StoreTextRevealGroup> : null}
         <div className="form-grid">
           <Field
             name="name"

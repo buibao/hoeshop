@@ -4,6 +4,8 @@ import { Footer } from "@/components/Footer";
 import { StoreScope } from "@/components/StoreScope";
 import { termes, cormorant } from "@/fonts/store-fonts";
 import "@/styles/store-typography.css";
+import "@/styles/store-gradients.css";
+import "@/styles/store-text-reveal.css";
 import {
   getSite,
   getAssets,
@@ -43,7 +45,7 @@ export default async function ShopLayout({
       <a href="#main-content" className="skip-link">
         Đến nội dung chính
       </a>
-      {test ? (
+      {/* {test ? (
         <div className="banner test">
           Demo
           {process.env.DATA_ADAPTER === "mock"
@@ -57,7 +59,7 @@ export default async function ShopLayout({
           Hòe đang chuẩn bị mở nhận đặt hoa. Mời bạn khám phá câu chuyện và dịch
           vụ của Hòe.
         </div>
-      ) : null}
+      ) : null} */}
       <Header logo={(await getAssets()).logo} />
       <main id="main-content">{children}</main>
       <Footer />

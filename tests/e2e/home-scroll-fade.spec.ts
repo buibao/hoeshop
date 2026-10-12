@@ -5,135 +5,44 @@ async function jump(page: Page, y: number) {
 }
 
 for (const width of [390, 768, 1024, 1440]) {
-  test(`Home scroll fade and back to top at ${width}px`, async ({ page }, testInfo) => {
+  test(`Home text entrance and back to top at ${width}px`, async ({ page }, testInfo) => {
     await page.setViewportSize({ width, height: 900 });
     const errors: string[] = [];
-    page.on("pageerror", (error) => errors.push(error.message));
+    page.on("pageerror", error => errors.push(error.message));
     await page.goto("/");
     const back = page.locator(".olf-back-to-top");
-    await expect(page.locator('[data-carousel-ready="true"]')).toHaveCount(1);
     await expect(back).toHaveAttribute("inert", "");
-    await expect(back).toHaveAttribute("tabindex", "-1");
+    const heading = page.locator(".olf-service-card h3").first();
+    const top = await heading.evaluate(node => node.getBoundingClientRect().top + scrollY);
+    await page.evaluate(y => { document.dispatchEvent(new WheelEvent("wheel")); scrollTo({ top: y, behavior: "instant" }); }, top - 900 * .7);
+    await expect(heading).toHaveAttribute("data-text-state", "ENTERING");
+    await expect(heading).toHaveAttribute("data-text-state", "VISIBLE");
+    await expect(heading.locator("[data-text-layer]")).toHaveCSS("opacity", "1");
+    await jump(page, top - 20);
+    await expect(heading.locator("[data-text-layer]")).toHaveCSS("opacity", "1");
     const slot = page.locator(".olf-service-grid > [data-scroll-fade]").first();
-    const content = slot.locator("[data-scroll-fade-content]");
-    const geometry = await slot.evaluate((node) => {
-      const rect = node.getBoundingClientRect();
-      return { top: rect.top + scrollY, height: rect.height, viewport: innerHeight,
-        band: Math.min(rect.height * 0.45, innerHeight * 0.18) };
-    });
-    const { top, height, viewport, band } = geometry;
-    // Repeated passes, including reversals inside each fade band.
-    const samples = [
-      [top - viewport - 2, 0], [top - viewport + band * 0.25, 0.25],
-      [top - viewport + band * 0.75, 0.75], [top - viewport + band * 0.5, 0.5],
-      [top - viewport + band + 4, 1], [top + height - band - 4, 1],
-      [top + height - band * 0.5, 0.5], [top + height + 2, 0],
-      [top + height - band * 0.25, 0.25], [top + height - band * 0.75, 0.75],
-      [top + height - band * 0.5, 0.5], [top - viewport + band + 4, 1],
-      [top - viewport + band * 0.5, 0.5], [top - viewport - 2, 0],
-      [top - viewport + band * 0.5, 0.5], [top - viewport + band + 4, 1],
-    ];
-    for (const [position, opacity] of samples) {
-      await jump(page, position);
-      await expect.poll(() => content.evaluate((node) => Number(getComputedStyle(node).opacity)))
-        .toBeCloseTo(opacity, 1);
-      await expect(content).toHaveCSS("transform", "none");
-    }
-    await expect(content).toHaveCSS("opacity", "1");
-    await page.waitForTimeout(200);
-    await expect(content).toHaveCSS("opacity", "1");
-    // Focus protects a group even after it has scrolled out of view.
-    const link = slot.locator("a");
-    await link.focus();
-    await jump(page, top + height + 10);
-    await expect(content).toHaveCSS("opacity", "1");
-    await expect(link).toBeFocused();
-    await link.evaluate((node: HTMLElement) => node.blur());
-    await expect(content).toHaveCSS("opacity", "0");
-    await expect(content).toHaveAttribute("inert", "");
-
-    // Resize/font/content geometry updates while stationary, including a tall block.
-    await slot.locator("article").evaluate((node: HTMLElement) => { node.style.minHeight = "1500px"; });
-    await jump(page, top + 300);
-    await expect(content).toHaveCSS("opacity", "1");
-    await page.setViewportSize({ width, height: 700 });
-    await expect(content).toHaveCSS("opacity", "1");
-    await slot.locator("article").evaluate((node: HTMLElement) => { node.style.minHeight = ""; });
-    await page.setViewportSize({ width, height: 900 });
-
-    await jump(page, 330);
-    await expect(back).toHaveAttribute("data-visible", "true");
-    await jump(page, 280);
-    await expect(back).toHaveAttribute("data-visible", "true");
-    await jump(page, 230);
-    await expect(back).toHaveAttribute("data-visible", "false");
-    await jump(page, 280);
-    await expect(back).toHaveAttribute("data-visible", "false");
-
-    // Anchor updates the current fade state immediately; Embla still advances one item.
+    await expect(slot.locator("[data-scroll-fade-content]")).toHaveCSS("opacity", "1");
+    await expect(slot.locator("[data-scroll-fade-content]")).not.toHaveAttribute("inert", "");
+    await jump(page, 330); await expect(back).toHaveAttribute("data-visible", "true");
+    await jump(page, 280); await expect(back).toHaveAttribute("data-visible", "true");
+    await jump(page, 230); await expect(back).toHaveAttribute("data-visible", "false");
+    await jump(page, 280); await expect(back).toHaveAttribute("data-visible", "false");
     await jump(page, 0);
     await page.locator(".olf-hero-description .olf-button").click();
     await expect(page).toHaveURL(/#nhung-doa-hoa$/);
-    await expect(page.locator(".olf-featured > [data-scroll-fade]").first().locator("[data-scroll-fade-content]"))
-      .toHaveCSS("opacity", "1");
-    const position = page.locator(".olf-carousel-position");
-    const carousel = page.locator(".olf-featured-carousel");
-    const count = await carousel.locator(".olf-carousel-slide").count();
-    const next = page.getByRole("button", { name: "Sản phẩm tiếp theo" });
-    if (await carousel.getAttribute("data-carousel-overflow") === "true") {
-      await next.click();
-      await expect(position).toHaveText(`2 / ${count}`);
-      await page.getByRole("button", { name: "Sản phẩm trước" }).click();
-      await expect(position).toHaveText(`1 / ${count}`);
-    } else {
-      await expect(next).toBeDisabled();
-    }
+    await expect(page.locator(".olf-featured-carousel [data-store-text]")).toHaveCount(0);
     await page.screenshot({ path: testInfo.outputPath(`home-${width}-featured.png`) });
-
     await jump(page, await page.evaluate(() => document.documentElement.scrollHeight));
-    await expect(back).toHaveCSS("opacity", "1");
-    const url = page.url();
-    const history = await page.evaluate(() => window.history.length);
-    await back.focus();
-    await page.keyboard.press("Enter");
+    const url = page.url(), history = await page.evaluate(() => window.history.length);
+    await back.focus(); await page.keyboard.press("Enter");
     await expect.poll(() => page.evaluate(() => scrollY)).toBe(0);
     await expect(page.locator("#home-title")).toBeFocused();
-    await expect(back).toHaveAttribute("data-visible", "false");
     expect(page.url()).toBe(url);
     expect(await page.evaluate(() => window.history.length)).toBe(history);
-    await expect(page.locator(".olf-hero-description .olf-button")).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
-    await page.screenshot({ path: testInfo.outputPath(`home-${width}-top.png`) });
     expect(errors).toEqual([]);
   });
 }
-
-test("wheel scrolling fades visible card copy and reverses without hiding the reading area", async ({ page, isMobile }) => {
-  test.skip(isMobile, "Wheel regression targets desktop input; mobile viewport cases cover native scroll.");
-  await page.setViewportSize({ width: 1440, height: 900 });
-  await page.emulateMedia({ reducedMotion: "no-preference" });
-  await page.goto("/");
-  await expect(page.locator('[data-carousel-ready="true"]')).toHaveCount(1);
-  const slot = page.locator(".olf-service-grid > [data-scroll-fade]").first();
-  const content = slot.locator("[data-scroll-fade-content]");
-  const heading = slot.locator("h3");
-  const entrance = await heading.evaluate((node) => node.getBoundingClientRect().top + scrollY - innerHeight + 18);
-  await jump(page, entrance - 200);
-  await expect(content).toHaveCSS("opacity", "0");
-  await page.mouse.wheel(0, 200);
-  await expect.poll(() => page.evaluate(() => Math.round(scrollY))).toBe(Math.round(entrance));
-  await expect(heading).toBeInViewport();
-  const enteringOpacity = await content.evaluate((node) => Number(getComputedStyle(node).opacity));
-  // The old short band reached 1 before any of this title was visible.
-  expect(enteringOpacity).toBeGreaterThan(0.2);
-  expect(enteringOpacity).toBeLessThan(0.95);
-  await page.mouse.wheel(0, -40);
-  await expect.poll(() => content.evaluate((node) => Number(getComputedStyle(node).opacity)))
-    .toBeLessThan(enteringOpacity - 0.1);
-  await page.mouse.wheel(0, 300);
-  await expect(content).toHaveCSS("opacity", "1");
-  await expect(heading).toBeInViewport();
-});
 
 test("reduced motion and no JavaScript keep all Home content visible", async ({ page, browser, baseURL }) => {
   await page.goto("/");

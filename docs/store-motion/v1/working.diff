@@ -1,0 +1,911 @@
+diff --git a/src/app/(shop)/dich-vu/[service]/page.tsx b/src/app/(shop)/dich-vu/[service]/page.tsx
+index 64f4f81..0787053 100644
+--- a/src/app/(shop)/dich-vu/[service]/page.tsx
++++ b/src/app/(shop)/dich-vu/[service]/page.tsx
+@@ -50,10 +50,8 @@ export default async function ServicePage({ params }: Props) {
+       {products.length ? (
+         <div className="product-grid">
+           {products.map((p, index) =>
+-            s.id === "hoa-thoi" ? (
+-              <HoaThoiReveal key={p.id} delay={index * 0.05}>
+-                <ProductCard product={p} />
+-              </HoaThoiReveal>
++            index < 4 ? (
++              <HoaThoiReveal key={p.id} delay={index * 0.05}><ProductCard product={p} /></HoaThoiReveal>
+             ) : (
+               <ProductCard key={p.id} product={p} />
+             ),
+diff --git a/src/app/(shop)/ve-hoe/page.tsx b/src/app/(shop)/ve-hoe/page.tsx
+index 1626cf0..3162e9d 100644
+--- a/src/app/(shop)/ve-hoe/page.tsx
++++ b/src/app/(shop)/ve-hoe/page.tsx
+@@ -2,6 +2,7 @@ import { StoreHeading } from "@/components/StoreHeading";
+ import type { Metadata } from "next";
+ import Link from "next/link";
+ import { getSite } from "@/server/content";
++import { StoreReveal } from "@/components/ui/StoreMotion";
+ export const metadata: Metadata = {
+   title: "Về Hòe",
+   description: "Hòe — nơi những điều khó nói được kể bằng hoa.",
+@@ -43,12 +44,12 @@ export default async function AboutPage() {
+               "Thanh lịch",
+               "Vẻ đẹp từ những điều vừa đủ. Hòe chăm chút màu sắc, hình dáng và cảm giác mà những đóa hoa mang đến.",
+             ],
+-          ].map(([letter, title, body]) => (
+-            <article key={letter} className="service-card">
++          ].map(([letter, title, body], index) => (
++            <StoreReveal as="article" key={letter} index={index} className="service-card">
+               <span className="eyebrow">{letter}</span>
+               <h3 style={{ fontSize: 30 }}>{title}</h3>
+               <p>{body}</p>
+-            </article>
++            </StoreReveal>
+           ))}
+         </section>
+         <h2>Những điều bạn muốn biết</h2>
+diff --git a/src/app/globals.css b/src/app/globals.css
+index e825442..86e7795 100644
+--- a/src/app/globals.css
++++ b/src/app/globals.css
+@@ -2,6 +2,7 @@
+ @import "../styles/shadcn-space.css";
+ @import "../styles/tokens.css";
+ @import "../styles/hoa-thoi.css";
++@import "../styles/store-motion.css";
+ @theme inline { --color-background: var(--background); --color-foreground: var(--ink); --font-sans: var(--font-body); }
+ :root { --font-heading: var(--font-root-heading); --font-body: var(--font-root-body); --font-brand: var(--font-root-heading); --font-brand-caption: var(--font-root-body); }
+ * { box-sizing: border-box; }
+@@ -40,8 +41,8 @@ button:disabled { cursor: wait; opacity: .65; }
+ .banner.test { background: #fae2ec; color: #742040; }
+ .skip-link { position: fixed; left: 10px; top: -100px; z-index: 100; background: var(--ink); color: white; padding: 10px; }
+ .skip-link:focus { top: 10px; }
+-.button { display: inline-flex; justify-content: center; align-items: center; gap: 12px; min-height: 48px; padding: 12px 23px; border: 1px solid var(--accent); border-radius: var(--radius); background: var(--accent); color: white; font-size: 12px; font-weight: var(--text-weight-medium, 500); transition: background .2s, transform .2s; text-align: center; }
+-.button:hover { background: var(--accent-hover); transform: translateY(-1px); }
++.button { display: inline-flex; justify-content: center; align-items: center; gap: 12px; min-height: 48px; padding: 12px 23px; border: 1px solid var(--accent); border-radius: var(--radius); background: var(--accent); color: white; font-size: 12px; font-weight: var(--text-weight-medium, 500); transition: background-color var(--store-motion-hover, .2s) var(--store-motion-ease-state, ease), border-color var(--store-motion-hover, .2s) var(--store-motion-ease-state, ease), transform var(--store-motion-hover, .2s) var(--store-motion-ease-out, ease); text-align: center; }
++.button:hover { background: var(--accent-hover); transform: translateY(var(--store-motion-button-lift, -1px)); }
+ .button.secondary { background: transparent; color: var(--accent); }
+ .button.secondary:hover { background: var(--brand-blush); }
+ .text-link { display: inline-flex; align-items: center; gap: 12px; font-size: 12px; color: var(--accent); border-bottom: 1px solid #dcaabb; padding-bottom: 5px; }
+@@ -81,8 +82,8 @@ button:disabled { cursor: wait; opacity: .65; }
+ .service-card .text-link { margin-top: auto; }
+ .service-flower { position: absolute; right: 28px; top: 27px; color: #d8b6ac; width: 48px; height: 48px; stroke-width: 1; }
+ .product-image { position: relative; aspect-ratio: 4/4.5; background: var(--surface-soft); border-radius: 100px 100px 4px 4px; overflow: hidden; }
+-.product-image img { object-fit: cover; transition: transform .4s; }
+-.product-card:hover .product-image img { transform: scale(1.04); }
++.product-image img { object-fit: cover; transition: transform var(--store-motion-hover, .4s) var(--store-motion-ease-out, ease); }
++.product-card:hover .product-image img { transform: scale(var(--store-motion-image-scale, 1.04)); }
+ .product-card .category { display: block; margin-top: 18px; margin-bottom: 7px; font-size: 9px; text-transform: uppercase; letter-spacing: .15em; color: var(--muted); }
+ .product-card h3 { font-size: 23px; margin-bottom: 8px; }
+ .product-price { color: var(--accent); font-size: 12px; }
+diff --git a/src/components/Header.tsx b/src/components/Header.tsx
+index 7812fb8..3ea8c78 100644
+--- a/src/components/Header.tsx
++++ b/src/components/Header.tsx
+@@ -85,6 +85,7 @@ export function Header({
+         onHide={() => setOpen(false)}
+         placement="end"
+         restoreFocusOptions={{ preventScroll: true }}
++        backdropClassName={`hoe-store-menu-backdrop ${portalClassName}`}
+         className={`hoe-menu hoe-store-menu ${portalClassName}`}
+         id="mobile-navigation"
+         aria-labelledby="mobile-menu-title"
+diff --git a/src/components/ProductNavigation.tsx b/src/components/ProductNavigation.tsx
+index a7b5db3..42a7b36 100644
+--- a/src/components/ProductNavigation.tsx
++++ b/src/components/ProductNavigation.tsx
+@@ -4,8 +4,11 @@ import { usePathname } from "next/navigation";
+ import { useEffect, useRef, useState } from "react";
+ import { ArrowUpRight, ChevronDown } from "lucide-react";
+ import { ServiceTypeIcon } from "./ServiceTypeIcon";
+-import { AnimatePresence, useIsPresent, useReducedMotion } from "motion/react";
++import { AnimatePresence, useIsPresent } from "motion/react";
+ import * as m from "motion/react-m";
++import { useReducedMotionPreference } from "@/components/ui/useReducedMotionPreference";
++import { useStoreScope } from "@/components/StoreScope";
++import { storeSubmenuMotion } from "@/lib/store-motion";
+ 
+ const services = [
+   { slug: "hoa-thoi", title: "Hoa Thời", note: "Hoa cho những ngày thường" },
+@@ -25,15 +28,17 @@ function ProductSubmenu({
+   children: React.ReactNode;
+ }) {
+   const present = useIsPresent();
++  const { portalClassName } = useStoreScope();
++  const distance = portalClassName ? storeSubmenuMotion.distance : 10;
+   return (
+     <m.div
+       id={id}
+       className="product-submenu hoe-store-submenu"
+       inert={!present}
+-      initial={reduced ? false : { opacity: 0, y: mobile ? 0 : 10 }}
++      initial={reduced ? false : { opacity: 0, y: mobile ? 0 : distance }}
+       animate={{ opacity: 1, y: 0 }}
+-      exit={reduced ? { opacity: 1 } : { opacity: 0, y: mobile ? 0 : 6 }}
+-      transition={{ duration: reduced ? 0 : 0.24, ease: [0.22, 1, 0.36, 1] }}
++      exit={reduced ? { opacity: 1, y: 0 } : { opacity: 0, y: mobile ? 0 : portalClassName ? distance : 6 }}
++      transition={{ duration: reduced ? 0 : portalClassName ? storeSubmenuMotion.duration : .24, ease: storeSubmenuMotion.ease }}
+     >
+       {children}
+     </m.div>
+@@ -53,7 +58,7 @@ export function ProductNavigation({
+   const wrapper = useRef<HTMLDivElement>(null);
+   const trigger = useRef<HTMLButtonElement>(null);
+   const hoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+-  const reduced = useReducedMotion();
++  const reduced = useReducedMotionPreference();
+   const id = mobile ? "mobile-product-links" : "desktop-product-links";
+   const active =
+     pathname.startsWith("/san-pham") || pathname.startsWith("/dich-vu/");
+diff --git a/src/components/ServiceCards.tsx b/src/components/ServiceCards.tsx
+index 9e4e95a..f5c3d1b 100644
+--- a/src/components/ServiceCards.tsx
++++ b/src/components/ServiceCards.tsx
+@@ -3,10 +3,11 @@ import { ArrowUpRight } from "lucide-react";
+ import { ServiceTypeIcon } from "./ServiceTypeIcon";
+ import { getServices } from "@/server/content";
+ import { LandingScrollFade } from "@/features/storefront/LandingMotion";
++import { StoreReveal } from "@/components/ui/StoreMotion";
+ export async function ServiceCards({ variant = "default" }: { variant?: "default" | "home" }) {
+   return (
+     <div className={variant === "home" ? "olf-service-grid" : "service-grid"}>
+-      {(await getServices()).map((service) => {
++      {(await getServices()).map((service, index) => {
+         const card = (
+           <article className={variant === "home" ? "olf-service-card" : "service-card"} key={service.id}>
+             <span className="number">{service.number}</span>
+@@ -19,7 +20,7 @@ export async function ServiceCards({ variant = "default" }: { variant?: "default
+             </Link>
+           </article>
+         );
+-        return variant === "home" ? <LandingScrollFade key={service.id}>{card}</LandingScrollFade> : card;
++        return variant === "home" ? <LandingScrollFade key={service.id}>{card}</LandingScrollFade> : <StoreReveal key={service.id} index={index}>{card}</StoreReveal>;
+       })}
+     </div>
+   );
+diff --git a/src/components/shadcn-space/select/select-10.tsx b/src/components/shadcn-space/select/select-10.tsx
+index 80b9e96..9dca0ce 100644
+--- a/src/components/shadcn-space/select/select-10.tsx
++++ b/src/components/shadcn-space/select/select-10.tsx
+@@ -1,11 +1,10 @@
+ "use client";
+ 
+-import { useId, useState, type Ref } from "react";
+-import { AnimatePresence, m as motion } from "motion/react";
++import { useId, useRef, useState, type Ref } from "react";
+ import { X } from "lucide-react";
+ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+ import { useStoreOverlay } from "@/components/StoreScope";
+-import { useReducedMotionPreference } from "@/components/ui/useReducedMotionPreference";
++import { useStoreValueFeedback } from "@/components/ui/StoreMotion";
+ 
+ const HOURS = Array.from({ length: 12 }, (_, i) => String(i + 1).padStart(2, "0"));
+ // Keep exact stored minutes while retaining the supplied widget's hour/minute UI.
+@@ -13,21 +12,11 @@ const MINUTES = Array.from({ length: 60 }, (_, i) => String(i).padStart(2, "0"))
+ const PERIODS = ["AM", "PM"] as const;
+ 
+ function Digit({ value, wide = false }: { value: string; wide?: boolean }) {
+-  const reducedMotion = useReducedMotionPreference();
++  const digit = useRef<HTMLSpanElement>(null);
++  useStoreValueFeedback(digit, value);
+   return (
+     <span className={`relative inline-flex h-5 ${wide ? "w-7" : "w-5"} items-center justify-center overflow-hidden`}>
+-      <AnimatePresence mode="popLayout" initial={false}>
+-        <motion.span
+-          key={value}
+-          initial={reducedMotion ? false : { y: 14, opacity: 0 }}
+-          animate={{ y: 0, opacity: 1 }}
+-          exit={reducedMotion ? undefined : { y: -14, opacity: 0 }}
+-          transition={{ type: "spring", stiffness: 420, damping: 32 }}
+-          className="absolute"
+-        >
+-          {value}
+-        </motion.span>
+-      </AnimatePresence>
++      <span ref={digit} className="absolute">{value}</span>
+     </span>
+   );
+ }
+diff --git a/src/components/ui/DateTimeField.tsx b/src/components/ui/DateTimeField.tsx
+index e4b7b00..a74635d 100644
+--- a/src/components/ui/DateTimeField.tsx
++++ b/src/components/ui/DateTimeField.tsx
+@@ -209,6 +209,11 @@ function OriginalDateTimeField({
+         </span>
+       ) : null}
+       <Modal
++        onTransitionEndCapture={portalClassName ? (event: React.TransitionEvent<HTMLDivElement>) => {
++          // Bootstrap forwards this to the dialog panel. Its own and selected-
++          // cell transitions must not consume the modal root's fallback event.
++          event.stopPropagation();
++        } : undefined}
+         show={show}
+         onHide={close}
+         onEntered={() => {
+@@ -243,7 +248,7 @@ function OriginalDateTimeField({
+         onExited={() => returnFocus.current?.focus()}
+         className={`hoe-widget hoe-picker ${portalClassName}`}
+         dialogClassName="hoe-picker-dialog"
+-        backdropClassName="hoe-picker-backdrop"
++        backdropClassName={`hoe-picker-backdrop ${portalClassName}`}
+         aria-labelledby={id + "-title"}
+         style={
+           {
+diff --git a/src/components/ui/QuantityField.tsx b/src/components/ui/QuantityField.tsx
+index bbe7618..7f803c8 100644
+--- a/src/components/ui/QuantityField.tsx
++++ b/src/components/ui/QuantityField.tsx
+@@ -1,6 +1,7 @@
+ "use client";
+-import { useId, useState } from "react";
++import { useId, useRef, useState } from "react";
+ import { Minus, Plus } from "lucide-react";
++import { useStoreValueFeedback } from "./StoreMotion";
+ export function QuantityField({
+   name,
+   label = "Số lượng",
+@@ -17,6 +18,8 @@ export function QuantityField({
+   const id = useId(),
+     [draft, setDraft] = useState(String(defaultValue));
+   const current = value ?? Number(draft);
++  const count = useRef<HTMLSpanElement>(null);
++  useStoreValueFeedback(count, current);
+   function update(next: number) {
+     if (!Number.isInteger(next) || next < 1 || next > 99) return;
+     setDraft(String(next));
+@@ -24,8 +27,8 @@ export function QuantityField({
+   }
+   return (
+     <div className="field hoe-widget">
+-      <label htmlFor={id}>{label}</label>
+-      <div className="hoe-quantity">
++      <label id={`${id}-label`}>{label}</label>
++      <div className="hoe-quantity" role="group" aria-labelledby={`${id}-label`}>
+         <button
+           type="button"
+           aria-label="Giảm số lượng"
+@@ -34,7 +37,8 @@ export function QuantityField({
+         >
+           <Minus size={16} />
+         </button>
+-        <div><span>{value ?? draft}</span></div>
++        <div><span ref={count}>{value ?? draft}</span></div>
++        {name ? <input type="hidden" name={name} value={current} /> : null}
+         {/* <input
+           id={id}
+           name={name}
+diff --git a/src/components/ui/select.tsx b/src/components/ui/select.tsx
+index e98588d..a1d69e0 100644
+--- a/src/components/ui/select.tsx
++++ b/src/components/ui/select.tsx
+@@ -48,11 +48,10 @@ function SelectTrigger({
+     >
+       {children}
+       <SelectPrimitive.Icon
+-        children={null}
+         render={
+           <ChevronDownIcon className="pointer-events-none size-4 text-muted-foreground" />
+         }
+-      />
++      >{null}</SelectPrimitive.Icon>
+     </SelectPrimitive.Trigger>
+   )
+ }
+diff --git a/src/features/cart/CartView.tsx b/src/features/cart/CartView.tsx
+index 2154df6..e1ccfc3 100644
+--- a/src/features/cart/CartView.tsx
++++ b/src/features/cart/CartView.tsx
+@@ -1,7 +1,7 @@
+ "use client";
+ import Link from "next/link";
+ import Image from "next/image";
+-import { useEffect, useState } from "react";
++import { useEffect, useRef, useState } from "react";
+ import { Trash2 } from "lucide-react";
+ import { useCart } from "./store";
+ import type { CartItem, Product } from "@/domain/schemas";
+@@ -23,6 +23,7 @@ import { displayDate } from "@/domain/date-time";
+ import { QuantityField } from "@/components/ui/QuantityField";
+ import { RecurrenceSummary } from "@/features/checkout/RecurrenceSummary";
+ import { isCalendarRecurrence } from "@/domain/delivery-schedule";
++import { useStoreValueFeedback } from "@/components/ui/StoreMotion";
+ export function CartSummary({
+   products,
+   checkout = false,
+@@ -42,11 +43,13 @@ export function CartSummary({
+   });
+   const totals = summarize(lines),
+     display = totalLabel(totals);
++  const total = useRef<HTMLDivElement>(null);
++  useStoreValueFeedback(total, display.value);
+   return (
+     <aside className="card cart-summary">
+       <span className="eyebrow">GIỎ HOA CỦA BẠN</span>
+       <h3>{display.label}</h3>
+-      <div className="total">{display.value}</div>
++      <div className="total" ref={total}>{display.value}</div>
+       {totals.quoteCount ? (
+         <p className="small muted">
+           {totals.quoteCount} dòng cần shop báo giá; phần này chưa nằm trong tạm
+@@ -84,15 +87,21 @@ function CartRow({
+   item,
+   product,
+   guidance,
++  remove,
+ }: {
+   item: CartItem;
+   product?: Product;
+   guidance?: Guidance;
++  remove: (lineId: string, button: HTMLButtonElement) => void;
+ }) {
+   const cart = useCart();
+   const [editing, setEditing] = useState(false);
+   const [error, setError] = useState("");
+   const [errors, setErrors] = useState<Record<string, string>>({});
++  const editTrigger = useRef<HTMLButtonElement>(null);
++  const price = useRef<HTMLParagraphElement>(null);
++  const displayPrice = product ? priceLabel(effectivePrice(product, item.configuration)) : "Vui lòng xóa mẫu này khỏi giỏ.";
++  useStoreValueFeedback(price, `${item.quantity}/${displayPrice}`);
+   useEffect(() => {
+     const frame = window.requestAnimationFrame(() => {
+       if (new URLSearchParams(window.location.search).get("edit") === "hoa-thoi" && item.configuration.serviceType === "hoa-thoi" && !isCalendarRecurrence(item.configuration.recurrence)) setEditing(true);
+@@ -119,6 +128,7 @@ function CartRow({
+         expectedRevision: product?.revision || item.expectedRevision,
+       });
+       setEditing(false);
++      editTrigger.current?.focus({ preventScroll: true });
+       setError("");
+     } catch {
+       setError("Chưa lưu được cấu hình. Vui lòng kiểm tra lại.");
+@@ -144,11 +154,7 @@ function CartRow({
+               "Mẫu không còn khả dụng"
+             )}
+           </h3>
+-          <p>
+-            {product
+-              ? priceLabel(effectivePrice(product, item.configuration))
+-              : "Vui lòng xóa mẫu này khỏi giỏ."}
+-          </p>
++          <p ref={price}>{displayPrice}</p>
+           {item.configuration.serviceType === "hoa-tam" ? (
+             <p>Cảm xúc: {item.configuration.emotion}</p>
+           ) : null}
+@@ -181,6 +187,7 @@ function CartRow({
+             />
+             {product ? (
+               <button
++                ref={editTrigger}
+                 className="link-button"
+                 onClick={() => setEditing(!editing)}
+                 aria-expanded={editing}
+@@ -191,7 +198,7 @@ function CartRow({
+             <button
+               className="icon-button"
+               aria-label={`Xóa ${product?.name || "mẫu"}`}
+-              onClick={() => cart.remove(item.lineId)}
++              onClick={event => remove(item.lineId, event.currentTarget)}
+             >
+               <Trash2 size={16} />
+             </button>
+@@ -227,6 +234,21 @@ export function CartView({
+   services?: Array<Guidance & { id: string }>;
+ }) {
+   const cart = useCart();
++  const focusFrame = useRef<number | null>(null);
++  useEffect(() => () => { if (focusFrame.current !== null) cancelAnimationFrame(focusFrame.current); }, []);
++  function remove(lineId: string, button: HTMLButtonElement) {
++    const row = button.closest(".cart-row");
++    const adjacent = row?.nextElementSibling ?? row?.previousElementSibling;
++    const target = adjacent?.querySelector<HTMLButtonElement>(".cart-row-controls .icon-button");
++    const host = button.closest(".cart-layout")?.parentElement;
++    cart.remove(lineId);
++    if (focusFrame.current !== null) cancelAnimationFrame(focusFrame.current);
++    focusFrame.current = requestAnimationFrame(() => {
++      const next = target?.isConnected ? target : host?.querySelector<HTMLAnchorElement>(".empty a");
++      next?.focus({ preventScroll: true });
++      focusFrame.current = null;
++    });
++  }
+   if (!cart.ready)
+     return (
+       <p role="status" className="section">
+@@ -265,6 +287,7 @@ export function CartView({
+               guidance={services.find(
+                 (s) => s.id === item.configuration.serviceType,
+               )}
++              remove={remove}
+             />
+           ))}
+         </div>
+diff --git a/src/features/cart/ProductForm.tsx b/src/features/cart/ProductForm.tsx
+index c2034e2..fee77ec 100644
+--- a/src/features/cart/ProductForm.tsx
++++ b/src/features/cart/ProductForm.tsx
+@@ -1,5 +1,5 @@
+ "use client";
+-import { useState } from "react";
++import { useRef, useState } from "react";
+ import Link from "next/link";
+ import { ArrowRight } from "lucide-react";
+ import type { Product } from "@/domain/schemas";
+@@ -14,6 +14,7 @@ import {
+ import { useCart } from "./store";
+ import { focusError } from "@/components/Fields";
+ import { QuantityField } from "@/components/ui/QuantityField";
++import { useStoreValueFeedback } from "@/components/ui/StoreMotion";
+ export function ProductForm({
+   product,
+   guidance,
+@@ -26,6 +27,8 @@ export function ProductForm({
+   const [errors, setErrors] = useState<Record<string, string>>({});
+   const [added, setAdded] = useState(false);
+   const [label, setLabel] = useState(priceLabel(product.price));
++  const price = useRef<HTMLElement>(null);
++  useStoreValueFeedback(price, label);
+   const initial = defaultConfiguration(product);
+   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+     e.preventDefault();
+@@ -100,7 +103,7 @@ export function ProductForm({
+         </div>
+       </fieldset>
+       <p className="form-note">
+-        Theo cấu hình hiện tại: <strong>{label}</strong>. Thay đổi thiết kế
++        Theo cấu hình hiện tại: <strong ref={price}>{label}</strong>. Thay đổi thiết kế
+         ngoài mẫu cần shop báo giá. Giá cuối, phí giao và lịch nhận được xác
+         nhận sau.
+       </p>
+diff --git a/src/features/checkout/HoaThoiDeliveryCalendar.tsx b/src/features/checkout/HoaThoiDeliveryCalendar.tsx
+index d2b0449..ec4f0b6 100644
+--- a/src/features/checkout/HoaThoiDeliveryCalendar.tsx
++++ b/src/features/checkout/HoaThoiDeliveryCalendar.tsx
+@@ -42,6 +42,7 @@ function CalendarDayButton({ children, modifiers, ...props }: DayButtonProps) {
+ }
+ export function HoaThoiDeliveryCalendar({ draft, today, change, errors }: { draft: ScheduleDraft; today: string; change: (date?: string) => void; errors?: Record<string, string> }) {
+   const id = useId(), root = useRef<HTMLDivElement>(null);
++  const nextButton = useRef<HTMLButtonElement>(null);
+   const [month, setMonth] = useState(() => localDate(draft.deliveryDates[0]?.slice(0, 7) || today.slice(0, 7)));
+   const [wide, setWide] = useState(false);
+   const total = useRef<HTMLParagraphElement>(null);
+@@ -60,10 +61,11 @@ export function HoaThoiDeliveryCalendar({ draft, today, change, errors }: { draf
+   const visibleFirst = `${currentMonth}-01` < today ? today : `${currentMonth}-01`;
+   const unavailable = !draft.startPeriod && !disabledPackage ? scheduleFeasibility({ ...draft, startPeriod: periodKey(visibleFirst, draft.period) }, today) : "";
+   function navigate(amount: number) {
+-    setMonth(localDate(nextMonth(currentMonth, amount)));
+-    if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+-      root.current?.querySelector(".ht-calendar-months")?.animate?.([{ opacity: 0.75 }, { opacity: 1 }], { duration: 160, easing: "ease-out" });
+-    }
++    const destination = nextMonth(currentMonth, amount);
++    setMonth(localDate(destination));
++    // At the earliest month, the previous button becomes disabled. Keep focus
++    // on a usable navigation control instead of letting the browser drop it.
++    if (amount < 0 && destination <= today.slice(0, 7)) nextButton.current?.focus({ preventScroll: true });
+   }
+   const target = disabledPackage ? 0 : draft.bouquetsPerPeriod * draft.comboCount;
+   return <div className="ht-delivery-calendar" ref={root} tabIndex={-1} data-delivery-calendar data-visible-month={currentMonth} aria-labelledby={`${id}-title`} aria-describedby={`${id}-hint ${id}-error`} onFocus={(event) => {
+@@ -71,7 +73,7 @@ export function HoaThoiDeliveryCalendar({ draft, today, change, errors }: { draf
+     const missing = groups.find((g) => g.dates.length !== g.required);
+     if (missing) setMonth(localDate(missing.start < today ? today : missing.start));
+   }}>
+-    <div className="ht-calendar-heading"><div><span className="eyebrow">02 / NGÀY HOA GHÉ</span><h3 id={`${id}-title`}>Chọn những ngày nhận hoa</h3></div><div className="ht-calendar-controls"><button type="button" aria-label="Tháng trước" disabled={currentMonth <= today.slice(0, 7)} onClick={() => navigate(-1)}><ChevronLeft size={18} aria-hidden="true" /></button><button type="button" aria-label="Tháng sau" onClick={() => navigate(1)}><ChevronRight size={18} aria-hidden="true" /></button></div></div>
++    <div className="ht-calendar-heading"><div><span className="eyebrow">02 / NGÀY HOA GHÉ</span><h3 id={`${id}-title`}>Chọn những ngày nhận hoa</h3></div><div className="ht-calendar-controls"><button type="button" aria-label="Tháng trước" disabled={currentMonth <= today.slice(0, 7)} onClick={() => navigate(-1)}><ChevronLeft size={18} aria-hidden="true" /></button><button ref={nextButton} type="button" aria-label="Tháng sau" onClick={() => navigate(1)}><ChevronRight size={18} aria-hidden="true" /></button></div></div>
+     <p className="ht-helper" id={`${id}-hint`}>{disabledPackage ? "Nhập số bó và số combo hợp lệ để chọn ngày." : "Mỗi ngày nhận 1 bó. Chọn đủ ngày trong từng chu kỳ; bấm lại ngày đã chọn để bỏ."}</p>
+     <p className="ht-calendar-total" ref={total} aria-live="polite" aria-atomic="true"><span>Đã chọn {draft.deliveryDates.length}/{target} ngày</span><span className="ht-helper">Số ngày cần chọn: {target}</span><span className="visually-hidden">Lịch tháng {month.getMonth() + 1}, năm {month.getFullYear()}{wide ? " và tháng kế tiếp" : ""}.</span></p>
+     <CalendarProgressContext.Provider value={{ period: draft.period, groups }}>
+diff --git a/src/features/checkout/HoaThoiMotion.tsx b/src/features/checkout/HoaThoiMotion.tsx
+index dfa8a4d..157e93d 100644
+--- a/src/features/checkout/HoaThoiMotion.tsx
++++ b/src/features/checkout/HoaThoiMotion.tsx
+@@ -1,28 +1,12 @@
+ "use client";
+ 
+-import { useEffect, useRef, type ReactNode, type RefObject } from "react";
+-import * as m from "motion/react-m";
+-import { useReducedMotionPreference } from "@/components/ui/useReducedMotionPreference";
++import { type ReactNode } from "react";
++import { StoreReveal } from "@/components/ui/StoreMotion";
+ 
+ /** Visible server fallback; decorative cards enter only once. */
+ export function HoaThoiReveal({ children, delay = 0 }: { children: ReactNode; delay?: number }) {
+-  const reduced = useReducedMotionPreference();
+-  return <m.div className="ht-reveal" initial={false}
+-    whileInView={reduced ? {} : { opacity: [0.75, 1], y: [8, 0] }}
+-    viewport={{ once: true, amount: 0.15 }}
+-    transition={{ duration: 0.28, delay: reduced ? 0 : delay, ease: "easeOut" }}>
+-    {children}
+-  </m.div>;
++  return <StoreReveal className="ht-reveal" index={Math.round(delay / .05)}>{children}</StoreReveal>;
+ }
+ 
+ /** Highlight the changed value without remounting controls or delaying state. */
+-export function useHoaThoiFeedback(ref: RefObject<HTMLElement | null>, value: string) {
+-  const previous = useRef(value);
+-  useEffect(() => {
+-    if (previous.current === value) return;
+-    previous.current = value;
+-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+-    const animation = ref.current?.animate?.([{ opacity: 0.72 }, { opacity: 1 }], { duration: 140, easing: "ease-out" });
+-    return () => animation?.cancel();
+-  }, [ref, value]);
+-}
++export { useStoreValueFeedback as useHoaThoiFeedback } from "@/components/ui/StoreMotion";
+diff --git a/src/features/checkout/HoaThoiScheduleProgress.tsx b/src/features/checkout/HoaThoiScheduleProgress.tsx
+index 0793a05..a25306e 100644
+--- a/src/features/checkout/HoaThoiScheduleProgress.tsx
++++ b/src/features/checkout/HoaThoiScheduleProgress.tsx
+@@ -7,9 +7,10 @@ import { shortDate } from "@/domain/delivery-schedule";
+ import { useHoaThoiFeedback } from "./HoaThoiMotion";
+ 
+ export function HoaThoiScheduleProgress({ draft, recommendations = [], receiptPrice, historical = false, remove }: { draft: ScheduleDraft; recommendations?: Recommendation[]; receiptPrice?: Recommendation | null; historical?: boolean; remove?: (date: string) => void }) {
+-  const panel = useRef<HTMLElement>(null), total = useRef<HTMLParagraphElement>(null), price = useRef<HTMLDivElement>(null);
++  const panel = useRef<HTMLElement>(null), total = useRef<HTMLParagraphElement>(null), price = useRef<HTMLDivElement>(null), dates = useRef<HTMLDivElement>(null);
+   useHoaThoiFeedback(total, `${draft.deliveryDates.length}/${draft.bouquetsPerPeriod * draft.comboCount}`);
+   useHoaThoiFeedback(price, `${draft.period}/${draft.bouquetsPerPeriod}`);
++  useHoaThoiFeedback(dates, draft.deliveryDates.join(","));
+   useEffect(() => {
+     const node = panel.current;
+     if (!node) return;
+@@ -36,7 +37,7 @@ export function HoaThoiScheduleProgress({ draft, recommendations = [], receiptPr
+     <p className="ht-summary-label">Ngày đã chọn</p>
+     <p ref={total} className={`ht-progress-total ${complete ? "is-complete" : ""}`}>{complete ? <Check size={20} aria-hidden="true" /> : <CalendarDays size={20} aria-hidden="true" />}{complete ? `Đã chọn đủ ${target} ngày nhận` : `Đã chọn ${draft.deliveryDates.length}/${target} ngày`}</p>
+     {!draft.startPeriod ? <p className="ht-helper">Chọn ngày đầu tiên để xác định thời gian bắt đầu combo.</p> : null}
+-    <div className="ht-period-groups">{groups.map((g) => <section className="ht-period-progress" key={g.key}>
++    <div className="ht-period-groups" ref={dates}>{groups.map((g) => <section className="ht-period-progress" key={g.key}>
+       <div><strong>{g.label}</strong><span className={`ht-quota ${g.dates.length === g.required ? "is-complete" : g.dates.length > g.required ? "is-over" : ""}`}>{g.dates.length}/{g.required} · {g.dates.length === g.required ? "Đủ" : g.dates.length > g.required ? "Vượt" : "Thiếu"}</span></div>
+       {g.dates.length ? <ul>{g.dates.map((date) => <li key={date}><span>{fullDate(date)}</span>{remove ? <button type="button" aria-label={`Bỏ ngày ${date}`} onClick={() => remove(date)}><X size={14} aria-hidden="true" /></button> : null}</li>)}</ul> : <p className="ht-helper">Cần chọn {g.required} ngày trong chu kỳ này.</p>}
+     </section>)}</div>
+diff --git a/src/features/checkout/RecurrenceFields.tsx b/src/features/checkout/RecurrenceFields.tsx
+index ba69672..a378db9 100644
+--- a/src/features/checkout/RecurrenceFields.tsx
++++ b/src/features/checkout/RecurrenceFields.tsx
+@@ -8,8 +8,11 @@ import { HoaThoiDeliveryCalendar } from "./HoaThoiDeliveryCalendar";
+ import { HoaThoiScheduleProgress } from "./HoaThoiScheduleProgress";
+ import { HoaThoiPackageContext, scrollToPackageControls, useHoaThoiPackageState } from "./HoaThoiPackageState";
+ import { HoaThoiAnchor } from "./HoaThoiAnchor";
++import { useStoreValueFeedback } from "@/components/ui/StoreMotion";
+ 
+ function NumberField({ label, name, value, max, change, id, helper, error, unit }: { label: string; name: string; value: string; max: number; change: (value: string) => void; id: string; helper: string; error?: string; unit: string }) {
++  const count = useRef<HTMLSpanElement>(null);
++  useStoreValueFeedback(count, value);
+   const [touched, setTouched] = useState(false);
+   const valid = value !== "" && Number.isInteger(Number(value)) && Number(value) >= 1 && Number(value) <= max;
+   const feedback = error || (touched && !valid ? `Nhập số nguyên từ 1 đến ${max}.` : "");
+@@ -17,7 +20,7 @@ function NumberField({ label, name, value, max, change, id, helper, error, unit
+     <label htmlFor={id}>{label} <span className="ht-helper">(bắt buộc)</span></label>
+     <div className="ht-number-stepper"><button type="button" aria-label={`Giảm ${label.toLowerCase()}`} disabled={!valid || Number(value) <= 1} onClick={() => change(String(Number(value) - 1))}><Minus size={16} /></button>
+       {/* <input id={id} name={name} type="number" inputMode="numeric" min={1} max={max} step={1} value={value} onChange={(e) => change(e.target.value)} onBlur={() => setTouched(true)} aria-invalid={!!feedback} aria-describedby={`${id}-hint${feedback ? ` ${id}-error` : ""}`} /> */}
+-      <span>{value} {unit}</span><button type="button" aria-label={`Tăng ${label.toLowerCase()}`} disabled={!valid || Number(value) >= max} onClick={() => change(String(Number(value) + 1))}><Plus size={16} /></button></div>
++      <span ref={count}>{value} {unit}</span><button type="button" aria-label={`Tăng ${label.toLowerCase()}`} disabled={!valid || Number(value) >= max} onClick={() => change(String(Number(value) + 1))}><Plus size={16} /></button></div>
+     <p className="ht-helper" id={`${id}-hint`}>{helper}</p>{feedback ? <p className="ht-error" id={`${id}-error`}>{feedback}</p> : null}
+   </div>;
+ }
+diff --git a/src/styles/hoa-thoi.css b/src/styles/hoa-thoi.css
+index a348132..e56ffa5 100644
+--- a/src/styles/hoa-thoi.css
++++ b/src/styles/hoa-thoi.css
+@@ -14,7 +14,7 @@
+ .ht-fields .ht-helper, .ht-summary .ht-helper, .ht-recommendations .ht-helper, .ht-reference { font-size: 14px; line-height: 1.6; color: var(--muted); }
+ .ht-recommendations { margin-bottom: 0; }
+ .ht-recommendation-grid { display: grid; grid-template-columns: 1fr; gap: 24px; margin-block: 24px; }
+-.ht-recommendation { height: 100%; padding: 24px; border: 1px solid var(--border); border-radius: var(--ht-radius, 10px); background: var(--background); display: flex; flex-direction: column; align-items: flex-start; gap: 12px; transition: border-color 180ms, background 180ms, transform 180ms; }
++.ht-recommendation { height: 100%; padding: 24px; border: 1px solid var(--border); border-radius: var(--ht-radius, 10px); background: var(--background); display: flex; flex-direction: column; align-items: flex-start; gap: 12px; transition: border-color var(--store-motion-feedback, 180ms) var(--store-motion-ease-state, ease), background-color var(--store-motion-feedback, 180ms) var(--store-motion-ease-state, ease), transform var(--store-motion-hover, 180ms) var(--store-motion-ease-out, ease); }
+ .ht-recommendation.is-selected { border-color: var(--accent); background: var(--ht-blush); }
+ .ht-card-price { font-size: 22px; overflow-wrap: anywhere; }
+ .ht-recommendation .button { margin-top: auto; }
+@@ -108,7 +108,7 @@
+ .ht-period-option.is-selected { border-color: var(--accent); background: var(--ht-blush); }
+ .ht-period-option:has(input:focus-visible), .ht-number-stepper:focus-within { outline: 1px solid var(--focus); outline-offset: 0px; }
+ .ht-period-option svg { stroke-width: 1.5; flex-shrink: 0; }
+-.ht-period-check { opacity: 0; transition: opacity 150ms; }
++.ht-period-check { opacity: 0; transition: opacity var(--store-motion-tick, 150ms); }
+ .ht-period-option.is-selected .ht-period-check { opacity: 1; }
+ .ht-count-controls { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+ .ht-number-field > label { display: block; margin-bottom: 10px; font-weight: 600; }
+@@ -137,7 +137,7 @@
+ .ht-calendar-region { background: var(--ht-blush); }
+ .ht-calendar-selected .ht-calendar-day-button { background: var(--ht-selected); border-color: var(--accent); color: var(--ink); }
+ .ht-calendar-selected .ht-calendar-day-button:hover { background: var(--ht-selected); color: var(--ink); }
+-.ht-day-check { position: absolute; right: 3px; bottom: 2px; opacity: 0; color: var(--accent); transition: opacity 150ms; }
++.ht-day-check { position: absolute; right: 3px; bottom: 2px; opacity: 0; color: var(--accent); transition: opacity var(--store-motion-tick, 150ms); }
+ .ht-calendar-selected .ht-day-check { opacity: 1; }
+ .ht-calendar-today .ht-calendar-day-button { border-color: var(--accent); }
+ .ht-calendar-today:not(.ht-calendar-selected) .ht-calendar-day-button::after { content: ""; width: 3px; height: 3px; background: var(--accent); position: absolute; bottom: 5px; border-radius: 50%; }
+@@ -201,7 +201,7 @@
+ @media (max-width: 600px) {
+   .hoe-editorial-detail .detail-copy form:has(.ht-delivery-calendar) { padding-inline: 0; border: 0; background: transparent; }
+ }
+-@media (prefers-reduced-motion: no-preference) { .ht-period-option, .ht-calendar-day-button, .ht-package-button { transition: border-color 180ms, background 180ms, color 180ms; } }
++@media (prefers-reduced-motion: no-preference) { .ht-period-option, .ht-calendar-day-button, .ht-package-button { transition: border-color var(--store-motion-feedback, 180ms) var(--store-motion-ease-state, ease), background-color var(--store-motion-feedback, 180ms) var(--store-motion-ease-state, ease), color var(--store-motion-state-text, 180ms) var(--store-motion-ease-state, ease); } }
+ 
+ /* Shared Hoa Thời presentation tokens stay inside the feature. */
+ .ht-service-page, .ht-fields, .ht-recommendations, .ht-inquiry, .ht-product-form, .ht-summary, .ht-receipt {
+@@ -223,7 +223,7 @@
+ .ht-inquiry .field :is(input, select, textarea), .ht-product-form .field :is(input, select, textarea),
+ .edit-form:has(.ht-fields) .field :is(input, select, textarea) { min-height: 44px; border-radius: var(--ht-radius, 10px); font-size: 16px; }
+ .ht-inquiry :is(.field-hint, .form-note, .field-error), .ht-product-form :is(.field-hint, .form-note, .field-error) { font-size: 14px; line-height: 1.5; }
+-.ht-inquiry .button, .ht-product-form .button { min-height: 44px; border-radius: var(--ht-radius); font-size: 16px; transition: background 180ms, border-color 180ms; }
++.ht-inquiry .button, .ht-product-form .button { min-height: 44px; border-radius: var(--ht-radius); font-size: 16px; transition: background-color var(--store-motion-hover, 180ms) var(--store-motion-ease-state, ease), border-color var(--store-motion-hover, 180ms) var(--store-motion-ease-state, ease); }
+ .ht-inquiry .divider { margin-block: 32px; }
+ .ht-inquiry .hoe-optional, .ht-product-form .hoe-optional { background: transparent; border: 0; border-block: 1px solid var(--border); border-radius: 0; padding: 16px 0; }
+ .ht-inquiry .hoe-optional summary, .ht-product-form .hoe-optional summary { min-height: 44px; font-size: 16px; }
+@@ -237,7 +237,7 @@
+ .ht-calendar-cycle { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 0 8px; min-height: 32px; padding: 4px 8px; font-size: 14px; line-height: 1.4; color: var(--muted); text-align: left; }
+ .ht-calendar-cycle > span:last-child { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+ .ht-calendar-cycle .is-complete { color: var(--accent); }
+-.ht-cycle-check { opacity: 0; transition: opacity 150ms; }
++.ht-cycle-check { opacity: 0; transition: opacity var(--store-motion-tick, 150ms); }
+ .ht-calendar-cycle .is-complete .ht-cycle-check { opacity: 1; }
+ .ht-calendar-progress-row td { padding: 0 0 4px; height: 36px; }
+ .ht-calendar-cycle > span:first-child { font-size: 14px; }
+@@ -252,7 +252,7 @@
+ .ht-service-page #mau-hoa:focus-visible, .ht-service-page #tu-van:focus-visible { outline: 1px solid var(--focus); outline-offset: 0px; }
+ .hoe-store-scope .ht-inquiry :is(.field-hint, .form-note, .required.small), .hoe-store-scope .ht-product-form :is(.field-hint, .form-note, .required.small) { font-size: 14px; line-height: 1.5; }
+ .ht-count-controls { max-width: 700px; }
+-.ht-calendar-controls button { transition: background 160ms, border-color 160ms; }
++.ht-calendar-controls button { transition: background-color var(--store-motion-hover, 160ms) var(--store-motion-ease-state, ease), border-color var(--store-motion-hover, 160ms) var(--store-motion-ease-state, ease); }
+ @container ht-fields (min-width: 900px) {
+   .ht-calendar-summary[data-sticky=true] { position: sticky; top: 110px; }
+ }
+@@ -261,7 +261,7 @@
+   .ht-count-controls { gap: 24px; }
+ }
+ @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+-  .ht-recommendation:hover { transform: translateY(-2px); border-color: var(--accent); }
++  .ht-recommendation:hover { transform: translateY(var(--store-motion-lift, -2px)); border-color: var(--accent); }
+ }
+ @media (prefers-reduced-motion: no-preference) {
+   .ht-service-page .page-heading { animation: ht-hero-enter 320ms ease-out; }
+diff --git a/src/styles/landing-home.css b/src/styles/landing-home.css
+index 6d0d0a8..6c9af1b 100644
+--- a/src/styles/landing-home.css
++++ b/src/styles/landing-home.css
+@@ -40,21 +40,23 @@
+ .olf-section-heading > [data-scroll-fade-content] > p { max-width: 560px; margin: 24px auto 0; font-size: 15px; color: var(--muted); }
+ .olf-services { background: var(--brand-blush); }
+ .olf-service-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
+-.olf-service-card { position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: 20px; padding: 36px 32px; background: var(--background); min-width: 0; border-radius: 48px; transition: transform 240ms; }
++.olf-service-card { position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: 20px; padding: 36px 32px; background: var(--background); min-width: 0; border-radius: 48px; transition: transform var(--store-motion-hover, 240ms) var(--store-motion-ease-out, ease); }
+ .olf-service-card .number { font-size: 12px; color: var(--muted); }
+ .olf-service-card .service-flower { position: absolute; width: 52px; height: 52px; top: 28px; right: 28px; stroke-width: 1.6; color: var(--accent); }
+ .olf-service-card h3 { font-size: 38px; line-height: 1.2; margin-top: 24px; }
+ .olf-service-card p { color: var(--muted); white-space: pre-line; font-size: 15px; }
+ .olf-service-card .text-link { margin-top: auto; font-size: 13px; padding-top: 8px; }
+-.olf-service-card:has(a:focus-visible), .olf-service-card:hover { transform: translateY(-8px); }
++.olf-service-card:has(a:focus-visible) { transform: translateY(var(--store-motion-focus-lift, -8px)); }
++.olf-service-card:hover { transform: translateY(var(--store-motion-lift, -8px)); }
+ .olf-heading-row { display: flex; justify-content: space-between; align-items: flex-end; gap: 32px; margin-bottom: 48px; }
+ .olf-heading-row > .olf-link { flex-shrink: 0; margin-bottom: 8px; }
+ .olf-product-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 48px 28px; }
+ .olf-product-grid > div { min-width: 0; }
+ .olf-product-card { display: flex; flex-direction: column; gap: 10px; height: 100%; min-width: 0; }
+ .olf-home .olf-product-card .product-image { position: relative; aspect-ratio: 4/5; border-radius: 4px; overflow: hidden; background: var(--surface-soft); }
+-.olf-product-card .product-image img { object-fit: cover; transition: transform 600ms cubic-bezier(.22,1,.36,1); }
+-.olf-product-card:hover img, .olf-product-card:focus-within img { transform: scale(1.035); }
++.olf-product-card .product-image img { object-fit: cover; transition: transform var(--store-motion-hover, 600ms) cubic-bezier(.22,1,.36,1); }
++.olf-product-card:focus-within img { transform: scale(var(--store-motion-focus-scale, 1.035)); }
++.olf-product-card:hover img { transform: scale(var(--store-motion-image-scale, 1.035)); }
+ .olf-product-card .category { margin-top: 8px; color: var(--muted); font-size: 11px; }
+ .olf-product-card h3 { font-size: 28px; line-height: 1.25; overflow-wrap: anywhere; }
+ .olf-product-card .product-price { color: var(--accent); font-size: 14px; }
+@@ -73,8 +75,8 @@
+ .olf-benefits-intro h3 { font-size: 40px; }
+ .olf-benefits-intro p { margin-top: 16px; color: var(--muted); font-size: 15px; }
+ .olf-benefit-grid, .olf-process-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 40px; }
+-.olf-benefit-card { padding: 32px; border-radius: 48px; background: var(--brand-blush); min-width: 0; overflow-wrap: anywhere; transition: transform 0.24s; }
+-.olf-benefit-card:hover {transform: translateY(-8px);}
++.olf-benefit-card { padding: 32px; border-radius: 48px; background: var(--brand-blush); min-width: 0; overflow-wrap: anywhere; transition: transform var(--store-motion-hover, .24s) var(--store-motion-ease-out, ease); }
++.olf-benefit-card:hover { transform: translateY(var(--store-motion-lift, -8px)); }
+ .olf-benefit-art { width: 52px; height: 52px; stroke-width: 1; margin-bottom: 24px; }
+ .olf-benefit-grid > :nth-child(3n + 2) .olf-benefit-card { background: color-mix(in srgb, var(--brand-jasmine) 40%, var(--background)); }
+ .olf-benefit-grid > :nth-child(3n) .olf-benefit-card { background: var(--brand-berry); color: var(--background); }
+@@ -222,8 +224,8 @@
+   display: grid; place-items: center; width: 48px; height: 48px;
+   border: 0; border-radius: 50%; background: var(--accent); color: var(--background);
+   box-shadow: 0 4px 16px #332c2a26; cursor: pointer;
+-  opacity: 0; visibility: hidden; pointer-events: none; transform: translateY(6px);
+-  transition: opacity 180ms, transform 180ms, background 180ms, box-shadow 180ms, visibility 180ms;
++  opacity: 0; visibility: hidden; pointer-events: none; transform: translateY(var(--store-motion-back-top-y, 6px));
++  transition: opacity var(--store-motion-hover, 180ms), transform var(--store-motion-hover, 180ms), background-color var(--store-motion-hover, 180ms), box-shadow var(--store-motion-hover, 180ms), visibility var(--store-motion-hover, 180ms);
+ }
+ .olf-back-to-top[data-visible="true"] { opacity: 1; visibility: visible; pointer-events: auto; transform: translateY(0); }
+ .olf-back-to-top:hover, .olf-back-to-top:active { background: var(--accent-hover); box-shadow: 0 6px 20px #332c2a33; }
+diff --git a/src/styles/phase3.css b/src/styles/phase3.css
+index 236e5dd..18384fd 100644
+--- a/src/styles/phase3.css
++++ b/src/styles/phase3.css
+@@ -61,7 +61,7 @@
+   border-radius: 40px;
+   min-height: 50px;
+   padding-inline: 26px;
+-  transition-duration: var(--ui-duration);
++  transition-duration: var(--store-motion-hover, var(--ui-duration));
+ }
+ .hoe-product-card .product-image {
+   aspect-ratio: 4/5;
+@@ -192,19 +192,19 @@
+   }
+ }
+ .hoe-product-card .text-link svg {
+-  transition: transform 160ms;
++  transition: transform var(--store-motion-hover, 160ms) var(--store-motion-ease-out, ease);
+ }
+ .hoe-product-card .text-link:hover svg {
+-  transform: translate(3px, -2px);
++  transform: translate(var(--store-motion-arrow-x, 3px), var(--store-motion-arrow-y, -2px));
+ }
+ .hoe-product-card .product-image {
+-  transition: box-shadow 240ms;
++  transition: box-shadow var(--store-motion-hover, 240ms) var(--store-motion-ease-state, ease);
+ }
+ .hoe-product-card:hover .product-image {
+   box-shadow: 0 12px 28px #332c2a12;
+ }
+ .hoe-product-card:has(a:active) .product-image img {
+-  transform: scale(1.015);
++  transform: scale(var(--store-motion-image-scale, 1.015));
+ }
+ /* @media (prefers-reduced-motion: reduce) {
+   .hoe-editorial-detail * {
+diff --git a/src/styles/store-shell.css b/src/styles/store-shell.css
+index f3d6680..dbd4ae6 100644
+--- a/src/styles/store-shell.css
++++ b/src/styles/store-shell.css
+@@ -11,14 +11,14 @@
+ .hoe-store-header .menu-button, .hoe-store-menu .icon-button { min-width: 44px; }
+ .hoe-store-product-navigation { position: relative; }
+ .hoe-store-product-navigation .product-navigation-heading { display: flex; align-items: center; gap: 4px; }
+-.hoe-store-product-navigation .product-navigation-heading > button { display: grid; place-items: center; min-width: 36px; min-height: 44px; color: var(--accent); border: 0; border-radius: 50%; background: transparent; cursor: pointer; transition: background 160ms; }
++.hoe-store-product-navigation .product-navigation-heading > button { display: grid; place-items: center; min-width: 36px; min-height: 44px; color: var(--accent); border: 0; border-radius: 50%; background: transparent; cursor: pointer; transition: background-color var(--store-motion-hover, 160ms) var(--store-motion-ease-state, ease); }
+ .hoe-store-product-navigation .product-navigation-heading > button:hover, .hoe-store-product-navigation .product-navigation-heading > button[aria-expanded="true"] { /* background: var(--brand-blush);*/ }
+-.hoe-store-product-navigation .product-navigation-heading > button svg { transition: transform 240ms; }
++.hoe-store-product-navigation .product-navigation-heading > button svg { transition: transform var(--store-motion-hover, 240ms) var(--store-motion-ease-out, ease); }
+ .hoe-store-product-navigation .product-navigation-heading > button[aria-expanded="true"] svg { transform: rotate(180deg); }
+ .hoe-store-submenu { position: absolute; z-index: 50; top: 100%; left: -20px; width: 310px; padding: 16px; border: 1px solid var(--border); border-radius: 8px; background: var(--background); box-shadow: 0 16px 40px #332c2a12; }
+ .hoe-store-submenu .product-submenu-eyebrow { display: block; padding: 8px 12px 16px; color: var(--muted); font-size: 11px; }
+ .hoe-store-submenu ul { list-style: none; margin: 0; padding: 0; }
+-.hoe-store-header .hoe-store-submenu a, .hoe-store-menu nav .hoe-store-submenu a { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 12px; min-height: 68px; border: 0; border-radius: 4px; transition: background 160ms; }
++.hoe-store-header .hoe-store-submenu a, .hoe-store-menu nav .hoe-store-submenu a { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 12px; min-height: 68px; border: 0; border-radius: 4px; transition: background-color var(--store-motion-hover, 160ms) var(--store-motion-ease-state, ease), color var(--store-motion-hover, 160ms) var(--store-motion-ease-state, ease); }
+ .hoe-store-submenu strong { display: block; font-family: var(--font-heading),serif; font-size: 24px; font-weight: 600; color: var(--ink); }
+ .hoe-store-submenu small { display: block; font-size: 11px; margin-top: 3px; color: var(--muted); }
+ .hoe-store-header .hoe-store-submenu a:hover, .hoe-store-header .hoe-store-submenu a[aria-current="page"], .hoe-store-menu nav .hoe-store-submenu a:hover, .hoe-store-menu nav .hoe-store-submenu a[aria-current="page"] { background: var(--brand-blush); color: var(--accent); }
+@@ -39,7 +39,7 @@
+ .hoe-store-footer .footer-links { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; font-size: inherit; color: var(--ink); }
+ .hoe-store-footer .footer-contact .footer-links { max-width: 36ch; }
+ .hoe-store-footer a, .hoe-store-footer .footer-links span { max-width: 100%; overflow-wrap: anywhere; }
+-.hoe-store-footer a { font-weight: 400; color: inherit; text-decoration-thickness: 1px; text-underline-offset: 5px; transition: color 180ms, text-decoration-color 180ms; }
++.hoe-store-footer a { font-weight: 400; color: inherit; text-decoration-thickness: 1px; text-underline-offset: 5px; transition: color var(--store-motion-hover, 180ms) var(--store-motion-ease-state, ease), text-decoration-color var(--store-motion-hover, 180ms) var(--store-motion-ease-state, ease); }
+ .hoe-store-footer a:hover { color: var(--accent-hover); text-decoration: underline; }
+ .hoe-store-footer a:focus-visible { outline: 1px solid var(--focus); outline-offset: 0px; border-radius: 2px; }
+ .hoe-store-footer .footer-social-links { display: flex; flex-direction: column; }
+@@ -64,7 +64,7 @@
+     background-color: var(--accent-hover);
+     transform: scaleX(0);
+     transform-origin: left; /* Cố định điểm xuất phát từ bên trái */
+-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* Thời gian và hiệu ứng chuyển động */
++    transition: transform var(--store-motion-hover, .3s) var(--store-motion-ease-out, cubic-bezier(0.4, 0, 0.2, 1));
+ }
+ 
+ .hoe-store-footer a:hover {
+diff --git a/src/styles/widgets.css b/src/styles/widgets.css
+index 7ff8be6..e2ba16a 100644
+--- a/src/styles/widgets.css
++++ b/src/styles/widgets.css
+@@ -182,8 +182,8 @@
+   place-items: center;
+   margin: auto;
+   transition:
+-    background 0.16s,
+-    color 0.16s;
++    background-color var(--store-motion-feedback, .16s) var(--store-motion-ease-state, ease),
++    color var(--store-motion-state-text, .16s) var(--store-motion-ease-state, ease);
+ }
+ .hoe-day-button:hover {
+   background: var(--brand-blush);
+@@ -423,8 +423,8 @@
+   transform: translateX(100%);
+   opacity: 0;
+   transition:
+-    transform 240ms cubic-bezier(0.22, 1, 0.36, 1),
+-    opacity 240ms;
++    transform var(--store-motion-overlay, 240ms) cubic-bezier(0.22, 1, 0.36, 1),
++    opacity var(--store-motion-overlay, 240ms);
+   visibility: hidden;
+   padding: 28px;
+ }
+diff --git a/tests/e2e/carousel-harness.ts b/tests/e2e/carousel-harness.ts
+index b2887aa..465d542 100644
+--- a/tests/e2e/carousel-harness.ts
++++ b/tests/e2e/carousel-harness.ts
+@@ -5,7 +5,7 @@ import type { Page } from '@playwright/test';
+ const bundle = build({entryPoints:['tests/e2e/carousel-harness.tsx'],bundle:true,write:false,format:'iife',platform:'browser',jsx:'automatic',alias:{'@':path.resolve('src')}});
+ export async function openCarouselHarness(page:Page) {
+  const result=await bundle;
+- const css=await Promise.all(['src/styles/tokens.css','src/styles/landing-home.css','src/styles/store-typography.css'].map(file=>readFile(file,'utf8')));
++ const css=await Promise.all(['src/styles/tokens.css','src/styles/landing-home.css','src/styles/store-typography.css','src/styles/store-motion.css'].map(file=>readFile(file,'utf8')));
+  await page.route('**/carousel-harness',route=>route.fulfill({contentType:'text/html',body:`<!doctype html><html lang="vi"><head><style>*{box-sizing:border-box}body{margin:0;background:#fffcf7}.hoe-store-scope{padding:24px;--font-store-body:Georgia;--font-store-heading:Georgia}h2{margin:20px 0}.icon-button{display:inline-flex;align-items:center;justify-content:center}a{color:inherit;text-decoration:none}${css.join('\n')}</style></head><body><div id="root"></div><script>${result.outputFiles[0].text}</script></body></html>`}));
+  await page.goto('/carousel-harness');
+  await page.locator('.olf-featured-carousel[data-carousel-ready="true"]').waitFor();
+diff --git a/tests/e2e/store-gradients.spec.ts b/tests/e2e/store-gradients.spec.ts
+index 9f10732..d09babf 100644
+--- a/tests/e2e/store-gradients.spec.ts
++++ b/tests/e2e/store-gradients.spec.ts
+@@ -136,6 +136,8 @@ test("root fallback and client navigation preserve Store isolation", async ({ pa
+   // Use the mounted AppRouter context so retained CSS is tested without reloads.
+   for (const route of ["/admin", "/dang-nhap", "/xem-thu/widgets", "/admin/khong-co", "/xem-thu/khong-co"]) {
+     await expect(page.locator(".hoe-store-header .brand")).toBeVisible();
++    await page.waitForLoadState("load");
++    await expect(page.locator('[data-carousel-ready="true"]')).toHaveCount(1);
+     await page.evaluate(async destination => {
+       const link = document.querySelector('.hoe-store-header .brand')!;
+       const key = Object.keys(link).find(key => key.startsWith("__reactFiber$"))!;
+@@ -148,9 +150,10 @@ test("root fallback and client navigation preserve Store isolation", async ({ pa
+       }
+       throw new Error("Mounted AppRouter context not found");
+     }, route);
+-    await expect(page).toHaveURL(new RegExp(route.replaceAll("/", "\\/")));
++    await expect(page).toHaveURL(new RegExp(route.replaceAll("/", "\\/")), { timeout: 30000 });
+     await expect(page.locator(".hoe-store-scope")).toHaveCount(0);
+     expect(await page.locator("body").evaluate(el => getComputedStyle(el).getPropertyValue("--store-gradient-action"))).toBe("");
++    expect(await page.locator("body").evaluate(el => getComputedStyle(el).getPropertyValue("--store-motion-feedback"))).toBe("");
+     await page.goto("/");
+   }
+ });
+diff --git a/tests/e2e/store-select.spec.ts b/tests/e2e/store-select.spec.ts
+index 072e095..a059de6 100644
+--- a/tests/e2e/store-select.spec.ts
++++ b/tests/e2e/store-select.spec.ts
+@@ -76,14 +76,10 @@ test("store selects persist shape and exact 24-hour time through cart edits", as
+   await expect(hour).toBeFocused();
+   await expect(page.locator('input[name="desiredTime"]')).toHaveValue("23:59");
+   await page.screenshot({ path: testInfo.outputPath("store-form.png") });
+-  // Seed from the actual form values: the existing QuantityField has no named
+-  // input, so adding products is blocked independently of these select controls.
+-  await page.locator(".detail-copy form").evaluate(form => {
+-    const configuration = { serviceType: "hoa-y", ...Object.fromEntries(new FormData(form as HTMLFormElement)) };
+-    localStorage.setItem("hoe.cart.v1", JSON.stringify({ version: 1, items: [{
+-      lineId: crypto.randomUUID(), productId: "test-y-nang", expectedRevision: "select-test-fixture", quantity: 1, configuration,
+-    }] }));
+-  });
++  await page.getByRole("button", { name: "Tăng số lượng", exact: true }).click();
++  expect(await page.locator(".detail-copy form").evaluate(form => new FormData(form as HTMLFormElement).get("quantity"))).toBe("2");
++  await page.getByRole("button", { name: "Thêm vào giỏ hoa" }).click();
++  await expect(page.getByRole("status")).toContainText("Đã thêm vào giỏ hoa.");
+   await page.getByRole("button", { name: "Xóa giờ: Giờ mong muốn", exact: true }).click();
+   await expect(page.locator('input[name="desiredTime"]')).toHaveValue("");
+   await expect(hour).toBeFocused();
+diff --git a/tests/unit/store-feedbacks.test.ts b/tests/unit/store-feedbacks.test.ts
+index de6e34e..2e71fcf 100644
+--- a/tests/unit/store-feedbacks.test.ts
++++ b/tests/unit/store-feedbacks.test.ts
+@@ -30,28 +30,28 @@ describe("carousel reading clock", () => {
+     vi.advanceTimersByTime(1); expect(step).toHaveBeenCalledTimes(1);
+     vi.advanceTimersByTime(60000); expect(step).toHaveBeenCalledTimes(1);
+     autoplay.settle();
+-    vi.advanceTimersByTime(2999); expect(step).toHaveBeenCalledTimes(1);
++    vi.advanceTimersByTime(AUTOPLAY_WAIT_MS - 1); expect(step).toHaveBeenCalledTimes(1);
+     vi.advanceTimersByTime(1); expect(step).toHaveBeenCalledTimes(2);
+     autoplay.destroy(); expect(vi.getTimerCount()).toBe(0);
+   });
+   it.each(["hover", "focus", "pointer", "hidden", "viewport", "overlay", "manual", "reduced", "unavailable"] as PauseReason[])("keeps %s independent of other blockers", (reason) => {
+     const { step, autoplay } = setup();
+-    vi.advanceTimersByTime(2500);
++    vi.advanceTimersByTime(AUTOPLAY_WAIT_MS - 1);
+     autoplay.pause(reason, true); autoplay.pause("focus", true); autoplay.pause("hover", true);
+     autoplay.pause("hover", false); autoplay.pause("focus", false);
+     if (reason === "hover" || reason === "focus") autoplay.pause(reason, true);
+     vi.advanceTimersByTime(60000); expect(step).not.toHaveBeenCalled();
+     autoplay.pause(reason, false);
+-    vi.advanceTimersByTime(2999); expect(step).not.toHaveBeenCalled();
++    vi.advanceTimersByTime(AUTOPLAY_WAIT_MS - 1); expect(step).not.toHaveBeenCalled();
+     vi.advanceTimersByTime(1); expect(step).toHaveBeenCalledTimes(1);
+     autoplay.destroy();
+   });
+   it("manual transition clears a pending tick and reInit never duplicates clocks", () => {
+     const { step, autoplay } = setup();
+-    vi.advanceTimersByTime(2900); autoplay.startTransition();
++    vi.advanceTimersByTime(AUTOPLAY_WAIT_MS - 1); autoplay.startTransition();
+     vi.advanceTimersByTime(10000); expect(step).not.toHaveBeenCalled();
+     autoplay.settle(); autoplay.settle(); expect(vi.getTimerCount()).toBe(1);
+-    vi.advanceTimersByTime(3000); expect(step).toHaveBeenCalledTimes(1);
++    vi.advanceTimersByTime(AUTOPLAY_WAIT_MS); expect(step).toHaveBeenCalledTimes(1);
+     autoplay.destroy();
+   });
+   it("stops at a finite boundary and cleans up on unmount", () => {

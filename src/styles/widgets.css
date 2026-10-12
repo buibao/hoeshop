@@ -182,8 +182,8 @@
   place-items: center;
   margin: auto;
   transition:
-    background 0.16s,
-    color 0.16s;
+    background-color var(--store-motion-feedback, .16s) var(--store-motion-ease-state, ease),
+    color var(--store-motion-state-text, .16s) var(--store-motion-ease-state, ease);
 }
 .hoe-day-button:hover {
   background: var(--brand-blush);
@@ -423,8 +423,8 @@
   transform: translateX(100%);
   opacity: 0;
   transition:
-    transform 240ms cubic-bezier(0.22, 1, 0.36, 1),
-    opacity 240ms;
+    transform var(--store-motion-overlay, 240ms) cubic-bezier(0.22, 1, 0.36, 1),
+    opacity var(--store-motion-overlay, 240ms);
   visibility: hidden;
   padding: 28px;
 }

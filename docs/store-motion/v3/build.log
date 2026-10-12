@@ -1,0 +1,69 @@
+
+> hoeshop@1.0.0 prebuild
+> tsx scripts/validate-content.ts
+
+Content schemas validated. Mode: TEST
+
+> hoeshop@1.0.0 build
+> next build --webpack
+
+▲ Next.js 16.3.8 (webpack)
+- Environments: .env.local
+✓ Running next.config.ts took 54ms
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 12.4s
+  Running TypeScript ...
+  Finished TypeScript in 7.0s ...
+  Collecting page data using 7 workers ...
+  Generating static pages using 7 workers (0/25) ...
+  Generating static pages using 7 workers (6/25)
+  Generating static pages using 7 workers (12/25)
+  Generating static pages using 7 workers (18/25)
+✓ Generating static pages using 7 workers (25/25) in 4.4s
+  Finalizing page optimization ...
+  Collecting build traces ...
+
+Route (app)
+┌ ƒ /
+├ ƒ /_not-found
+├ ƒ /admin
+├ ƒ /admin/[resource]
+├ ƒ /admin/[resource]/[id]
+├ ƒ /admin/home-featured
+├ ƒ /admin/home-hero
+├ ƒ /api/admin/[resource]
+├ ƒ /api/admin/[resource]/[id]
+├ ƒ /api/admin/dashboard
+├ ƒ /api/admin/home/[kind]
+├ ƒ /api/admin/media/finish
+├ ƒ /api/admin/media/prepare
+├ ƒ /api/admin/media/upload
+├ ƒ /api/admin/product-options
+├ ƒ /api/admin/settings/site/contact
+├ ƒ /api/comments
+├ ƒ /api/inquiries
+├ ƒ /api/orders
+├ ƒ /blog
+├ ƒ /blog/[slug]
+├ ƒ /chinh-sach/[slug]
+├ ƒ /dang-nhap/[[...rest]]
+├ ƒ /dat-hoa
+├ ƒ /dich-vu/[service]
+├ ƒ /gio-hang
+├ ○ /icon.svg
+├ ƒ /images/preview/[name]
+├ ƒ /lien-he
+├ ○ /robots.txt
+├ ƒ /san-pham
+├ ƒ /san-pham/[slug]
+├ ƒ /sitemap.xml
+├ ƒ /ve-hoe
+├ ƒ /xem-thu/giao-dien
+└ ƒ /xem-thu/widgets
+
+
+ƒ Proxy (Middleware)
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand

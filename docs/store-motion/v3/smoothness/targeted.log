@@ -1,0 +1,37 @@
+node.exe : [WebServer] (node:35256) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+At C:\Program Files\nodejs\npx.ps1:29 char:3
++   & $NODE_EXE $NPX_CLI_JS $args
++   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([WebServer] (no... env being set.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 12 tests using 1 worker
+
+(node:14196) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  1 [desktop] › tests\e2e\store-text.spec.ts:82:1 › replay needs the extra 120px in both directions and edge jitter does not rearm (6.2s)
+  ok  2 [desktop] › tests\e2e\store-text.spec.ts:153:1 › a touch starting a scroll does not snap text to visible, but touching controls still settles it (1.3s)
+(node:1156) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  3 [desktop] › tests\e2e\store-text.spec.ts:82:1 › replay needs the extra 120px in both directions and edge jitter does not rearm (6.7s)
+  ok  4 [desktop] › tests\e2e\store-text.spec.ts:153:1 › a touch starting a scroll does not snap text to visible, but touching controls still settles it (1.2s)
+(node:5816) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  5 [desktop] › tests\e2e\store-text.spec.ts:82:1 › replay needs the extra 120px in both directions and edge jitter does not rearm (6.3s)
+  ok  6 [desktop] › tests\e2e\store-text.spec.ts:153:1 › a touch starting a scroll does not snap text to visible, but touching controls still settles it (1.0s)
+(node:34372) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  7 [mobile] › tests\e2e\store-text.spec.ts:82:1 › replay needs the extra 120px in both directions and edge jitter does not rearm (5.8s)
+  ok  8 [mobile] › tests\e2e\store-text.spec.ts:153:1 › a touch starting a scroll does not snap text to visible, but touching controls still settles it (846ms)
+(node:32228) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  9 [mobile] › tests\e2e\store-text.spec.ts:82:1 › replay needs the extra 120px in both directions and edge jitter does not rearm (6.0s)
+  ok 10 [mobile] › tests\e2e\store-text.spec.ts:153:1 › a touch starting a scroll does not snap text to visible, but touching controls still settles it (810ms)
+(node:2808) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 11 [mobile] › tests\e2e\store-text.spec.ts:82:1 › replay needs the extra 120px in both directions and edge jitter does not rearm (5.7s)
+  ok 12 [mobile] › tests\e2e\store-text.spec.ts:153:1 › a touch starting a scroll does not snap text to visible, but touching controls still settles it (801ms)
+
+  12 passed (53.9s)

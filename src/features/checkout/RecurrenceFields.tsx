@@ -1,4 +1,5 @@
 "use client";
+import { StoreTextRevealGroup } from "@/components/ui/StoreTextReveal";
 import { useContext, useEffect, useId, useRef, useState } from "react";
 import { CalendarDays, Flower2, Minus, Plus, Check } from "lucide-react";
 import { HoaThoiRecommendations } from "@/components/HoaThoiRecommendations";
@@ -8,8 +9,11 @@ import { HoaThoiDeliveryCalendar } from "./HoaThoiDeliveryCalendar";
 import { HoaThoiScheduleProgress } from "./HoaThoiScheduleProgress";
 import { HoaThoiPackageContext, scrollToPackageControls, useHoaThoiPackageState } from "./HoaThoiPackageState";
 import { HoaThoiAnchor } from "./HoaThoiAnchor";
+import { useStoreValueFeedback } from "@/components/ui/StoreMotion";
 
 function NumberField({ label, name, value, max, change, id, helper, error, unit }: { label: string; name: string; value: string; max: number; change: (value: string) => void; id: string; helper: string; error?: string; unit: string }) {
+  const count = useRef<HTMLSpanElement>(null);
+  useStoreValueFeedback(count, value);
   const [touched, setTouched] = useState(false);
   const valid = value !== "" && Number.isInteger(Number(value)) && Number(value) >= 1 && Number(value) <= max;
   const feedback = error || (touched && !valid ? `Nhập số nguyên từ 1 đến ${max}.` : "");
@@ -17,7 +21,7 @@ function NumberField({ label, name, value, max, change, id, helper, error, unit 
     <label htmlFor={id}>{label} <span className="ht-helper">(bắt buộc)</span></label>
     <div className="ht-number-stepper"><button type="button" aria-label={`Giảm ${label.toLowerCase()}`} disabled={!valid || Number(value) <= 1} onClick={() => change(String(Number(value) - 1))}><Minus size={16} /></button>
       {/* <input id={id} name={name} type="number" inputMode="numeric" min={1} max={max} step={1} value={value} onChange={(e) => change(e.target.value)} onBlur={() => setTouched(true)} aria-invalid={!!feedback} aria-describedby={`${id}-hint${feedback ? ` ${id}-error` : ""}`} /> */}
-      <span>{value} {unit}</span><button type="button" aria-label={`Tăng ${label.toLowerCase()}`} disabled={!valid || Number(value) >= max} onClick={() => change(String(Number(value) + 1))}><Plus size={16} /></button></div>
+      <span ref={count}>{value} {unit}</span><button type="button" aria-label={`Tăng ${label.toLowerCase()}`} disabled={!valid || Number(value) >= max} onClick={() => change(String(Number(value) + 1))}><Plus size={16} /></button></div>
     <p className="ht-helper" id={`${id}-hint`}>{helper}</p>{feedback ? <p className="ht-error" id={`${id}-error`}>{feedback}</p> : null}
   </div>;
 }
@@ -56,7 +60,7 @@ export function RecurrenceFields({ initial, recommendations = [], showRecommenda
   }
   return <div className="ht-fields full">
     {showRecommendations ? <HoaThoiRecommendations recommendations={recommendations} referenceId={referenceId} period={period} bouquets={draft.bouquetsPerPeriod} choose={choose} id={id} /> : null}
-    <div className="ht-form-heading"><span className="eyebrow">BẠN CHỌN NGÀY, HÒE GỬI HOA</span><h2>Chọn gói và lịch nhận hoa</h2><p>Chọn nhịp phù hợp và những ngày bạn muốn hoa ghé đến. Hòe sẽ cùng bạn chốt từng điều nhỏ.</p>{showRecommendations ? <HoaThoiAnchor href="#mau-hoa" className="text-link">Xem mẫu hoa tham khảo</HoaThoiAnchor> : null}</div>
+    <StoreTextRevealGroup className="ht-form-heading"><span className="eyebrow">BẠN CHỌN NGÀY, HÒE GỬI HOA</span><h2>Chọn gói và lịch nhận hoa</h2><p>Chọn nhịp phù hợp và những ngày bạn muốn hoa ghé đến. Hòe sẽ cùng bạn chốt từng điều nhỏ.</p>{showRecommendations ? <HoaThoiAnchor href="#mau-hoa" className="text-link">Xem mẫu hoa tham khảo</HoaThoiAnchor> : null}</StoreTextRevealGroup>
     <div className="ht-package-controls" ref={controls} data-recurrence-root tabIndex={-1}>
       <input type="hidden" name="recurrence" value={JSON.stringify(normalized.success ? normalized.data : candidate)} />
       <span className="eyebrow">01 / CHỌN NHỊP HOA</span>

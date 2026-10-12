@@ -1,6 +1,8 @@
 @import "tailwindcss";
+@import "../styles/shadcn-space.css";
 @import "../styles/tokens.css";
 @import "../styles/hoa-thoi.css";
+@import "../styles/store-motion.css";
 @theme inline { --color-background: var(--background); --color-foreground: var(--ink); --font-sans: var(--font-body); }
 :root { --font-heading: var(--font-root-heading); --font-body: var(--font-root-body); --font-brand: var(--font-root-heading); --font-brand-caption: var(--font-root-body); }
 * { box-sizing: border-box; }
@@ -39,8 +41,8 @@ button:disabled { cursor: wait; opacity: .65; }
 .banner.test { background: #fae2ec; color: #742040; }
 .skip-link { position: fixed; left: 10px; top: -100px; z-index: 100; background: var(--ink); color: white; padding: 10px; }
 .skip-link:focus { top: 10px; }
-.button { display: inline-flex; justify-content: center; align-items: center; gap: 12px; min-height: 48px; padding: 12px 23px; border: 1px solid var(--accent); border-radius: var(--radius); background: var(--accent); color: white; font-size: 12px; font-weight: var(--text-weight-medium, 500); transition: background .2s, transform .2s; text-align: center; }
-.button:hover { background: var(--accent-hover); transform: translateY(-1px); }
+.button { display: inline-flex; justify-content: center; align-items: center; gap: 12px; min-height: 48px; padding: 12px 23px; border: 1px solid var(--accent); border-radius: var(--radius); background: var(--accent); color: white; font-size: 12px; font-weight: var(--text-weight-medium, 500); transition: background-color var(--store-motion-hover, .2s) var(--store-motion-ease-state, ease), border-color var(--store-motion-hover, .2s) var(--store-motion-ease-state, ease), transform var(--store-motion-hover, .2s) var(--store-motion-ease-out, ease); text-align: center; }
+.button:hover { background: var(--accent-hover); transform: translateY(var(--store-motion-button-lift, -1px)); }
 .button.secondary { background: transparent; color: var(--accent); }
 .button.secondary:hover { background: var(--brand-blush); }
 .text-link { display: inline-flex; align-items: center; gap: 12px; font-size: 12px; color: var(--accent); border-bottom: 1px solid #dcaabb; padding-bottom: 5px; }
@@ -80,8 +82,8 @@ button:disabled { cursor: wait; opacity: .65; }
 .service-card .text-link { margin-top: auto; }
 .service-flower { position: absolute; right: 28px; top: 27px; color: #d8b6ac; width: 48px; height: 48px; stroke-width: 1; }
 .product-image { position: relative; aspect-ratio: 4/4.5; background: var(--surface-soft); border-radius: 100px 100px 4px 4px; overflow: hidden; }
-.product-image img { object-fit: cover; transition: transform .4s; }
-.product-card:hover .product-image img { transform: scale(1.04); }
+.product-image img { object-fit: cover; transition: transform var(--store-motion-hover, .4s) var(--store-motion-ease-out, ease); }
+.product-card:hover .product-image img { transform: scale(var(--store-motion-image-scale, 1.04)); }
 .product-card .category { display: block; margin-top: 18px; margin-bottom: 7px; font-size: 9px; text-transform: uppercase; letter-spacing: .15em; color: var(--muted); }
 .product-card h3 { font-size: 23px; margin-bottom: 8px; }
 .product-price { color: var(--accent); font-size: 12px; }

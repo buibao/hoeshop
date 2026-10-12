@@ -1,3 +1,4 @@
+import { StoreTextReveal, StoreTextRevealGroup, StoreTextExemption } from "@/components/ui/StoreTextReveal";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight, Flower2, Heart } from "lucide-react";
@@ -41,7 +42,7 @@ export async function EditorialHome() {
   }
   return (
     <div className="olf-home" data-home-design="oh-les-fleurs">
-      <LandingHeroMotion>
+      <StoreTextExemption><LandingHeroMotion>
         <div className="olf-shell olf-hero-stage">
           <div className="olf-hero-heading">
             <span className="olf-eyebrow">{home.eyebrow}</span>
@@ -76,49 +77,49 @@ export async function EditorialHome() {
         </div>
         <div className="olf-hero-gallery" aria-hidden="true" />
         </div>
-      </LandingHeroMotion>
+      </LandingHeroMotion></StoreTextExemption>
 
       <section className="olf-section olf-story" aria-labelledby="story-title">
         <div className="olf-shell">
           {home.benefits.length > 0 && <LandingBenefitsMotion intro={<>
-          <span className="olf-eyebrow">{home.benefitEyebrow}</span>
-          <h3 className="copy-lines">{home.benefitTitle}</h3>
-          <p>{home.benefitIntro}</p>
+          <StoreTextReveal as="span" role="eyebrow" className="olf-eyebrow">{home.benefitEyebrow}</StoreTextReveal>
+          <StoreTextReveal as="h3" role="heading" delayMs={90} className="copy-lines">{home.benefitTitle}</StoreTextReveal>
+          <StoreTextReveal as="p" role="body" delayMs={180}>{home.benefitIntro}</StoreTextReveal>
           </>}
             cards={home.benefits.map((benefit, index) => <div key={index}>
               <Flower2 className="olf-benefit-art" aria-hidden="true" />
-              <span className="olf-step-number">{String(index + 1).padStart(2, "0")}</span><h3>{benefit.title}</h3><p>{benefit.body}</p>
+              <span className="olf-step-number">{String(index + 1).padStart(2, "0")}</span><StoreTextReveal as="h3" role="body">{benefit.title}</StoreTextReveal><StoreTextReveal as="p" role="body" delayMs={90}>{benefit.body}</StoreTextReveal>
             </div>)} />}
         </div>
       </section>
 
       <section id="dich-vu" className="olf-section olf-services" aria-labelledby="services-title">
         <div className="olf-shell">
-          <LandingScrollFade className="olf-section-heading">
+          <StoreTextRevealGroup legacyLayout className="olf-section-heading">
             <span className="olf-eyebrow">{home.servicesEyebrow}</span>
             <h2 id="services-title" className="copy-lines">{home.servicesTitle}</h2><p>{home.servicesIntro}</p>
-          </LandingScrollFade>
+          </StoreTextRevealGroup>
           <ServiceCards variant="home" />
         </div>
       </section>
 
       <section id="nhung-doa-hoa" className="olf-section olf-shell olf-featured" aria-labelledby="featured-title">
-        <LandingScrollFade><div className="olf-heading-row"><div><span className="olf-eyebrow">{home.featuredEyebrow}</span><h2 id="featured-title">{home.featuredTitle}</h2></div>
+        <StoreTextRevealGroup legacyLayout><div className="olf-heading-row"><div><StoreTextReveal as="span" role="eyebrow" className="olf-eyebrow">{home.featuredEyebrow}</StoreTextReveal><StoreTextReveal as="h2" role="heading" delayMs={90} id="featured-title">{home.featuredTitle}</StoreTextReveal></div>
           <Link className="olf-link" href={home.featuredCta.href}>{home.featuredCta.label}<ArrowUpRight aria-hidden="true" size={19} /></Link>
-        </div></LandingScrollFade>
-        <LandingScrollFade>{products.length ? <FeaturedProductCarousel slides={products.map((p) => ({ id: p.id, card: <ProductCard product={p} variant="home" /> }))} />
-          : <Empty title="Những mùa hoa đang được chuẩn bị" body="Hòe sẽ giới thiệu mẫu hoa khi thông tin và hình ảnh đã sẵn sàng." href="/dich-vu/hoa-tam" action="Khám phá Hoa Tâm" />}</LandingScrollFade>
+        </div></StoreTextRevealGroup>
+        <StoreTextExemption><LandingScrollFade>{products.length ? <FeaturedProductCarousel slides={products.map((p) => ({ id: p.id, card: <ProductCard product={p} variant="home" /> }))} />
+          : <Empty title="Những mùa hoa đang được chuẩn bị" body="Hòe sẽ giới thiệu mẫu hoa khi thông tin và hình ảnh đã sẵn sàng." href="/dich-vu/hoa-tam" action="Khám phá Hoa Tâm" />}</LandingScrollFade></StoreTextExemption>
       </section>
 
       <section className="olf-section olf-story" aria-labelledby="story-title">
         <div className="olf-shell">
           <div className="olf-story-grid">
             <LandingScrollFade><LandingStoryPhoto><Image src={storyPhoto.src} alt={storyPhoto.alt} fill sizes="(max-width: 767px) 90vw, 42vw" /></LandingStoryPhoto></LandingScrollFade>
-            <LandingScrollFade className="olf-story-copy"><span className="olf-eyebrow">{home.storyEyebrow}</span>
+            <StoreTextRevealGroup legacyLayout className="olf-story-copy"><span className="olf-eyebrow">{home.storyEyebrow}</span>
               <h2 id="story-title" className="copy-lines">{home.storyTitle}</h2><p>{home.storyBody}</p>
               <Link className="olf-link" href={story ? `/blog/${story.slug}` : "/ve-hoe"}>{home.storyCtaLabel}<ArrowUpRight aria-hidden="true" size={19} /></Link>
               <Flower2 className="olf-story-flower" aria-hidden="true" />
-            </LandingScrollFade>
+            </StoreTextRevealGroup>
           </div>
           {/* {home.benefits.length > 0 && <LandingBenefitsMotion intro={<>
           <span className="olf-eyebrow">{home.benefitEyebrow}</span>
@@ -144,16 +145,16 @@ export async function EditorialHome() {
 
       <section className="olf-section olf-process" aria-labelledby="process-title">
         <div className="olf-shell">
-          <LandingScrollFade className="olf-section-heading"><span className="olf-eyebrow">TỪ MONG MUỐN ĐẾN MỘT CHÚT HOA</span><h2 id="process-title">{home.processTitle}</h2></LandingScrollFade>
-          <div className="olf-process-grid">{home.process.map((step, index) => <LandingScrollFade key={step.title}><span className="olf-step-number">0{index + 1}</span><h3>{step.title}</h3><p>{step.body}</p></LandingScrollFade>)}</div>
-          {site.faq.length > 0 && <div className="olf-faq"><h2>{home.faqTitle}</h2>{site.faq.map(q => <details key={q.question}><summary>{q.question}</summary><p>{q.answer}</p></details>)}</div>}
+          <StoreTextRevealGroup legacyLayout className="olf-section-heading"><span className="olf-eyebrow">TỪ MONG MUỐN ĐẾN MỘT CHÚT HOA</span><h2 id="process-title">{home.processTitle}</h2></StoreTextRevealGroup>
+          <div className="olf-process-grid">{home.process.map((step, index) => <StoreTextRevealGroup legacyLayout key={step.title}><span className="olf-step-number">0{index + 1}</span><h3>{step.title}</h3><p>{step.body}</p></StoreTextRevealGroup>)}</div>
+          {site.faq.length > 0 && <div className="olf-faq"><StoreTextReveal as="h2" role="heading">{home.faqTitle}</StoreTextReveal>{site.faq.map(q => <details key={q.question}><summary>{q.question}</summary><StoreTextReveal as="p" role="body">{q.answer}</StoreTextReveal></details>)}</div>}
         </div>
       </section>
 
       <section className="olf-section olf-cta" aria-labelledby="cta-title"><div className="olf-shell">
-        <LandingScrollFade><Flower2 className="olf-cta-flower" aria-hidden="true" /><span className="olf-eyebrow">{home.ctaEyebrow}</span><h2 id="cta-title">{home.ctaTitle}</h2><p>{home.ctaBody}</p>
+        <StoreTextRevealGroup legacyLayout><Flower2 className="olf-cta-flower" aria-hidden="true" /><span className="olf-eyebrow">{home.ctaEyebrow}</span><h2 id="cta-title">{home.ctaTitle}</h2><p>{home.ctaBody}</p>
           <div className="olf-actions"><ScrollAnchor className="olf-button" href={home.primaryCta.href}>{home.primaryCta.label}<ArrowUpRight aria-hidden="true" size={20} /></ScrollAnchor><Link className="olf-link" href={home.secondaryCta.href}>{home.secondaryCta.label}</Link></div>
-        </LandingScrollFade>
+        </StoreTextRevealGroup>
       </div></section>
       <HomeBackToTop />
     </div>

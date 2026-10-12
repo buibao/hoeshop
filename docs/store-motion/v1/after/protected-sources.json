@@ -1,0 +1,11 @@
+{
+  "src/features/storefront/LandingHeroMotion.tsx": "18235a24eb8a46fb5f152a8a257cb023271b969a344b617dd2504e5609f79b09",
+  "src/features/storefront/landing-geometry.ts": "d247f8ba1e33f6216a85a440d53e9664de788834895a58c6bd10c053562585f4",
+  "src/features/storefront/LandingMotion.tsx": "dd90c9af905583f54691898e4c7416d785437aef38311cb31d36d1ec52e2826a",
+  "src/features/storefront/LandingBenefitsMotion.tsx": "2766182f11e9d271bff3f137a9087f18e701957de56534c16007973ee8633676",
+  "src/features/storefront/FeaturedProductCarousel.tsx": "fa6bc45b0cf327b24fac3dadc5ec5084ec7262c35d63d77c386ffb879fa4a27b",
+  "src/features/storefront/carousel-autoplay.ts": "335c0373d0f018c6112255edb121062761622e3222edc3fda8ff13a282570422",
+  "src/features/storefront/HomeBackToTop.tsx": "3fd66d2cd8e7a086bbe3834e632dc3c5c9cc440094e9e4815bb9a9b8e2778883",
+  "src/components/ui/MotionProvider.tsx": "2296f550f50a60cd08eed1797fbdc282b73d6e5ddd77cb8a739096213597abfa",
+  "src/components/ui/SmoothScroll.tsx": "890c766e9eb92eceee2b1f281a77264f79a93dac0100b42319411fa482f93f18"
+}

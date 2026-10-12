@@ -4,8 +4,11 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { ArrowUpRight, ChevronDown } from "lucide-react";
 import { ServiceTypeIcon } from "./ServiceTypeIcon";
-import { AnimatePresence, useIsPresent, useReducedMotion } from "motion/react";
+import { AnimatePresence, useIsPresent } from "motion/react";
 import * as m from "motion/react-m";
+import { useReducedMotionPreference } from "@/components/ui/useReducedMotionPreference";
+import { useStoreScope } from "@/components/StoreScope";
+import { storeSubmenuMotion } from "@/lib/store-motion";
 
 const services = [
   { slug: "hoa-thoi", title: "Hoa Thời", note: "Hoa cho những ngày thường" },
@@ -25,15 +28,17 @@ function ProductSubmenu({
   children: React.ReactNode;
 }) {
   const present = useIsPresent();
+  const { portalClassName } = useStoreScope();
+  const distance = portalClassName ? storeSubmenuMotion.distance : 10;
   return (
     <m.div
       id={id}
       className="product-submenu hoe-store-submenu"
       inert={!present}
-      initial={reduced ? false : { opacity: 0, y: mobile ? 0 : 10 }}
+      initial={reduced ? false : { opacity: 0, y: mobile ? 0 : distance }}
       animate={{ opacity: 1, y: 0 }}
-      exit={reduced ? { opacity: 1 } : { opacity: 0, y: mobile ? 0 : 6 }}
-      transition={{ duration: reduced ? 0 : 0.24, ease: [0.22, 1, 0.36, 1] }}
+      exit={reduced ? { opacity: 1, y: 0 } : { opacity: 0, y: mobile ? 0 : portalClassName ? distance : 6 }}
+      transition={{ duration: reduced ? 0 : portalClassName ? storeSubmenuMotion.duration : .24, ease: storeSubmenuMotion.ease }}
     >
       {children}
     </m.div>
@@ -53,7 +58,7 @@ export function ProductNavigation({
   const wrapper = useRef<HTMLDivElement>(null);
   const trigger = useRef<HTMLButtonElement>(null);
   const hoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const reduced = useReducedMotion();
+  const reduced = useReducedMotionPreference();
   const id = mobile ? "mobile-product-links" : "desktop-product-links";
   const active =
     pathname.startsWith("/san-pham") || pathname.startsWith("/dich-vu/");

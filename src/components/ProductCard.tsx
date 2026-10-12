@@ -4,7 +4,8 @@ import { ArrowUpRight } from "lucide-react";
 import { priceLabel } from "@/domain/pricing";
 import { valueLabel } from "@/domain/labels";
 import type { Product } from "@/domain/schemas";
-export function ProductCard({ product, variant = "default" }: { product: Product; variant?: "default" | "home" }) {
+import { StoreTextReveal } from "./ui/StoreTextReveal";
+export function ProductCard({ product, variant = "default", revealText = false }: { product: Product; variant?: "default" | "home"; revealText?: boolean }) {
   const href = "/san-pham/" + product.slug;
   const placeholder = variant === "home" && product.fixture && product.image === "/images/preview/peonies.jpg";
   return (
@@ -19,9 +20,9 @@ export function ProductCard({ product, variant = "default" }: { product: Product
           />
         </div>
       </Link>
-      <span className="category">{valueLabel(product.serviceType)}</span>
+      {revealText ? <StoreTextReveal role="eyebrow" className="category">{valueLabel(product.serviceType)}</StoreTextReveal> : <span className="category">{valueLabel(product.serviceType)}</span>}
       <h3>
-        <Link href={href}>{product.name}</Link>
+        <Link href={href}>{revealText ? <StoreTextReveal className="store-card-title-copy" role="body">{product.name}</StoreTextReveal> : product.name}</Link>
       </h3>
       <div className="product-price">{priceLabel(product.price)}</div>
       <div className="product-link">

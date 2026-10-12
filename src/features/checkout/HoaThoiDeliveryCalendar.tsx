@@ -1,4 +1,5 @@
 "use client";
+import { StoreTextRevealGroup, StoreTextReveal } from "@/components/ui/StoreTextReveal";
 import { createContext, useContext, useEffect, useId, useRef, useState } from "react";
 import { DayPicker, DayButton, Week, Month, CaptionLabel, type DayButtonProps, type WeekProps, type MonthProps, type CaptionLabelProps } from "@daypicker/react";
 import { vi } from "@daypicker/react/locale";
@@ -42,6 +43,7 @@ function CalendarDayButton({ children, modifiers, ...props }: DayButtonProps) {
 }
 export function HoaThoiDeliveryCalendar({ draft, today, change, errors }: { draft: ScheduleDraft; today: string; change: (date?: string) => void; errors?: Record<string, string> }) {
   const id = useId(), root = useRef<HTMLDivElement>(null);
+  const nextButton = useRef<HTMLButtonElement>(null);
   const [month, setMonth] = useState(() => localDate(draft.deliveryDates[0]?.slice(0, 7) || today.slice(0, 7)));
   const [wide, setWide] = useState(false);
   const total = useRef<HTMLParagraphElement>(null);
@@ -60,10 +62,11 @@ export function HoaThoiDeliveryCalendar({ draft, today, change, errors }: { draf
   const visibleFirst = `${currentMonth}-01` < today ? today : `${currentMonth}-01`;
   const unavailable = !draft.startPeriod && !disabledPackage ? scheduleFeasibility({ ...draft, startPeriod: periodKey(visibleFirst, draft.period) }, today) : "";
   function navigate(amount: number) {
-    setMonth(localDate(nextMonth(currentMonth, amount)));
-    if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      root.current?.querySelector(".ht-calendar-months")?.animate?.([{ opacity: 0.75 }, { opacity: 1 }], { duration: 160, easing: "ease-out" });
-    }
+    const destination = nextMonth(currentMonth, amount);
+    setMonth(localDate(destination));
+    // At the earliest month, the previous button becomes disabled. Keep focus
+    // on a usable navigation control instead of letting the browser drop it.
+    if (amount < 0 && destination <= today.slice(0, 7)) nextButton.current?.focus({ preventScroll: true });
   }
   const target = disabledPackage ? 0 : draft.bouquetsPerPeriod * draft.comboCount;
   return <div className="ht-delivery-calendar" ref={root} tabIndex={-1} data-delivery-calendar data-visible-month={currentMonth} aria-labelledby={`${id}-title`} aria-describedby={`${id}-hint ${id}-error`} onFocus={(event) => {
@@ -71,7 +74,7 @@ export function HoaThoiDeliveryCalendar({ draft, today, change, errors }: { draf
     const missing = groups.find((g) => g.dates.length !== g.required);
     if (missing) setMonth(localDate(missing.start < today ? today : missing.start));
   }}>
-    <div className="ht-calendar-heading"><div><span className="eyebrow">02 / NGÀY HOA GHÉ</span><h3 id={`${id}-title`}>Chọn những ngày nhận hoa</h3></div><div className="ht-calendar-controls"><button type="button" aria-label="Tháng trước" disabled={currentMonth <= today.slice(0, 7)} onClick={() => navigate(-1)}><ChevronLeft size={18} aria-hidden="true" /></button><button type="button" aria-label="Tháng sau" onClick={() => navigate(1)}><ChevronRight size={18} aria-hidden="true" /></button></div></div>
+    <StoreTextRevealGroup className="ht-calendar-heading"><div><StoreTextReveal as="span" role="eyebrow" className="eyebrow">02 / NGÀY HOA GHÉ</StoreTextReveal><StoreTextReveal as="h3" role="heading" delayMs={90} id={`${id}-title`}>Chọn những ngày nhận hoa</StoreTextReveal></div><div className="ht-calendar-controls"><button type="button" aria-label="Tháng trước" disabled={currentMonth <= today.slice(0, 7)} onClick={() => navigate(-1)}><ChevronLeft size={18} aria-hidden="true" /></button><button ref={nextButton} type="button" aria-label="Tháng sau" onClick={() => navigate(1)}><ChevronRight size={18} aria-hidden="true" /></button></div></StoreTextRevealGroup>
     <p className="ht-helper" id={`${id}-hint`}>{disabledPackage ? "Nhập số bó và số combo hợp lệ để chọn ngày." : "Mỗi ngày nhận 1 bó. Chọn đủ ngày trong từng chu kỳ; bấm lại ngày đã chọn để bỏ."}</p>
     <p className="ht-calendar-total" ref={total} aria-live="polite" aria-atomic="true"><span>Đã chọn {draft.deliveryDates.length}/{target} ngày</span><span className="ht-helper">Số ngày cần chọn: {target}</span><span className="visually-hidden">Lịch tháng {month.getMonth() + 1}, năm {month.getFullYear()}{wide ? " và tháng kế tiếp" : ""}.</span></p>
     <CalendarProgressContext.Provider value={{ period: draft.period, groups }}>
