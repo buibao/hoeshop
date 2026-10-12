@@ -1,4 +1,4 @@
-import { StoreTextReveal, StoreTextLink } from "@/components/ui/StoreTextReveal";
+import { StoreTextReveal, StoreTextLink, StoreTextExemption } from "@/components/ui/StoreTextReveal";
 import Link from "next/link";
 import Image from "next/image";
 import { getArticles, getAssets, getSite } from "@/server/content";
@@ -57,7 +57,8 @@ export async function Footer() {
             </div>
           </nav>}
         </div>
-        <div className="footer-bottom">
+        {/* The final row cannot always reach the 85% trigger band at scroll end. */}
+        <StoreTextExemption><div className="footer-bottom">
           <div className="footer-copyright">
             <StoreTextReveal>© Hòe. Một chút hoa, một chút dịu dàng.</StoreTextReveal>
             <StoreTextReveal as="p" role="body" className="footer-footnote">Giá và lịch nhận hoa được shop xác nhận sau khi tiếp nhận yêu cầu.</StoreTextReveal>
@@ -65,7 +66,7 @@ export async function Footer() {
           {policies.length > 0 && <nav className="footer-policies" aria-label="Chính sách">
             {policies.map((policy) => <StoreTextLink key={policy.id}><Link href={`/chinh-sach/${policy.slug}`}>{policy.title}</Link></StoreTextLink>)}
           </nav>}
-        </div>
+        </div></StoreTextExemption>
       </div>
     </footer>
   );

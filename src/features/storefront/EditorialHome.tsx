@@ -1,4 +1,4 @@
-import { StoreTextReveal, StoreTextRevealGroup, StoreTextExemption } from "@/components/ui/StoreTextReveal";
+import { StoreTextReveal, StoreTextRevealGroup } from "@/components/ui/StoreTextReveal";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight, Flower2, Heart } from "lucide-react";
@@ -7,7 +7,7 @@ import { ProductCard } from "@/components/ProductCard";
 import { ServiceCards } from "@/components/ServiceCards";
 import { Empty } from "@/components/Empty";
 import { LandingScrollFade } from "./LandingMotion";
-import { LandingHeroMotion, LandingTitleLine, LandingHeroPhoto, LandingHeroOrnament, LandingStoryPhoto } from "./LandingHeroMotion";
+import { LandingHeroMotion, LandingHeroPhoto, LandingHeroOrnament, LandingStoryPhoto } from "./LandingHeroMotion";
 import { HomeBackToTop } from "./HomeBackToTop";
 import { LandingBenefitsMotion } from "./LandingBenefitsMotion";
 import { FeaturedProductCarousel } from "./FeaturedProductCarousel";
@@ -42,18 +42,18 @@ export async function EditorialHome() {
   }
   return (
     <div className="olf-home" data-home-design="oh-les-fleurs">
-      <StoreTextExemption><LandingHeroMotion>
+      <LandingHeroMotion>
         <div className="olf-shell olf-hero-stage">
-          <div className="olf-hero-heading">
-            <span className="olf-eyebrow">{home.eyebrow}</span>
-            <h1 id="home-title" tabIndex={-1}>
-              {lines.map((line, index) => <LandingTitleLine key={index} index={index}>
+          <div className="olf-hero-heading" data-text-group>
+            <StoreTextReveal role="eyebrow" className="olf-eyebrow" initial>{home.eyebrow}</StoreTextReveal>
+            <StoreTextReveal as="h1" role="page" delayMs={90} initial id="home-title" tabIndex={-1}>
+              {lines.map((line, index) => <span className="olf-title-line" data-hero-line key={index}>
                 {index === 0 ? line : <em>{line}</em>}
                 {index === 0 ? <LandingHeroOrnament kind="flower"><Flower2 className="olf-title-flower" /></LandingHeroOrnament> : null}
                 {index === lines.length - 1 ? <LandingHeroOrnament kind="heart"><Heart className="olf-title-heart" /></LandingHeroOrnament> : null}
                 {index < lines.length - 1 ? " " : null}
-              </LandingTitleLine>)}
-            </h1>
+              </span>)}
+            </StoreTextReveal>
           </div>
           <div className="olf-hero-photos">
             <LandingHeroPhoto index={0}>
@@ -66,18 +66,18 @@ export async function EditorialHome() {
               <div className="olf-photo-frame"><Image src={heroPhotos[2].src} alt={heroPhotos[2].alt} fill sizes="(max-width: 767px) 26vw, 27vw" loading="eager" /></div>
             </LandingHeroPhoto>
           </div>
-        <div className="olf-hero-description">
-          <p>{home.intro}</p>
+        <div className="olf-hero-description" data-text-group>
+          <StoreTextReveal as="p" role="body" delayMs={180} initial>{home.intro}</StoreTextReveal>
           <div className="olf-actions">
             <ScrollAnchor className="olf-button" href={home.primaryCta.href}>{home.primaryCta.label}<ArrowUpRight aria-hidden="true" size={20} /></ScrollAnchor>
             {/* <Link className="olf-link" href={home.secondaryCta.href}>{home.secondaryCta.label}</Link> */}
           </div>
-          <p className="olf-hero-note">{home.footnote}</p>
-          <p className="olf-image-note">{home.imageNote}</p>
+          <StoreTextReveal as="p" role="eyebrow" className="olf-hero-note" initial>{home.footnote}</StoreTextReveal>
+          <StoreTextReveal as="p" role="eyebrow" delayMs={90} className="olf-image-note" initial>{home.imageNote}</StoreTextReveal>
         </div>
         <div className="olf-hero-gallery" aria-hidden="true" />
         </div>
-      </LandingHeroMotion></StoreTextExemption>
+      </LandingHeroMotion>
 
       <section className="olf-section olf-story" aria-labelledby="story-title">
         <div className="olf-shell">
@@ -107,8 +107,8 @@ export async function EditorialHome() {
         <StoreTextRevealGroup legacyLayout><div className="olf-heading-row"><div><StoreTextReveal as="span" role="eyebrow" className="olf-eyebrow">{home.featuredEyebrow}</StoreTextReveal><StoreTextReveal as="h2" role="heading" delayMs={90} id="featured-title">{home.featuredTitle}</StoreTextReveal></div>
           <Link className="olf-link" href={home.featuredCta.href}>{home.featuredCta.label}<ArrowUpRight aria-hidden="true" size={19} /></Link>
         </div></StoreTextRevealGroup>
-        <StoreTextExemption><LandingScrollFade>{products.length ? <FeaturedProductCarousel slides={products.map((p) => ({ id: p.id, card: <ProductCard product={p} variant="home" /> }))} />
-          : <Empty title="Những mùa hoa đang được chuẩn bị" body="Hòe sẽ giới thiệu mẫu hoa khi thông tin và hình ảnh đã sẵn sàng." href="/dich-vu/hoa-tam" action="Khám phá Hoa Tâm" />}</LandingScrollFade></StoreTextExemption>
+        <div data-scroll-fade><div data-scroll-fade-content>{products.length ? <FeaturedProductCarousel slides={products.map((p) => ({ id: p.id, card: <ProductCard product={p} variant="home" revealText /> }))} />
+          : <Empty title="Những mùa hoa đang được chuẩn bị" body="Hòe sẽ giới thiệu mẫu hoa khi thông tin và hình ảnh đã sẵn sàng." href="/dich-vu/hoa-tam" action="Khám phá Hoa Tâm" />}</div></div>
       </section>
 
       <section className="olf-section olf-story" aria-labelledby="story-title">
